@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Simplify mark termination and eliminate mark 2 &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Create an undefined internal calling convention" href="27539-internal-abi.html" />
+    <link rel="prev" title="Proposal: Raw XML Token" href="26756-rawxml-token.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Simplify mark termination and eliminate mark 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#replace-mark-2-with-a-race-free-algorithm">Replace mark 2 with a race-free algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#variations-on-the-basic-algorithm">Variations on the basic algorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#consequences">Consequences</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#unify-stw-gc-and-checkmark-mode-with-concurrent-marking">Unify STW GC and checkmark mode with concurrent marking</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Consequences</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#flush-mcaches-after-mark-termination">Flush mcaches after mark termination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allow-safe-points-without-preemption-in-dedicated-workers">Allow safe-points without preemption in dedicated workers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#proof-of-termination-detection-algorithm">Proof of termination detection algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Simplify mark termination and eliminate mark 2</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/26903-simplify-mark-termination.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-simplify-mark-termination-and-eliminate-mark-2">
+<h1>Proposal: Simplify mark termination and eliminate mark 2<a class="headerlink" href="#proposal-simplify-mark-termination-and-eliminate-mark-2" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements</p>
+<p>Last updated: 2018-08-09</p>
+<p>Discussion at https://golang.org/issue/26903.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Go’s garbage collector has evolved substantially over time, and as
+with any software with a history, there are places where the vestigial
+remnants of this evolution show.
+This document proposes several related simplifications to the design
+of Go’s mark termination and related parts of concurrent marking that
+were made possible by shifts in other parts of the garbage collector.</p>
+<p>The keystone of these simplifications is a new mark completion
+algorithm.
+The current algorithm is racy and, as a result, mark termination must
+cope with the possibility that there may still be marking work to do.
+We propose a new algorithm based on distributed termination detection
+that both eliminates this race and replaces the existing “mark 2”
+sub-phase, yielding simplifications throughout concurrent mark and
+mark termination.</p>
+<p>This new mark completion algorithm combined with a few smaller changes
+can simplify or completely eliminate several other parts of the
+garbage collector. Hence, we propose to also:</p>
+<ol class="simple">
+<li><p>Unify stop-the-world GC and checkmark mode with concurrent marking;</p></li>
+<li><p>Flush mcaches after mark termination;</p></li>
+<li><p>And allow safe-points without preemption in dedicated workers.</p></li>
+</ol>
+<p>Taken together, these fairly small changes will allow us to eliminate
+mark 2, “blacken promptly” mode, the second root marking pass,
+blocking drain mode, <code class="docutils literal notranslate"><span class="pre">getfull</span></code> and its troublesome spin loop, work
+queue draining during mark termination, <code class="docutils literal notranslate"><span class="pre">gchelper</span></code>, and idle worker
+tracking.</p>
+<p>This will eliminate a good deal of subtle code from the garbage
+collector, making it simpler and more maintainable.
+As an added bonus, it’s likely to perform a little better, too.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Prior to Go 1.5, Go’s garbage collector was a stop-the-world garbage
+collector, and Go continues to support STW garbage collection as a
+debugging mode.
+Go 1.5 introduced a concurrent collector, but, in order to minimize a
+massively invasive change, it kept much of the existing GC mechanism
+as a STW “mark termination” phase, while adding a concurrent mark
+phase before the STW phase.
+This concurrent mark phase did as much as it could, but ultimately
+fell back to the STW algorithm to clean up any work it left behind.</p>
+<p>Until Go 1.8, concurrent marking always left behind at least some
+work, since any stacks that had been modified during the concurrent
+mark phase had to be re-scanned during mark termination.
+Go 1.8 introduced <a class="reference internal" href="17503-eliminate-rescan.html"><span class="doc">a new write barrier</span></a>
+that eliminated the need to re-scan stacks.
+This significantly reduced the amount of work that had to be done in
+mark termination.
+However, since it had never really mattered before, we were sloppy
+about entering mark termination: the algorithm that decided when it
+was time to enter mark termination <em>usually</em> waited until all work was
+done by concurrent mark, but sometimes <a class="reference external" href="17503-eliminate-rescan.md#appendix-mark-completion-race">work would slip
+through</a>,
+leaving mark termination to clean up the mess.</p>
+<p>Furthermore, in order to minimize (though not eliminate) the chance of
+entering mark termination prematurely, Go 1.5 divided concurrent
+marking into two phases creatively named “mark 1” and “mark 2”.
+During mark 1, when it ran out of global marking work, it would flush
+and disable all local work caches (enabling “blacken promptly” mode)
+and enter mark 2.
+During mark 2, when it ran out of global marking work again, it would
+enter mark termination.
+Unfortunately, blacken promptly mode has performance implications
+(there was a reason for those local caches), and this algorithm can
+enter mark 2 very early in the GC cycle since it merely detects a work
+bottleneck.
+And while disabling all local caches was intended to prevent premature
+mark termination, this doesn’t always work.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>There are several steps to this proposal, and it’s not necessary to
+implement all of them.
+However, the crux of the proposal is a new termination detection
+algorithm.</p>
+<div class="section" id="replace-mark-2-with-a-race-free-algorithm">
+<h3>Replace mark 2 with a race-free algorithm<a class="headerlink" href="#replace-mark-2-with-a-race-free-algorithm" title="Permalink to this headline">¶</a></h3>
+<p>We propose replacing mark 2 with a race-free algorithm based on ideas
+from distributed termination detection [Matocha ‘97].</p>
+<p>The GC maintains several work queues of grey objects to be blackened.
+It maintains two global queues, one for root marking work and one for
+heap objects, but we can think of these as a single logical queue.
+It also maintains a queue of locally cached work on each <em>P</em> (that is,
+each GC worker).
+A P can move work from the global queue to its local queue or
+vice-versa.
+Scanning removes work from the local queue and may add work back to
+the local queue.
+This algorithm does not change the structure of the GC’s work queues
+from the current implementation.</p>
+<p>A P <em>cannot</em> observe or remove work from another P’s local queue.
+A P also <em>cannot</em> create work from nothing: it must consume a marking
+job in order to create more marking jobs.
+This is critical to termination detection because it means termination
+is a stable condition.
+Furthermore, all of these actions must be <em>GC-atomic</em>; that is, there
+are no safe-points within each of these actions.
+Again, all of this is true of the current implementation.</p>
+<p>The proposed algorithm is as follows:</p>
+<p>First, each P, maintains a local <em>flushed</em> flag that it sets whenever
+the P flushes any local GC work to the global queue.
+The P may cache an arbitrary amount of GC work locally without setting
+this flag; the flag indicates that it may have shared work with
+another P.
+This flag is only accessed synchronously, so it need not be atomic.</p>
+<p>When a P’s local queue is empty and the global queue is empty it runs
+the termination detection algorithm:</p>
+<ol class="simple">
+<li><p>Acquire a global termination detection lock (only one P may run
+this algorithm at a time).</p></li>
+<li><p>Check the global queue. If it is non-empty, we have not reached
+termination, so abort the algorithm.</p></li>
+<li><p>Execute a ragged barrier. On each P, when it reaches a safe-point,</p>
+<ol class="simple">
+<li><p>Flush the local write barrier buffer.
+This may mark objects and add pointers to the local work queue.</p></li>
+<li><p>Flush the local work queue.
+This may set the P’s flushed flag.</p></li>
+<li><p>Check and clear the P’s flushed flag.</p></li>
+</ol>
+</li>
+<li><p>If any P’s flushed flag was set, we have not reached termination,
+so abort the algorithm.
+If no P’s flushed flag was set, enter mark termination.</p></li>
+</ol>
+<p>Like most wave-based distributed termination algorithms, it may be
+necessary to run this algorithm multiple times during a cycle.
+However, this isn’t necessarily a disadvantage: flushing the local
+work queues also serves to balance work between Ps, and makes it okay
+to keep work cached on a P that isn’t actively doing GC work.</p>
+<p>There are a few subtleties to this algorithm that are worth noting.
+First, unlike many distributed termination algorithms, it <em>does not</em>
+detect that no work was done since the previous barrier.
+It detects that no work was <em>communicated</em>, and that all queues were
+empty at some point.
+As a result, while many similar algorithms require at least two waves
+to detect termination [Hudson ‘97], this algorithm can detect
+termination in a single wave.
+For example, on small heaps it’s possible for all Ps to work entirely
+out of their local queues, in which case mark can complete after just
+a single wave.</p>
+<p>Second, while the only way to add work to the local work queue is by
+consuming work, this is not true of the local write barrier buffer.
+Since this buffer simply records pointer writes, and the recorded
+objects may already be black, it can continue to grow after
+termination has been detected.
+However, once termination is detected, we know that all pointers in
+the write barrier buffer must be to black objects, so this buffer can
+simply be discarded.</p>
+<div class="section" id="variations-on-the-basic-algorithm">
+<h4>Variations on the basic algorithm<a class="headerlink" href="#variations-on-the-basic-algorithm" title="Permalink to this headline">¶</a></h4>
+<p>There are several small variations on the basic algorithm that may be
+desirable for implementation and efficiency reasons.</p>
+<p>When flushing the local work queues during the ragged barrier, it may
+be valuable to break up the work buffers that are put on the global
+queue.
+For efficiency, work is tracked in batches and the queues track these
+batches, rather than individual marking jobs.
+The ragged barrier is an excellent opportunity to break up these
+batches to better balance work.</p>
+<p>The ragged barrier places no constraints on the order in which Ps
+flush, nor does it need to run on all Ps if some P has its local
+flushed flag set.
+One obvious optimization this allows is for the P that triggers
+termination detection to flush its own queues and check its own
+flushed flag before trying to interrupt other Ps.
+If its own flushed flag is set, it can simply clear it and abort (or
+retry) termination detection.</p>
+</div>
+<div class="section" id="consequences">
+<h4>Consequences<a class="headerlink" href="#consequences" title="Permalink to this headline">¶</a></h4>
+<p>This new termination detection algorithm replaces mark 2, which means
+we no longer need blacken-promptly mode.
+Hence, we can delete all code related to blacken-promptly mode.</p>
+<p>It also eliminates the mark termination race, so, in concurrent mode,
+mark termination no longer needs to detect this race and behave
+differently.
+However, we should probably continue to detect the race and panic, as
+detecting the race is cheap and this is an excellent self-check.</p>
+</div>
+</div>
+<div class="section" id="unify-stw-gc-and-checkmark-mode-with-concurrent-marking">
+<h3>Unify STW GC and checkmark mode with concurrent marking<a class="headerlink" href="#unify-stw-gc-and-checkmark-mode-with-concurrent-marking" title="Permalink to this headline">¶</a></h3>
+<p>The next step in this proposal is to unify stop-the-world GC and
+checkmark mode with concurrent marking.
+Because of the GC’s heritage from a STW collector, there are several
+code paths that are specific to STW collection, even though STW is
+only a debugging option at this point.
+In fact, as we’ve made the collector more concurrent, more code paths
+have become vestigial, existing only to support STW mode.
+This adds complexity to the garbage collector and makes this debugging
+mode less reliable (and less useful) as these code paths are poorly
+tested.</p>
+<p>We propose instead implementing STW collection by reusing the existing
+concurrent collector, but simply telling the scheduler that all Ps
+must run “dedicated GC workers”.
+Hence, while the world won’t technically be stopped during marking, it
+will effectively be stopped.</p>
+<div class="section" id="id1">
+<h4>Consequences<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Unifying STW into concurrent marking directly eliminates several code
+paths specific to STW mode.
+Most notably, concurrent marking currently has two root marking phases
+and STW mode has a single root marking pass.
+All three of these passes must behave differently.
+Unifying STW and concurrent marking collapses all three passes into
+one.</p>
+<p>In conjunction with the new termination detection algorithm, this
+eliminates the need for mark work draining during mark termination.
+As a result, the write barrier does not need to be on during mark
+termination, and we can eliminate blocking drain mode entirely.
+Currently, blocking drain mode is only used if the mark termination
+race happens or if we’re in STW mode.
+This in turn eliminates the troublesome spin loop in <code class="docutils literal notranslate"><span class="pre">getfull</span></code> that
+implements blocking drain mode.
+Specifically, this eliminates <code class="docutils literal notranslate"><span class="pre">work.helperDrainBlock</span></code>, <code class="docutils literal notranslate"><span class="pre">gcDrainBlock</span></code>
+mode, <code class="docutils literal notranslate"><span class="pre">gcWork.get</span></code>, and <code class="docutils literal notranslate"><span class="pre">getfull</span></code>.</p>
+<p>At this point, the <code class="docutils literal notranslate"><span class="pre">gcMark</span></code> function should be renamed, since it will
+no longer have anything to do with marking.</p>
+<p>Unfortunately, this isn’t enough to eliminate work draining entirely
+from mark termination, since the draining mechanism is also used to
+flush mcaches during mark termination.</p>
+</div>
+</div>
+<div class="section" id="flush-mcaches-after-mark-termination">
+<h3>Flush mcaches after mark termination<a class="headerlink" href="#flush-mcaches-after-mark-termination" title="Permalink to this headline">¶</a></h3>
+<p>The third step in this proposal is to delay the flushing of mcaches
+until after mark termination.</p>
+<p>Each P has an mcache that tracks spans being actively allocated from
+by that P.
+Sweeping happens when a P brings a span into its mcache, or can happen
+asynchronously as part of background sweeping.
+Hence, the spans in mcaches must be flushed out in order to trigger
+sweeping of those spans and to prevent a race between allocating from
+an unswept span and the background sweeper sweeping that span.</p>
+<p>While it’s important for the mcaches to be flushed between enabling
+the sweeper and allocating, it does not have to happen during mark
+termination.</p>
+<p>Hence, we propose to flush each P’s mcache when that P returns from
+the mark termination STW.
+This is early enough to ensure no allocation can happen on that P,
+parallelizes this flushing, and doesn’t block other Ps during
+flushing.</p>
+<p>Combined with the first two steps, this eliminates the only remaining
+use of work draining during mark termination, so we can eliminate mark
+termination draining entirely, including <code class="docutils literal notranslate"><span class="pre">gchelper</span></code> and related
+mechanisms (<code class="docutils literal notranslate"><span class="pre">mhelpgc</span></code>, <code class="docutils literal notranslate"><span class="pre">m.helpgc</span></code>, <code class="docutils literal notranslate"><span class="pre">helpgc</span></code>, <code class="docutils literal notranslate"><span class="pre">gcprocs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">needaddgcproc</span></code>, etc).</p>
+</div>
+<div class="section" id="allow-safe-points-without-preemption-in-dedicated-workers">
+<h3>Allow safe-points without preemption in dedicated workers<a class="headerlink" href="#allow-safe-points-without-preemption-in-dedicated-workers" title="Permalink to this headline">¶</a></h3>
+<p>The final step of this proposal is to allow safe-points in dedicated
+GC workers.
+Currently, dedicated GC workers only reach a safe-point when there is
+no more local or global work.
+However, this interferes with the ragged barrier in the termination
+detection algorithm (which can only run at a safe-point on each P).
+As a result, it’s only fruitful to run the termination detection
+algorithm if there are no dedicated workers running, which in turn
+requires tracking the number of running and idle workers, and may
+delay work balancing.</p>
+<p>By allowing more frequent safe-points in dedicated GC workers,
+termination detection can run more eagerly.</p>
+<p>Furthermore, worker tracking was based on the mechanism used by STW GC
+to implement the <code class="docutils literal notranslate"><span class="pre">getfull</span></code> barrier.
+Once that has also been eliminated, we no longer need any worker
+tracking.</p>
+</div>
+</div>
+<div class="section" id="proof-of-termination-detection-algorithm">
+<h2>Proof of termination detection algorithm<a class="headerlink" href="#proof-of-termination-detection-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>The proposed termination detection algorithm is remarkably simple to
+implement, but subtle in its reasoning.
+Here we prove it correct and endeavor to provide some insight into why
+it works.</p>
+<p><strong>Theorem.</strong> The termination detection algorithm succeeds only if all
+mark work queues are empty when the algorithm terminates.</p>
+<p><strong>Proof.</strong> Assume the termination detection algorithm succeeds.
+In order to show that all mark work queues must be empty once the
+algorithm succeeds, we use induction to show that all possible actions
+must maintain three conditions: 1) the global queue is empty, 2) all
+flushed flags are clear, and 3) after a P has been visited by the
+ragged barrier, its local queue is empty.</p>
+<p>First, we show that these conditions were true at the instant it
+observed the global queue was empty.
+This point in time trivially satisfies condition 1.
+Since the algorithm succeeded, each P’s flushed flag must have been
+clear when the ragged barrier observed that P.
+Because termination detection is the only operation that clears the
+flushed flags, each flag must have been clear for all time between the
+start of termination detection and when the ragged barrier observed
+the flag.
+In particular, all flags must have been clear at the instant it
+observed that the global queue was empty, so condition 2 is satisfied.
+Condition 3 is trivially satisfied at this point because no Ps have
+been visited by the ragged barrier.
+This establishes the base case for induction.</p>
+<p>Next, we consider all possible actions that could affect the state of
+the queue or the flags after this initial state.
+There are four such actions:</p>
+<ol class="simple">
+<li><p>The ragged barrier can visit a P.
+This may modify the global queue, but if it does so it will set the
+flushed flag and the algorithm will not succeed, contradicting the
+assumption.
+Thus it could not have modified the global queue, maintaining
+condition 1.
+For the same reason, we know it did not set the flushed flag,
+maintaining condition 2.
+Finally, the ragged barrier adds the P to the set of visited P, but
+flushes the P’s local queue, thus maintaining condition 3.</p></li>
+<li><p>If the global queue is non-empty, a P can move work from the global
+queue to its local queue.
+By assumption, the global queue is empty, so this action can’t
+happen.</p></li>
+<li><p>If its local queue is non-empty, a P can consume local work and
+potentially produce local work.
+This action does not modify the global queue or flushed flag, so it
+maintains conditions 1 and 2.
+If the P has not been visited by the ragged barrier, then condition
+3 is trivially maintained.
+If it has been visited, then by assumption the P’s local queue is
+empty, so this action can’t happen.</p></li>
+<li><p>If the local queue is non-empty, the P can move work from the local
+queue to the global queue.
+There are two sub-cases.
+If the P has not been visited by the ragged barrier, then this
+action would set the P’s flushed flag, causing termination
+detection to fail, which contradicts the assumption.
+If the P has been visited by the ragged barrier, then its local
+queue is empty, so this action can’t happen.</p></li>
+</ol>
+<p>Therefore, by induction, all three conditions must be true when
+termination detection succeeds.
+Notably, we’ve shown that once the ragged barrier is complete, none of
+the per-P actions (2, 3, and 4) can happen.
+Thus, if termination detection succeeds, then by conditions 1 and 3,
+all mark work queues must be empty.</p>
+<p><strong>Corollary.</strong> Once the termination detection algorithm succeeds,
+there will be no work to do in mark termination.</p>
+<p>Go’s GC never turns a black object grey because it uses black mutator
+techniques (once a stack is black it remains black) and a
+forward-progress barrier.
+Since the mark work queues contain pointers to grey objects, it
+follows that once the mark work queues are empty, they will remain
+empty, including when the garbage collector transitions in to mark
+termination.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal does not affect any user-visible APIs, so it is Go 1
+compatible.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>This proposal can be implemented incrementally, and each step opens up
+new simplifications.
+The first step will be to implement the new termination detection
+algorithm, since all other simplifications build on that, but the
+other steps can be implemented as convenient.</p>
+<p>Austin Clements plans to implement all or most of this proposal for Go
+1.12.
+The actual implementation effort for each step is likely to be fairly
+small (the mark termination algorithm was implemented and debugged in
+under an hour).</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>[Hudson ‘97] R. L. Hudson, R. Morrison, J. E. B. Moss, and D. S.
+Munro. Garbage collecting the world: One car at a time. In <em>ACM
+SIGPLAN Notices</em> 32(10):162–175, October 1997.</p>
+<p>[Matocha ‘98] Jeff Matocha and Tracy Camp. “A taxonomy of distributed
+termination detection algorithms.” In <em>Journal of Systems and
+Software</em> 43(3):207–221, November 1998.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="27539-internal-abi.html" class="btn btn-neutral float-right" title="Proposal: Create an undefined internal calling convention" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="26756-rawxml-token.html" class="btn btn-neutral float-left" title="Proposal: Raw XML Token" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

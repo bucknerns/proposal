@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Go should have generics &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Ignore tags in struct type conversions" href="16085-conversions-ignore-tags.html" />
+    <link rel="prev" title="Proposal: Separate soft and hard heap size goal" href="14951-soft-heap-limit.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Go should have generics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#generic-arguments-in-favor-of-generics">Generic arguments in favor of generics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#existing-support-for-generic-programming-in-go">Existing support for generic programming in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specific-arguments-in-favor-of-generics-in-go">Specific arguments in favor of generics in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-we-want-from-generics-in-go">What we want from generics in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-downsides-of-generics">The downsides of generics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples-of-potential-uses-of-generics-in-go">Examples of potential uses of generics in Go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Go should have generics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/15292-generics.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-go-should-have-generics">
+<h1>Proposal: Go should have generics<a class="headerlink" href="#proposal-go-should-have-generics" title="Permalink to this headline">¶</a></h1>
+<p>Author: <a class="reference external" href="iant&#64;golang.org">Ian Lance Taylor</a></p>
+<p>Created: January 2011</p>
+<p>Last updated: April 2016</p>
+<p>Discussion at https://golang.org/issue/15292</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Go should support some form of generic programming.
+Generic programming enables the representation of algorithms and data
+structures in a generic form, with concrete elements of the code
+(such as types) factored out.
+It means the ability to express algorithms with minimal assumptions
+about data structures, and vice-versa
+(paraphrasing <a class="reference external" href="https://www.dagstuhl.de/en/program/calendar/semhp/?semnr=98171">Jazayeri, et al</a>).</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="generic-arguments-in-favor-of-generics">
+<h3>Generic arguments in favor of generics<a class="headerlink" href="#generic-arguments-in-favor-of-generics" title="Permalink to this headline">¶</a></h3>
+<p>People can write code once, saving coding time.
+People can fix a bug in one instance without having to remember to fix it
+in others.
+Generics avoid boilerplate: less coding by copying and editing.</p>
+<p>Generics save time testing code: they increase the amount of code
+that can be type checked at compile time rather than at run time.</p>
+<p>Every statically typed language in current use has generics in one
+form or another (even C has generics, where they are called preprocessor macros;
+<a class="reference external" href="https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/vec.h?revision=165314&amp;view=markup&amp;pathrev=165314">example</a>).</p>
+</div>
+<div class="section" id="existing-support-for-generic-programming-in-go">
+<h3>Existing support for generic programming in Go<a class="headerlink" href="#existing-support-for-generic-programming-in-go" title="Permalink to this headline">¶</a></h3>
+<p>Go already supports a form of generic programming via interfaces.
+People can write an abstract algorithm that works with any type that
+implements the interface.
+However, interfaces are limited because the methods must use specific types.
+There is no way to write an interface with a method that takes an
+argument of type T, for any T, and returns a value of the same type.
+There is no way to write an interface with a method that compares two
+values of the same type T, for any T.
+The assumptions that interfaces require about the types that satisfy
+them are not minimal.</p>
+<p>Interfaces are not simply types; they are also values.
+There is no way to use interface types without using interface values,
+and interface values aren’t always efficient.
+There is no way to create a slice of the dynamic type of an interface.
+That is, there is no way to avoid boxing.</p>
+</div>
+<div class="section" id="specific-arguments-in-favor-of-generics-in-go">
+<h3>Specific arguments in favor of generics in Go<a class="headerlink" href="#specific-arguments-in-favor-of-generics-in-go" title="Permalink to this headline">¶</a></h3>
+<p>Generics permit type-safe polymorphic containers.
+Go currently has a very limited set of such containers: slices, and
+maps of most but not all types.
+Not every program can be written using a slice or map.</p>
+<p>Look at the functions <code class="docutils literal notranslate"><span class="pre">SortInts</span></code>, <code class="docutils literal notranslate"><span class="pre">SortFloats</span></code>, <code class="docutils literal notranslate"><span class="pre">SortStrings</span></code> in the
+sort package.
+Or <code class="docutils literal notranslate"><span class="pre">SearchInts</span></code>, <code class="docutils literal notranslate"><span class="pre">SearchFloats</span></code>, <code class="docutils literal notranslate"><span class="pre">SearchStrings</span></code>.
+Or the <code class="docutils literal notranslate"><span class="pre">Len</span></code>, <code class="docutils literal notranslate"><span class="pre">Less</span></code>, and <code class="docutils literal notranslate"><span class="pre">Swap</span></code> methods of <code class="docutils literal notranslate"><span class="pre">byName</span></code> in package io/ioutil.
+Pure boilerplate copying.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">copy</span></code> and <code class="docutils literal notranslate"><span class="pre">append</span></code> functions exist because they make slices much
+more useful.
+Generics would mean that these functions are unnecessary.
+Generics would make it possible to write similar functions for maps
+and channels, not to mention user created data types.
+Granted, slices are the most important composite data type, and that’s why
+these functions were needed, but other data types are still useful.</p>
+<p>It would be nice to be able to make a copy of a map.
+Right now that function can only be written for a specific map type,
+but, except for types, the same code works for any map type.
+Similarly, it would be nice to be able to multiplex one channel onto
+two, without having to rewrite the function for each channel type.
+One can imagine a range of simple channel manipulators, but they can
+not be written because the type of the channel must be specified
+explicitly.</p>
+<p>Generics let people express the relationship between function parameters
+and results.
+Consider the simple Transform function that calls a function on every
+element of a slice, returning a new slice.
+We want to write something like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Transform</span><span class="p">(</span><span class="n">s</span> <span class="p">[]</span><span class="n">T</span><span class="p">,</span> <span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">U</span><span class="p">)</span> <span class="p">[]</span><span class="n">U</span>
+</pre></div>
+</div>
+<p>but this can not be expressed in current Go.</p>
+<p>In many Go programs, people only have to write explicit types in function
+signatures.
+Without generics, they also have to write them in another place: in the
+type assertion needed to convert from an interface type back to the
+real type.
+The lack of static type checking provided by generics makes the code
+heavier.</p>
+</div>
+<div class="section" id="what-we-want-from-generics-in-go">
+<h3>What we want from generics in Go<a class="headerlink" href="#what-we-want-from-generics-in-go" title="Permalink to this headline">¶</a></h3>
+<p>Any implementation of generics in Go should support the following.</p>
+<ul class="simple">
+<li><p>Define generic types based on types that are not known until they are instantiated.</p></li>
+<li><p>Write algorithms to operate on values of these types.</p></li>
+<li><p>Name generic types and name specific instantiations of generic types.</p></li>
+<li><p>Use types derived from generic types, as in making a slice of a generic type,
+or conversely, given a generic type known to be a slice, defining a variable
+with the slice’s element type.</p></li>
+<li><p>Restrict the set of types that may be used to instantiate a generic type, to
+ensure that the generic type is only instantiated with types that support the
+required operations.</p></li>
+<li><p>Do not require an explicit relationship between the definition of a generic
+type or function and its use.  That is, programs should not have to
+explicitly say <em>type T implements generic G</em>.</p></li>
+<li><p>Write interfaces that describe explicit relationships between generic types,
+as in a method that takes two parameters that must both be the same unknown type.</p></li>
+<li><p>Do not require explicit instantiation of generic types or functions; they
+should be instantiated as needed.</p></li>
+</ul>
+</div>
+<div class="section" id="the-downsides-of-generics">
+<h3>The downsides of generics<a class="headerlink" href="#the-downsides-of-generics" title="Permalink to this headline">¶</a></h3>
+<p>Generics affect the whole language.
+It is necessary to evaluate every single language construct to see how
+it will work with generics.</p>
+<p>Generics affect the whole standard library.
+It is desirable to have the standard library make effective use of generics.
+Every existing package should be reconsidered to see whether it would benefit
+from using generics.</p>
+<p>It becomes tempting to build generics into the standard library at a
+very low level, as in C++ <code class="docutils literal notranslate"><span class="pre">std::basic_string&lt;char,</span> <span class="pre">std::char_traits&lt;char&gt;,</span> <span class="pre">std::allocator&lt;char&gt;</span> <span class="pre">&gt;</span></code>.
+This has its benefits—otherwise nobody would do it—but it has
+wide-ranging and sometimes surprising effects, as in incomprehensible
+C++ error messages.</p>
+<p>As <a class="reference external" href="https://research.swtch.com/generic">Russ pointed out</a>, generics are
+a trade off between programmer time, compilation time, and execution
+time.</p>
+<p>Go is currently optimizing compilation time and execution time at the
+expense of programmer time.
+Compilation time is a significant benefit of Go.
+Can we retain compilation time benefits without sacrificing too much
+execution time?</p>
+<p>Unless we choose to optimize execution time, operations that appear
+cheap may be more expensive if they use values of generic type.
+This may be subtly confusing for programmers.
+I think this is less important for Go than for some other languages,
+as some operations in Go already have hidden costs such as array
+bounds checks.
+Still, it would be essential to ensure that the extra cost of using
+values of generic type is tightly bounded.</p>
+<p>Go has a lightweight type system.
+Adding generic types inevitably makes the type system more complex.
+It is essential that the result remain lightweight.</p>
+<p>The upsides of the downsides are that Go is a relatively small
+language, and it really is possible to consider every aspect of the
+language when adding generics.
+At least the following sections of the spec would need to be extended:
+Types, Type Identity, Assignability, Type assertions, Calls, Type
+switches, For statements with range clauses.</p>
+<p>Only a relatively small number of packages will need to be
+reconsidered in light of generics: container/*, sort, flag, perhaps
+bytes.
+Packages that currently work in terms of interfaces will generally be
+able to continue doing so.</p>
+</div>
+<div class="section" id="conclusion">
+<h3>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h3>
+<p>Generics will make the language safer, more efficient to use, and more
+powerful.
+These advantages are harder to quantify than the disadvantages, but
+they are real.</p>
+</div>
+</div>
+<div class="section" id="examples-of-potential-uses-of-generics-in-go">
+<h2>Examples of potential uses of generics in Go<a class="headerlink" href="#examples-of-potential-uses-of-generics-in-go" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Containers</p>
+<ul>
+<li><p>User-written hash tables that are compile-time type-safe, rather than
+converting slice keys to string and using maps</p></li>
+<li><p>Sorted maps (red-black tree or similar)</p></li>
+<li><p>Double-ended queues, circular buffers</p></li>
+<li><p>A simpler Heap</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Keys(map[K]V)</span> <span class="pre">[]K</span></code>, <code class="docutils literal notranslate"><span class="pre">Values(map[K]V)</span> <span class="pre">[]V</span></code></p></li>
+<li><p>Caches</p></li>
+<li><p>Compile-time type-safe <code class="docutils literal notranslate"><span class="pre">sync.Pool</span></code></p></li>
+</ul>
+</li>
+<li><p>Generic algorithms that work with these containers in a type-safe way.</p>
+<ul>
+<li><p>Union/Intersection</p></li>
+<li><p>Sort, StableSort, Find</p></li>
+<li><p>Copy (a generic container, and also copy a map)</p></li>
+<li><p>Transform a container by applying a function–LISP <code class="docutils literal notranslate"><span class="pre">mapcar</span></code> and friends</p></li>
+</ul>
+</li>
+<li><p>math and math/cmplx</p></li>
+<li><p>testing/quick.{<code class="docutils literal notranslate"><span class="pre">Check</span></code>,<code class="docutils literal notranslate"><span class="pre">CheckEqual</span></code>}</p></li>
+<li><p>Mixins</p>
+<ul>
+<li><p>like <code class="docutils literal notranslate"><span class="pre">ioutil.NopCloser</span></code>, but preserving other methods instead of
+restricting to the passed-in interface (see the <code class="docutils literal notranslate"><span class="pre">ReadFoo</span></code> variants of
+<code class="docutils literal notranslate"><span class="pre">bytes.Buffer</span></code>)</p></li>
+</ul>
+</li>
+<li><p>protobuf <code class="docutils literal notranslate"><span class="pre">proto.Clone</span></code></p></li>
+<li><p>Eliminate boilerplate when calling sort function</p></li>
+<li><p>Generic diff: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">[T]</span> <span class="pre">Diff(x,</span> <span class="pre">y</span> <span class="pre">[]T)</span> <span class="pre">[]range</span></code></p></li>
+<li><p>Channel operations</p>
+<ul>
+<li><p>Merge N channels onto one</p></li>
+<li><p>Multiplex one channel onto N</p></li>
+<li><p>The <a class="reference external" href="https://play.golang.org/p/b5XRHnxzZF">worker-pool pattern</a></p></li>
+</ul>
+</li>
+<li><p>Graph algorithms, for example immediate dominator computation</p></li>
+<li><p>Multi-dimensional arrays (not slices) of different lengths</p></li>
+<li><p>Many of the packages in go.text could benefit from it to avoid duplicate
+implementation or APIs for <code class="docutils literal notranslate"><span class="pre">string</span></code> and <code class="docutils literal notranslate"><span class="pre">[]byte</span></code> variants; many points that
+could benefit need high performance, though, and generics should provide that
+benefit</p></li>
+</ul>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I won’t discuss a specific implementation proposal here: my hope is
+that this document helps show people that generics are worth having
+provided the downsides can be kept under control.</p>
+<p>The following documents are my previous generics proposals,
+presented for historic reference. All are flawed in various ways.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="15292/2010-06-type-functions.html"><span class="doc">Type functions</span></a> (June 2010)</p></li>
+<li><p><a class="reference internal" href="15292/2011-03-gen.html"><span class="doc">Generalized types</span></a> (March 2011)</p></li>
+<li><p><a class="reference internal" href="15292/2013-10-gen.html"><span class="doc">Generalized types</span></a> (October 2013)</p></li>
+<li><p><a class="reference internal" href="15292/2013-12-type-params.html"><span class="doc">Type parameters</span></a> (December 2013)</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="16085-conversions-ignore-tags.html" class="btn btn-neutral float-right" title="Proposal: Ignore tags in struct type conversions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="14951-soft-heap-limit.html" class="btn btn-neutral float-left" title="Proposal: Separate soft and hard heap size goal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

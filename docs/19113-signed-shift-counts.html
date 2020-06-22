@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Permit Signed Integers as Shift Counts for Go 2 &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Go 2 Number Literal Changes" href="19308-number-literals.html" />
+    <link rel="prev" title="Proposal: percpu.Sharded, an API for reducing cache contention" href="18802-percpu-sharded.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Permit Signed Integers as Shift Counts for Go 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Permit Signed Integers as Shift Counts for Go 2</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/19113-signed-shift-counts.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-permit-signed-integers-as-shift-counts-for-go-2">
+<h1>Proposal: Permit Signed Integers as Shift Counts for Go 2<a class="headerlink" href="#proposal-permit-signed-integers-as-shift-counts-for-go-2" title="Permalink to this headline">¶</a></h1>
+<p>Robert Griesemer</p>
+<p>Last updated: January 17, 2019</p>
+<p>Discussion at <a class="reference external" href="https://golang.org/issue/19113">golang.org/issue/19113</a>.</p>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>We propose to change the language spec such that the shift count
+(the rhs operand in a <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code> operation)
+may be a <em>signed</em> or unsigned (non-constant) integer,
+or any non-negative constant value that can be represented as an integer.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>See <strong>Rationale</strong> section below.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We change the language spec regarding shift operations as follows:
+In the section on <a class="reference external" href="https://golang.org/ref/spec#Operators">Operators</a>, the text:</p>
+<blockquote>
+<div><p>The right operand in a shift expression must have unsigned integer type
+or be an untyped constant that can be converted to unsigned integer type.</p>
+</div></blockquote>
+<p>to</p>
+<blockquote>
+<div><p>The right operand in a shift expression must have integer type
+or be an untyped constant that can be converted to an integer type.
+If the right operand is constant, it must not be negative.</p>
+</div></blockquote>
+<p>Furthermore, in the section on <a class="reference external" href="https://golang.org/ref/spec#Arithmetic_operators">Integer operators</a>, we change the text:</p>
+<blockquote>
+<div><p>The shift operators shift the left operand by the shift count specified by the right operand.</p>
+</div></blockquote>
+<p>to</p>
+<blockquote>
+<div><p>The shift operators shift the left operand by the shift count specified by the right operand.
+A run-time panic occurs if a non-constant shift count is negative.</p>
+</div></blockquote>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>Since Go’s inception, shift counts had to be of unsigned integer type
+(or a non-negative constant representable as an unsigned integer).
+The idea behind this rule was that
+(a) the spec didn’t have to explain what happened for negative values,
+and (b) the implementation didn’t have to deal with negative values
+possibly occurring at run-time.</p>
+<p>In retrospect, this may have been a mistake;
+for example see
+<a class="reference external" href="https://github.com/golang/go/issues/18616#issuecomment-278852766">this comment by Russ Cox</a>
+during the development of
+<a class="reference external" href="https://golang.org/pkg/math/bits"><code class="docutils literal notranslate"><span class="pre">math/bits</span></code></a>.
+It turns out that we could actually change the spec
+in a backward-compatible way in this regard,
+and this proposal is suggesting that we do exactly that.</p>
+<p>There are other language features where the result (<code class="docutils literal notranslate"><span class="pre">len(x)</span></code>),
+argument (<code class="docutils literal notranslate"><span class="pre">n</span></code> in <code class="docutils literal notranslate"><span class="pre">make([]T,</span> <span class="pre">n)</span></code>) or constant (<code class="docutils literal notranslate"><span class="pre">n</span></code> in <code class="docutils literal notranslate"><span class="pre">[n]T</span></code>)
+are known to be never negative or must not be negative,
+yet we return an <code class="docutils literal notranslate"><span class="pre">int</span></code> (for <code class="docutils literal notranslate"><span class="pre">len</span></code>, <code class="docutils literal notranslate"><span class="pre">cap</span></code>) or permit any integer type.
+Requiring an unsigned integer type for shift counts is frequently
+a non-issue because the shift count is constant (see below);
+but in some cases explicit <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversions are needed,
+or the code around the shift is carefully crafted to use unsigned integers.
+In either case, readability is slightly compromised,
+and more decision making is required when crafting the code:
+Should we use a conversion or type other variables as unsigned integers?
+Finally, and perhaps most importantly, there may be cases
+where we simply convert an integer to an unsigned integer
+and in the process inadvertently make an (invalid) negative value
+positive in the process, possibly hiding a bug that way
+(resulting in a shift by a very large number,
+leading to 0 or -1 depending on the shifted value).</p>
+<p>If we permit any integer type, the existing code will continue to work.
+Places where we currently use a <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversion won’t need it anymore,
+and code that is crafted for an unsigned shift count
+may not require unsigned integers elsewhere.
+(There’s a remote chance that some code relies on the
+fact that a negative value becomes a large positive value
+with a uint conversion; such code would continue to need the uint conversion.
+We cannot remove the uint conversions without testing.)</p>
+<p>An investigation of shifts in the current standard library and tests
+as of 2/15/2017 (excluding package-external tests) found:</p>
+<ul class="simple">
+<li><p>8081 shifts total; 5457 (68%) right shifts vs 2624 (32%) left shifts</p></li>
+<li><p>6151 (76%) of those are shifts by a (typed or untyped) constant</p></li>
+<li><p>1666 (21%) shifts are in tests (_test.go files)</p></li>
+<li><p>253 (3.1%) shifts use an explicit uint conversion for the shift count</p></li>
+</ul>
+<p>If we only look at shifts outside of test files we have:</p>
+<ul class="simple">
+<li><p>6415 shifts total; 4548 (71%) right shifts vs 1867 (29%) left shifts</p></li>
+<li><p>5759 (90%) of those are shifts by a (typed or untyped) constant</p></li>
+<li><p>243 (3.8%) shifts use an explicit uint conversion for the shift count</p></li>
+</ul>
+<p>The overwhelming majority (90%) of shifts
+outside of testing code is by untyped constant values,
+and none of those turns out to require a conversion.
+This proposal won’t affect that code.</p>
+<p>From the remaining 10% of all shifts,
+38% (3.8% of the total number of shifts) require a <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversion.
+That’s a significant number.
+In the remaining 62% of non-constant shifts,
+the shift count expression must be using a variable
+that’s of unsigned integer type, and often a conversion is required there.
+A typical example is <a class="reference external" href="https://golang.org/src/archive/tar/strconv.go#L88">archive/tar/strconv.go:88</a>:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">fitsInBase256</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">x</span> <span class="kt">int64</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">binBits</span> <span class="p">=</span> <span class="nb">uint</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span>    <span class="c1">// &lt;&lt;&lt;&lt; uint cast</span>
+	<span class="k">return</span> <span class="nx">n</span> <span class="o">&gt;=</span> <span class="mi">9</span> <span class="o">||</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="nx">binBits</span> <span class="o">&amp;&amp;</span> <span class="nx">x</span> <span class="p">&lt;</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="nx">binBits</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">n</span></code> is an incoming argument,
+and we can’t be sure that <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> without further analysis of the callers,
+and thus there’s a possibility that <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">-</span> <span class="pre">1</span></code> is negative.
+The <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversions hides that error silently.</p>
+<p>Another one is <a class="reference external" href="https://golang.org/src/cmd/compile/internal/gc/esc.go#L1460">cmd/compile/internal/gc/esc.go:1460</a>:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span>	<span class="nx">shift</span> <span class="o">:=</span> <span class="nb">uint</span><span class="p">(</span><span class="nx">bitsPerOutputInTag</span><span class="o">*</span><span class="p">(</span><span class="nx">vargen</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nx">EscReturnBits</span><span class="p">)</span>    <span class="c1">// &lt;&lt;&lt;&lt; uint cast</span>
+	<span class="nx">old</span> <span class="o">:=</span> <span class="p">(</span><span class="nx">e</span> <span class="o">&gt;&gt;</span> <span class="nx">shift</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nx">bitsMaskForTag</span>
+</pre></div>
+</div>
+<p>Or <a class="reference external" href="https://golang.org/src/fmt/scan.go#L604">src/fmt/scan.go:604</a>:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span>	<span class="nx">n</span> <span class="o">:=</span> <span class="nb">uint</span><span class="p">(</span><span class="nx">bitSize</span><span class="p">)</span>    <span class="c1">// uint cast</span>
+	<span class="nx">x</span> <span class="o">:=</span> <span class="p">(</span><span class="nx">r</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">64</span> <span class="o">-</span> <span class="nx">n</span><span class="p">))</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">64</span> <span class="o">-</span> <span class="nx">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Many (most?) of the non-constant shifts
+that don’t use an explicit <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversion in the shift expression itself
+appear to have a <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversion before that expression.
+Most (all?) of these conversions wouldn’t be necessary anymore.</p>
+<p>The drawback of permitting signed integers
+where negative values are not permitted is that we need to check
+for negative values at run-time and panic as needed,
+as we do elsewhere (e.g., for <code class="docutils literal notranslate"><span class="pre">make</span></code>).
+This requires a bit more code; an estimated minimum of
+two extra instructions per non-constant shift: a test and a branch).
+However, none of the existing code will incur that cost
+because all shift counts are unsigned integers at this point,
+thus the compiler can omit the check.
+For new code using non-constant integer shift counts,
+often the compiler may be able to prove that
+the operand is non-negative and then also avoid the extra instructions.
+The compiler can already often prove that a value is non-negative
+(done anyway for automatic bounds check elimination),
+and in that case it can avoid the new branch entirely.
+Of course, as a last resort,
+an explicit <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversion or mask in the source code
+will allow programmers to force the removal of the check,
+just as an explicit mask of the shift count today
+avoids the oversize shift check.</p>
+<p>On the plus side, almost all code that used a <code class="docutils literal notranslate"><span class="pre">uint</span></code> conversion
+before won’t need it anymore, and it will be safer for that
+since possibly negative values will not be silently converted into positive ones.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This is a backward-compatible language change:
+Any valid program will continue to be valid,
+and will continue to run exactly the same,
+without any performance impact.
+New programs may be using non-constant integer shift counts
+as right operands in shift operations.
+Except for fairly small changes to the spec,
+the compiler, and go/types,
+(and possibly go/vet and golint if they look at shift operations),
+no other code needs to be changed.</p>
+<p>There’s a (remote) chance that some code makes intentional
+use of negative shift count values converted to unsigned:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">shift</span> <span class="kt">int</span> <span class="p">=</span> <span class="p">&lt;</span><span class="nx">some</span> <span class="nx">expression</span><span class="p">&gt;</span> <span class="c1">// use negative value to indicate that we want a 0 result</span>
+<span class="nx">result</span> <span class="o">:=</span> <span class="nx">x</span> <span class="o">&lt;&lt;</span> <span class="nb">uint</span><span class="p">(</span><span class="nx">shift</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">uint(shift)</span></code> will produce a very large positive
+value if <code class="docutils literal notranslate"><span class="pre">shift</span></code> is negative, resulting in <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&lt;&lt;</span> <span class="pre">uint(shift)</span></code> becoming 0.
+Because such code required an explicit conversion
+and will continue to have an explicit conversion, it will continue to work.
+Programmers removing uint conversions from their code will
+need to keep this in mind. Most of the time, however, a panic
+resulting from removing the conversion will indicate a bug.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The implementation requires:</p>
+<ul class="simple">
+<li><p>Adjusting the compiler’s type-checker to allow signed integer shift counts</p></li>
+<li><p>Adjusting the compiler’s back-end to generate the extra test</p></li>
+<li><p>Possibly some (minimal) runtime work to support the new runtime panic</p></li>
+<li><p>Adjusting go/types to allow signed integer shift counts</p></li>
+<li><p>Adjusting the Go spec as outlined earlier in this proposal</p></li>
+<li><p>Adjusting gccgo accordingly (type-checker and back-end)</p></li>
+<li><p>Testing the new changes by adding new tests</p></li>
+</ul>
+<p>No library changes will be needed as this is a 100% backward-compatible change.</p>
+<p>Robert Griesemer and Keith Randall plan to split the work
+and aim to have all the changes ready at the start of the Go 1.13 cycle,
+around February 1. Ian Lance Taylor will look into the gccgo changes.</p>
+<p>As noted in our
+<a class="reference external" href="https://blog.golang.org/go2-here-we-come">“Go 2, here we come!” blog post</a>,
+the development cycle will serve as a way to collect experience about
+these new features and feedback from (very) early adopters.</p>
+<p>At the release freeze, May 1, we will revisit the proposed features
+and decide whether to include them in Go 1.13.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="19308-number-literals.html" class="btn btn-neutral float-right" title="Proposal: Go 2 Number Literal Changes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="18802-percpu-sharded.html" class="btn btn-neutral float-left" title="Proposal: percpu.Sharded, an API for reducing cache contention" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

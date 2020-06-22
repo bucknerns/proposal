@@ -1,0 +1,1014 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: API for unstable runtime metrics &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Multi-project gopls workspaces" href="37720-gopls-workspaces.html" />
+    <link rel="prev" title="Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives" href="36606-64-bit-field-alignment.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: API for unstable runtime metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background-motivation">Background &amp; Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#representation-of-metrics">Representation of metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discoverability">Discoverability</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metric-naming">Metric naming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#metric-descriptions">Metric Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#time-series-metrics">Time series metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#draft-api-specification">Draft API Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposed-initial-list-of-metrics">Proposed initial list of metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#existing-metrics">Existing metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#new-gc-metrics">New GC metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scheduler-metrics">Scheduler metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backwards-compatibility">Backwards Compatibility</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: API for unstable runtime metrics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/37112-unstable-runtime-metrics.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-api-for-unstable-runtime-metrics">
+<h1>Proposal: API for unstable runtime metrics<a class="headerlink" href="#proposal-api-for-unstable-runtime-metrics" title="Permalink to this headline">¶</a></h1>
+<p>Author: Michael Knyszek</p>
+<div class="section" id="background-motivation">
+<h2>Background &amp; Motivation<a class="headerlink" href="#background-motivation" title="Permalink to this headline">¶</a></h2>
+<p>The need for a new API for unstable metrics was already summarized quite well by
+&#64;aclements, so I’ll quote that here:</p>
+<blockquote>
+<div><p>The runtime currently exposes heap-related metrics through
+<code class="docutils literal notranslate"><span class="pre">runtime.ReadMemStats</span></code> (which can be used programmatically) and
+<code class="docutils literal notranslate"><span class="pre">GODEBUG=gctrace=1</span></code> (which is difficult to read programmatically).
+These metrics are critical to understanding runtime behavior, but have some
+serious limitations:</p>
+<ol class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MemStats</span></code> is hard to evolve because it must obey the Go 1 compatibility
+rules.
+The existing metrics are confusing, but we can’t change them.
+Some of the metrics are now meaningless (like <code class="docutils literal notranslate"><span class="pre">EnableGC</span></code> and <code class="docutils literal notranslate"><span class="pre">DebugGC</span></code>),
+and several have aged poorly (like hard-coding the number of size classes
+at 61, or only having a single pause duration per GC cycle).
+Hence, we tend to shy away from adding anything to this because we’ll have
+to maintain it for the rest of time.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">gctrace</span></code> format is unspecified, which means we can evolve it (and have
+completely changed it several times).
+But it’s a pain to collect programmatically because it only comes out on
+stderr and, even if you can capture that, you have to parse a text format
+that changes.
+Hence, automated metric collection systems ignore gctrace.
+There have been requests to make this programmatically accessible (#28623).
+There are many metrics I would love to expose from the runtime memory manager
+and scheduler, but our current approach forces me to choose between two bad
+options: programmatically expose metrics that are so fundamental they’ll make
+sense for the rest of time, or expose unstable metrics in a way that’s
+difficult to collect and process programmatically.</p></li>
+</ol>
+</div></blockquote>
+<p>Other problems with <code class="docutils literal notranslate"><span class="pre">ReadMemStats</span></code> include performance, such as the need to
+stop-the-world.
+While it’s otherwise difficult to collect many of the metrics in <code class="docutils literal notranslate"><span class="pre">MemStats</span></code>, not
+all metrics require it, and it would be nice to be able to acquire some subset
+of metrics without a global application penalty.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>Conversing with &#64;aclements, we agree that:</p>
+<ul class="simple">
+<li><p>The API should be easily extendable with new metrics.</p></li>
+<li><p>The API should be easily retractable, to deprecate old metrics.</p>
+<ul>
+<li><p>Removing a metric should not break any Go applications as per the Go 1
+compatibility promise.</p></li>
+</ul>
+</li>
+<li><p>The API should be discoverable, to obtain a list of currently relevant
+metrics.</p></li>
+<li><p>The API should be rich, allowing a variety of metrics (e.g. distributions).</p></li>
+<li><p>The API implementation should minimize CPU/memory usage, such that it does not
+appreciably affect any of the metrics being measured.</p></li>
+<li><p>The API should include useful existing metrics already exposed by the runtime.</p></li>
+</ul>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<p>Given the requirements, I suggest we prioritize the following concerns when
+designing the API in the following order.</p>
+<ol class="simple">
+<li><p>Extensibility.</p>
+<ul class="simple">
+<li><p>Metrics are “unstable” and therefore it should always be compatible to add
+or remove metrics.</p></li>
+<li><p>Since metrics will tend to be implementation-specific, this feature is
+critical.</p></li>
+</ul>
+</li>
+<li><p>Discoverability.</p>
+<ul class="simple">
+<li><p>Because these metrics are “unstable,” there must be a way for the
+application, and for the human writing the application, to discover the
+set of usable metrics and be able to do something useful with that
+information (e.g. log the metric).</p></li>
+<li><p>The API should enable collecting a subset of metrics programmatically.
+For example, one might want to “collect all memory-related metrics” or
+“collect all metrics which are efficient to collect”.</p></li>
+</ul>
+</li>
+<li><p>Performance.</p>
+<ul class="simple">
+<li><p>Must have a minimized effect on the metrics it returns in the
+steady-state.</p></li>
+<li><p>Should scale up to 100s metrics, an amount that a human might consider “a
+lot.”</p>
+<ul>
+<li><p>Note that picking the right types to expose can limit the amount of
+metrics we need to expose.
+For example, a distribution type would significantly reduce the number
+of metrics.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Ergonomics.</p>
+<ul class="simple">
+<li><p>The API should be as easy to use as it can be, given the above.</p></li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="design">
+<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>I propose we add a new standard library package to support a new runtime metrics
+API to avoid polluting the namespace of existing packages.
+The proposed name of the package is the <code class="docutils literal notranslate"><span class="pre">runtime/metrics</span></code> package.</p>
+<p>I propose that this package expose a sampling-based API for acquiring runtime
+metrics, in the same vein as <code class="docutils literal notranslate"><span class="pre">runtime.ReadMemStats</span></code>, that meets this proposal’s
+stated goals.
+The sampling approach is taken in opposition to a stream-based (or event-based)
+API.
+Many of the metrics currently exposed by the runtime are “continuous” in the
+sense that they’re cheap to update and are updated frequently enough that
+emitting an event for every update would be quite expensive, and would require
+scaffolding to allow the user to control the emission rate.
+Unless noted otherwise, this document will assume a sampling-based API.</p>
+<p>With that said, I believe that in the future it will be worthwhile to expose an
+event-based API as well, taking a hybrid approach, much like Linux’s <code class="docutils literal notranslate"><span class="pre">perf</span></code>
+tool.
+See “Time series data” for a discussion of such an extension.</p>
+<div class="section" id="representation-of-metrics">
+<h3>Representation of metrics<a class="headerlink" href="#representation-of-metrics" title="Permalink to this headline">¶</a></h3>
+<p>Firstly, it probably makes the most sense to interact with a set of metrics,
+rather than one metric at a time.
+Many metrics require that the runtime reach some safe state to collect, so
+naturally it makes sense to collect all such metrics at this time for
+performance.
+For the rest of this document, we’re going to consider “sets of metrics” as the
+unit of our API instead of individual metrics for this reason.</p>
+<p>Second, the extendability and retractability requirements imply a less rigid
+data structure to represent and interact with a set of metrics.
+Perhaps the least rigid data structure in Go is something like a byte slice, but
+this is decidedly too low-level to use from within a Go application because it
+would need to have an encoding.
+Simply defining a new encoding for this would be a non-trivial undertaking with
+its own complexities.</p>
+<p>The next least-rigid data structure is probably a Go map, which allows us to
+associate some key for a metric with a sampled metric value.
+The two most useful properties of maps here is that their set of keys is
+completely dynamic, and that they allow efficient random access.
+The inconvenience of a map though is its undefined iteration order.
+While this might not matter if we’re just constructing an RPC message to hit an
+API, it does matter if one just wants to print statistics to STDERR every once
+in a while for debugging.</p>
+<p>A slightly more rigid data structure would be useful for managing an unstable
+set of metrics is a slice of structs, with each struct containing a key (the
+metric name) and a value.
+This allows us to have a well-defined iteration order, and it’s up to the user
+if they want efficient random access.
+For example, they could keep the slice sorted by metric keys, and do a binary
+search over them, or even have a map on the side.</p>
+<p>There are several variants of this slice approach (e.g. struct of keys slice and
+values slice), but I think the general idea of using slices of key-value pairs
+strikes the right balance between flexibility and usability.
+Going any further in terms of rigidity and we end up right where we don’t want
+to be: with a <code class="docutils literal notranslate"><span class="pre">MemStats</span></code>-like struct.</p>
+<p>Third, I propose the metric key be something abstract but still useful for
+humans, such as a string.
+An alternative might be an integral ID, where we provide a function to obtain a
+metric’s name from its ID.
+However, using an ID pollutes the API.
+Since we want to allow a user to ask for specific metrics, we would be required
+to provide named constants for each metric which would later be deprecated.
+It’s also unclear that this would give any performance benefit at all.</p>
+<p>Finally, we want the metric value to be able to take on a variety of forms.
+Many metrics might work great as <code class="docutils literal notranslate"><span class="pre">uint64</span></code> values, but most do not.
+For example we might want to collect a distribution of values (size classes are
+one such example).
+Distributions in particular can take on many different forms, for example if we
+wanted to have an HDR histogram of STW pause times.
+In the interest of being as extensible as possible, something like an empty
+interface value could work here.</p>
+<p>However, an empty interface value has implications for performance.
+How do we efficiently populate that empty interface value without allocating?
+One idea is to only use pointer types, for example it might contain <code class="docutils literal notranslate"><span class="pre">*float64</span></code>
+or <code class="docutils literal notranslate"><span class="pre">*uint64</span></code> values.
+While this strategy allows us to re-use allocations between samples, it’s
+starting to rely on the internal details of Go interface types for efficiency.</p>
+<p>Fundamentally, the problem we have here is that we want to include a fixed set
+of valid types as possible values.
+This concept maps well to the notion of a sum type in other languages.
+While Go lacks such a facility, we can emulate one.
+Consider the following representation for a value:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Kind</span> <span class="kt">int</span>
+
+<span class="kd">const</span> <span class="p">(</span>
+	<span class="nx">KindBad</span> <span class="nx">Kind</span> <span class="p">=</span> <span class="kc">iota</span>
+	<span class="nx">KindUint64</span>
+	<span class="nx">KindFloat64</span>
+	<span class="nx">KindFloat64Histogram</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Value</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// unexported fields</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Kind</span><span class="p">()</span> <span class="nx">Kind</span>
+
+<span class="c1">// panics if v.Kind() != KindUint64</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Uint64</span><span class="p">()</span> <span class="kt">uint64</span>
+
+<span class="c1">// panics if v.Kind() != KindFloat64</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Float64</span><span class="p">()</span> <span class="kt">float64</span>
+
+<span class="c1">// panics if v.Kind() != KindFloat64Histogram</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Float64Histogram</span><span class="p">()</span> <span class="o">*</span><span class="nx">Float64Histogram</span>
+</pre></div>
+</div>
+<p>The advantage of such a representation means that we can hide away details about
+how each metric sample value is actually represented.
+For example, we could embed a <code class="docutils literal notranslate"><span class="pre">uint64</span></code> slot into the <code class="docutils literal notranslate"><span class="pre">Value</span></code> which is used to
+hold either a <code class="docutils literal notranslate"><span class="pre">uint64</span></code>, a <code class="docutils literal notranslate"><span class="pre">float64</span></code>, or an <code class="docutils literal notranslate"><span class="pre">int64</span></code>, and which is populated
+directly by the runtime without any additional allocations at all.
+For types which will require an indirection, such as histograms, we could also
+hold an <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> or <code class="docutils literal notranslate"><span class="pre">interface{}</span></code> value as an unexported field and pull
+out the correct type as needed.
+In these cases we would still need to allocate once up-front (the histogram
+needs to contain a slice for counts, for example).</p>
+<p>The downside of such a structure is mainly ergonomics.
+In order to use it effectively, one needs to <code class="docutils literal notranslate"><span class="pre">switch</span></code> on the result of the
+<code class="docutils literal notranslate"><span class="pre">Kind()</span></code> method, then call the appropriate method to get the underlying value.
+While in that case we lose some type safety as opposed to using an <code class="docutils literal notranslate"><span class="pre">interface{}</span></code>
+and a type-switch construct, there is some precedent for such a structure.
+In particular a <code class="docutils literal notranslate"><span class="pre">Value</span></code> mimics the API <code class="docutils literal notranslate"><span class="pre">reflect.Value</span></code> in some ways.</p>
+<p>Putting this all together, I propose sampled metric values look like</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Sample captures a single metric sample.</span>
+<span class="kd">type</span> <span class="nx">Sample</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">Name</span> <span class="kt">string</span>
+  <span class="nx">Value</span> <span class="nx">Value</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Furthermore, I propose that we use a slice of these <code class="docutils literal notranslate"><span class="pre">Sample</span></code> structures to
+represent our “snapshot” of the current state of the system (i.e. the
+counterpart to <code class="docutils literal notranslate"><span class="pre">runtime.MemStats</span></code>).</p>
+</div>
+<div class="section" id="discoverability">
+<h3>Discoverability<a class="headerlink" href="#discoverability" title="Permalink to this headline">¶</a></h3>
+<p>To support discovering which metrics the system supports, we must provide a
+function that returns the set of supported metric keys.</p>
+<p>I propose that the discovery API return a slice of “metric descriptions” which
+contain a “Name” field referring to a metric key.
+Using a slice here mirrors the sampling API.</p>
+<div class="section" id="metric-naming">
+<h4>Metric naming<a class="headerlink" href="#metric-naming" title="Permalink to this headline">¶</a></h4>
+<p>Choosing a naming scheme for each metric will significantly influence its usage,
+since these are the names that will eventually be surfaced to the user.
+There are two important properties we would like to have such that these metric
+names may be smoothly and correctly exposed to the user.</p>
+<p>The first, and perhaps most important of these properties is that semantics be
+tied to their name.
+If the semantics (including the type of each sample value) of a metric changes,
+then the name should too.</p>
+<p>The second is that the name should be easily parsable and mechanically
+rewritable, since different metric collection systems have different naming
+conventions.</p>
+<p>Putting these two together, I propose that the metric name be built from two
+components: a forward-slash-separated path to a metric where each component is
+lowercase words separated by hyphens (the “name”, e.g. “/memory/heap/free”), and
+its unit (e.g. bytes, seconds).
+I propose we separate the two components of “name” and “unit” by a colon (“:”)
+and provide a well-defined format for the unit (e.g. “/memory/heap/free:bytes”).</p>
+<p>Representing the metric name as a path is intended to provide a mechanism for
+namespacing metrics.
+Many metrics naturally group together, and this provides a straightforward way
+of filtering out only a subset of metrics, or perhaps matching on them.
+The use of lower-case and hyphenated path components is intended to make the
+name easy to translate to most common naming conventions used in metrics
+collection systems.
+The introduction of this new API is also a good time to rename some of the more
+vaguely named statistics, and perhaps to introduce a better namespacing
+convention.</p>
+<p>Including the unit in the name may be a bit surprising at first.
+First of all, why should the unit even be a string? One alternative way to
+represent the unit is to use some structured format, but this has the potential
+to lock us into some bad decisions or limit us to only a certain subset of
+units.
+Using a string gives us more flexibility to extend the units we support in the
+future.
+Thus, I propose that no matter what we do, we should definitely keep the unit as
+a string.</p>
+<p>In terms of a format for this string, I think we should keep the unit closely
+aligned with the Go benchmark output format to facilitate a nice user experience
+for measuring these metrics within the Go testing framework.
+This goal suggests the following very simple format: a series of all-lowercase
+common base unit names, singular or plural, without SI prefixes (such as
+“seconds” or “bytes”, not “nanoseconds” or “MiB”), potentially containing
+hyphens (e.g. “cpu-seconds”), delimited by either <code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">/</span></code> characters.
+A regular expression is sufficient to describe the format, and ignoring the
+restriction of common base unit names, would look like
+<code class="docutils literal notranslate"><span class="pre">^[a-z-]+(?:[*\/][a-z-]+)*$</span></code>.</p>
+<p>Why should the unit be a part of the name? Mainly to help maintain the first
+property mentioned above.
+If we decide to change a metric’s unit, which represents a semantic change, then
+the name must also change.
+Also, in this situation, it’s much more difficult for a user to forget to
+include the unit.
+If their metric collection system has no rules about names, then great, they can
+just use whatever Go gives them.
+If they do (and most seem to be fairly opinionated) it forces the user to
+account for the unit when dealing with the name and it lessens the chance that
+it would be forgotten.
+Furthermore, splitting a string is typically less computationally expensive than
+combining two strings.</p>
+</div>
+<div class="section" id="metric-descriptions">
+<h4>Metric Descriptions<a class="headerlink" href="#metric-descriptions" title="Permalink to this headline">¶</a></h4>
+<p>Firstly, any metric description must contain the name of the metric.
+No matter which way we choose to store a set of descriptions, it is both useful
+and necessary to carry this information around.
+Another useful field is an English description of the metric.
+This description may then be propagated into metrics collection systems
+dynamically.</p>
+<p>The metric description should also indicate the performance sensitivity of the
+metric.
+Today <code class="docutils literal notranslate"><span class="pre">ReadMemStats</span></code> forces the user to endure a stop-the-world to collect all
+metrics.
+There are a number of pieces of information we could add, but one good one for
+now would be “does this metric require a stop-the-world event?”.
+The intended use of such information would be to collect certain metrics less
+often, or to exclude them altogether from metrics collection.
+While this is fairly implementation-specific for metadata, the majority of
+tracing GC designs involve a stop-the-world event at one point or another.</p>
+<p>Another useful aspect of a metric description would be to indicate whether the
+metric is a “gauge” or a “counter” (i.e. it increases monotonically).
+We have examples of both in the runtime and this information is often useful to
+bubble up to metrics collection systems to influence how they’re displayed and
+what operations are valid on them (e.g. counters are often more usefully viewed
+as rates).
+By including whether a metric is a gauge or a counter in the descriptions,
+metrics collection systems don’t have to try to guess, and users don’t have to
+annotate exported metrics manually; they can do so programmatically.</p>
+<p>Finally, metric descriptions should allow users to filter out metrics that their
+application can’t understand.
+The most common situation in which this can happen is if a user upgrades or
+downgrades the Go version their application is built with, but they do not
+update their code.
+Another situation in which this can happen is if a user switches to a different
+Go runtime (e.g. TinyGo).
+There may be a new metric in this Go version represented by a type which was not
+used in previous versions.
+For this case, it’s useful to include type information in the metric description
+so that applications can programmatically filter these metrics out.
+In this case, I propose we use add a <code class="docutils literal notranslate"><span class="pre">Kind</span></code> field to the description.</p>
+</div>
+<div class="section" id="documentation">
+<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h4>
+<p>While the metric descriptions allow an application to programmatically discover
+the available set of metrics at runtime, it’s tedious for humans to write an
+application just to dump the set of metrics available to them.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">ReadMemStats</span></code>, the documentation is on the <code class="docutils literal notranslate"><span class="pre">MemStats</span></code> struct itself.
+For <code class="docutils literal notranslate"><span class="pre">gctrace</span></code> it is in the runtime package’s top-level comment.
+Because this proposal doesn’t tie metrics to Go variables or struct fields, the
+best we can do is what <code class="docutils literal notranslate"><span class="pre">gctrace</span></code> does and document it in the metrics
+package-level documentation.
+A test in the <code class="docutils literal notranslate"><span class="pre">runtime/metrics</span></code> package will ensure that the documentation
+always matches the metric’s English description.</p>
+<p>Furthermore, the documentation should contain a record of when metrics were
+added and when metrics were removed (such as a note like “(since Go 1.X)” in the
+English description).
+Users who are using an old version of Go but looking at up-to-date
+documentation, such as the documentation exported to golang.org, will be able to
+more easily discover information relevant to their application.
+If a metric is removed, the documentation should note which version removed it.</p>
+</div>
+</div>
+<div class="section" id="time-series-metrics">
+<h3>Time series metrics<a class="headerlink" href="#time-series-metrics" title="Permalink to this headline">¶</a></h3>
+<p>The API as described so far has been a sampling-based API, but many metrics are
+updated at well-defined (and relatively infrequent) intervals, such as many of
+the metrics found in the <code class="docutils literal notranslate"><span class="pre">gctrace</span></code> output.
+These metrics, which I’ll call “time series metrics,” may be sampled, but the
+sampling operation is inherently lossy.
+In many cases it’s very useful for performance debugging to have precise
+information of how a metric might change e.g. from GC cycle to GC cycle.</p>
+<p>Measuring such metrics thus fits better in an event-based, or stream-based API,
+which emits a stream of metric values (tagged with precise timestamps) which are
+then ingested by the application and logged someplace.</p>
+<p>While we stated earlier that considering such time series metrics is outside of
+the scope of this proposal, it’s worth noting that buying into a sampling-based
+API today does not close any doors toward exposing precise time series metrics
+in the future.
+A straightforward way of extending the API would be to add the time series
+metrics to the total list of metrics, allowing the usual sampling-based approach
+if desired, while also tagging some metrics with a “time series” flag in their
+descriptions.
+The event-based API, in that form, could then just be a pure addition.</p>
+<p>A feasible alternative in this space is to only expose a sampling API, but to
+include a timestamp on event metrics to allow users to correlate metrics with
+specific events.
+For example, if metrics came from the previous GC, they would be tagged with the
+timestamp of that GC, and if the metric and timestamp hadn’t changed, the user
+could identify that.</p>
+<p>One interesting consequence of having an event-based API which is prompt is that
+users could then to Go runtime state on-the-fly, such as for detecting when the
+GC is running.
+On the one hand, this could provide value to some users of Go, who require
+fine-grained feedback from the runtime system.
+On the other hand, the supported metrics will still always be unstable, so
+relying on a metric for feedback in one release might no longer be possible in a
+future release.</p>
+</div>
+</div>
+<div class="section" id="draft-api-specification">
+<h2>Draft API Specification<a class="headerlink" href="#draft-api-specification" title="Permalink to this headline">¶</a></h2>
+<p>Given the discussion of the design above, I propose the following draft API
+specification.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">metrics</span>
+
+<span class="c1">// Float64Histogram represents a distribution of float64 values.</span>
+<span class="kd">type</span> <span class="nx">Float64Histogram</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Counts contains the weights for each histogram bucket. The length of</span>
+	<span class="c1">// Counts is equal to the length of Bucket plus one to account for the</span>
+	<span class="c1">// implicit minimum bucket.</span>
+	<span class="c1">//</span>
+	<span class="c1">// Given N buckets, the following is the mathematical relationship between</span>
+	<span class="c1">// Counts and Buckets.</span>
+	<span class="c1">// count[0] is the weight of the range (-inf, bucket[0])</span>
+	<span class="c1">// count[n] is the weight of the range [bucket[n], bucket[n+1]), for 0 &lt; n &lt; N-1</span>
+	<span class="c1">// count[N-1] is the weight of the range [bucket[N-1], inf)</span>
+	<span class="nx">Counts</span> <span class="p">[]</span><span class="kt">uint64</span>
+
+	<span class="c1">// Buckets contains the boundaries between histogram buckets, in increasing order.</span>
+	<span class="c1">//</span>
+	<span class="c1">// Because this slice contains boundaries, there are len(Buckets)+1 total buckets:</span>
+	<span class="c1">// a bucket for all values less than the first boundary, a bucket covering each</span>
+	<span class="c1">// [slice[i], slice[i+1]) interval, and a bucket for all values greater than or</span>
+	<span class="c1">// equal to the last boundary.</span>
+	<span class="nx">Buckets</span> <span class="p">[]</span><span class="kt">float64</span>
+<span class="p">}</span>
+
+<span class="c1">// Clone generates a deep copy of the Float64Histogram.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Float64Histogram</span><span class="p">)</span> <span class="nx">Clone</span><span class="p">()</span> <span class="o">*</span><span class="nx">Float64Histogram</span>
+
+<span class="c1">// Kind is a tag for a metric Value which indicates its type.</span>
+<span class="kd">type</span> <span class="nx">Kind</span> <span class="kt">int</span>
+
+<span class="kd">const</span> <span class="p">(</span>
+	<span class="c1">// KindBad indicates that the Value has no type and should not be used.</span>
+	<span class="nx">KindBad</span> <span class="nx">Kind</span> <span class="p">=</span> <span class="kc">iota</span>
+
+	<span class="c1">// KindUint64 indicates that the type of the Value is a uint64.</span>
+	<span class="nx">KindUint64</span>
+
+	<span class="c1">// KindFloat64 indicates that the type of the Value is a float64.</span>
+	<span class="nx">KindFloat64</span>
+
+	<span class="c1">// KindFloat64Histogram indicates that the type of the Value is a *Float64Histogram.</span>
+	<span class="nx">KindFloat64Histogram</span>
+<span class="p">)</span>
+
+<span class="c1">// Value represents a metric value returned by the runtime.</span>
+<span class="kd">type</span> <span class="nx">Value</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">kind</span>    <span class="nx">Kind</span>
+	<span class="nx">scalar</span>  <span class="kt">uint64</span>         <span class="c1">// contains scalar values for scalar Kinds.</span>
+	<span class="nx">pointer</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="c1">// contains non-scalar values.</span>
+<span class="p">}</span>
+
+<span class="c1">// Value returns a value of one of the types mentioned by Kind.</span>
+<span class="c1">//</span>
+<span class="c1">// This function may allocate memory.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Value</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span>
+
+<span class="c1">// Kind returns the a tag representing the kind of value this is.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Kind</span><span class="p">()</span> <span class="nx">Kind</span>
+
+<span class="c1">// Uint64 returns the internal uint64 value for the metric.</span>
+<span class="c1">//</span>
+<span class="c1">// If v.Kind() != KindUint64, this method panics.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Uint64</span><span class="p">()</span> <span class="kt">uint64</span>
+
+<span class="c1">// Float64 returns the internal float64 value for the metric.</span>
+<span class="c1">//</span>
+<span class="c1">// If v.Kind() != KindFloat64, this method panics.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Float64</span><span class="p">()</span> <span class="kt">float64</span>
+
+<span class="c1">// Float64Histogram returns the internal *Float64Histogram value for the metric.</span>
+<span class="c1">//</span>
+<span class="c1">// The returned value may be reused by calls to Read, so the user should clone</span>
+<span class="c1">// it if they intend to use it across calls to Read.</span>
+<span class="c1">//</span>
+<span class="c1">// If v.Kind() != KindFloat64Histogram, this method panics.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Float64Histogram</span><span class="p">()</span> <span class="o">*</span><span class="nx">Float64Histogram</span>
+
+<span class="c1">// Description describes a runtime metric.</span>
+<span class="kd">type</span> <span class="nx">Description</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Name is the full name of the metric, including the unit.</span>
+	<span class="c1">//</span>
+	<span class="c1">// The format of the metric may be described by the following regular expression.</span>
+	<span class="c1">// ^(?P&lt;name&gt;/[^:]+):(?P&lt;unit&gt;[^:*\/]+(?:[*\/][^:*\/]+)*)$</span>
+	<span class="c1">//</span>
+	<span class="c1">// The format splits the name into two components, separated by a colon: a path which always</span>
+	<span class="c1">// starts with a /, and a machine-parseable unit. The name may contain any valid Unicode</span>
+	<span class="c1">// codepoint in between / characters, but by convention will try to stick to lowercase</span>
+	<span class="c1">// characters and hyphens. An example of such a path might be &quot;/memory/heap/free&quot;.</span>
+	<span class="c1">//</span>
+	<span class="c1">// The unit is by convention a series of lowercase English unit names (singular or plural)</span>
+	<span class="c1">// without prefixes delimited by &#39;*&#39; or &#39;/&#39;. The unit names may contain any valid Unicode</span>
+	<span class="c1">// codepoint that is not a delimiter.</span>
+	<span class="c1">// Examples of units might be &quot;seconds&quot;, &quot;bytes&quot;, &quot;bytes/second&quot;, &quot;cpu-seconds&quot;,</span>
+	<span class="c1">// &quot;byte*cpu-seconds&quot;, and &quot;bytes/second/second&quot;.</span>
+	<span class="c1">//</span>
+	<span class="c1">// A complete name might look like &quot;/memory/heap/free:bytes&quot;.</span>
+	<span class="nx">Name</span> <span class="kt">string</span>
+
+	<span class="c1">// Cumulative is whether or not the metric is cumulative. If a cumulative metric is just</span>
+	<span class="c1">// a single number, then it increases monotonically. If the metric is a distribution,</span>
+	<span class="c1">// then each bucket count increases monotonically.</span>
+	<span class="c1">//</span>
+	<span class="c1">// This flag thus indicates whether or not it&#39;s useful to compute a rate from this value.</span>
+	<span class="nx">Cumulative</span> <span class="kt">bool</span>
+
+	<span class="c1">// Kind is the kind of value for this metric.</span>
+	<span class="c1">//</span>
+	<span class="c1">// The purpose of this field is to allow users to filter out metrics whose values are</span>
+	<span class="c1">// types which their application may not understand.</span>
+	<span class="nx">Kind</span> <span class="nx">Kind</span>
+
+	<span class="c1">// StopTheWorld is whether or not the metric requires a stop-the-world</span>
+	<span class="c1">// event in order to collect it.</span>
+	<span class="nx">StopTheWorld</span> <span class="kt">bool</span>
+<span class="p">}</span>
+
+<span class="c1">// All returns a slice of containing metric descriptions for all supported metrics.</span>
+<span class="kd">func</span> <span class="nx">All</span><span class="p">()</span> <span class="p">[]</span><span class="nx">Description</span>
+
+<span class="c1">// Sample captures a single metric sample.</span>
+<span class="kd">type</span> <span class="nx">Sample</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// Name is the name of the metric sampled.</span>
+	<span class="c1">//</span>
+	<span class="c1">// It must correspond to a name in one of the metric descriptions</span>
+	<span class="c1">// returned by Descriptions.</span>
+	<span class="nx">Name</span> <span class="kt">string</span>
+
+	<span class="c1">// Value is the value of the metric sample.</span>
+	<span class="nx">Value</span> <span class="nx">Value</span>
+<span class="p">}</span>
+
+<span class="c1">// Read populates each Value element in the given slice of metric samples.</span>
+<span class="c1">//</span>
+<span class="c1">// Desired metrics should be present in the slice with the appropriate name.</span>
+<span class="c1">// The user of this API is encouraged to re-use the same slice between calls.</span>
+<span class="c1">//</span>
+<span class="c1">// Metric values with names not appearing in the value returned by Descriptions</span>
+<span class="c1">// will simply be left untouched (Value.Kind == KindBad).</span>
+<span class="kd">func</span> <span class="nx">Read</span><span class="p">(</span><span class="nx">m</span> <span class="p">[]</span><span class="nx">Sample</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The usage of the API we have in mind for collecting specific metrics is the
+following:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">stats</span> <span class="p">=</span> <span class="p">[]</span><span class="nx">metrics</span><span class="p">.</span><span class="nx">Sample</span><span class="p">{</span>
+	<span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&quot;/gc/heap/goal:bytes&quot;</span><span class="p">},</span>
+	<span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&quot;/gc/pause-latency-distribution:seconds&quot;</span><span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1">// Somewhere...</span>
+<span class="o">...</span>
+	<span class="k">go</span> <span class="nx">statsLoop</span><span class="p">(</span><span class="nx">stats</span><span class="p">,</span> <span class="mi">30</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="o">...</span>
+
+<span class="kd">func</span> <span class="nx">statsLoop</span><span class="p">(</span><span class="nx">stats</span> <span class="p">[]</span><span class="nx">metrics</span><span class="p">.</span><span class="nx">Sample</span><span class="p">,</span> <span class="nx">d</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// Read and print stats every 30 seconds.</span>
+	<span class="nx">ticker</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">NewTicker</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="nx">metrics</span><span class="p">.</span><span class="nx">Read</span><span class="p">(</span><span class="nx">stats</span><span class="p">)</span>
+		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">sample</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">stats</span> <span class="p">{</span>
+			<span class="nx">split</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">IndexByte</span><span class="p">(</span><span class="nx">sample</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="sc">&#39;:&#39;</span><span class="p">)</span>
+			<span class="nx">name</span><span class="p">,</span> <span class="nx">unit</span> <span class="o">:=</span> <span class="nx">sample</span><span class="p">.</span><span class="nx">Name</span><span class="p">[:</span><span class="nx">split</span><span class="p">],</span> <span class="nx">sample</span><span class="p">.</span><span class="nx">Name</span><span class="p">[</span><span class="nx">split</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+			<span class="k">switch</span> <span class="nx">value</span><span class="p">.</span><span class="nx">Kind</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">case</span> <span class="nx">KindUint64</span><span class="p">:</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s: %d %s&quot;</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">.</span><span class="nx">Uint64</span><span class="p">(),</span> <span class="nx">unit</span><span class="p">)</span>
+			<span class="k">case</span> <span class="nx">KindFloat64</span><span class="p">:</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s: %d %s&quot;</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">.</span><span class="nx">Float64</span><span class="p">(),</span> <span class="nx">unit</span><span class="p">)</span>
+			<span class="k">case</span> <span class="nx">KindFloat64Histogram</span><span class="p">:</span>
+				<span class="nx">v</span> <span class="o">:=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">Float64Histogram</span><span class="p">()</span>
+				<span class="nx">m</span> <span class="o">:=</span> <span class="nx">computeMean</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s: %f avg %s&quot;</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">unit</span><span class="p">)</span>
+			<span class="k">default</span><span class="p">:</span>
+				<span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;unknown value %s:%s: %v&quot;</span><span class="p">,</span> <span class="nx">sample</span><span class="p">.</span><span class="nx">Value</span><span class="p">())</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="o">&lt;-</span><span class="nx">ticker</span><span class="p">.</span><span class="nx">C</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>I believe common usage will be to simply slurp up all metrics, which would look
+like this:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+	<span class="c1">// Generate a sample array for all the metrics.</span>
+	<span class="nx">desc</span> <span class="o">:=</span> <span class="nx">metrics</span><span class="p">.</span><span class="nx">All</span><span class="p">()</span>
+	<span class="nx">stats</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">metric</span><span class="p">.</span><span class="nx">Sample</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">desc</span><span class="p">))</span>
+	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">desc</span> <span class="p">{</span>
+		<span class="nx">stats</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">metric</span><span class="p">.</span><span class="nx">Sample</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="nx">desc</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">Name</span><span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">go</span> <span class="nx">statsLoop</span><span class="p">(</span><span class="nx">stats</span><span class="p">,</span> <span class="mi">30</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="proposed-initial-list-of-metrics">
+<h2>Proposed initial list of metrics<a class="headerlink" href="#proposed-initial-list-of-metrics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="existing-metrics">
+<h3>Existing metrics<a class="headerlink" href="#existing-metrics" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">free</span><span class="p">:</span><span class="nb">bytes</span>        <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">HeapIdle</span> <span class="o">-</span> <span class="n">HeapReleased</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">uncommitted</span><span class="p">:</span><span class="nb">bytes</span> <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">HeapReleased</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">objects</span><span class="p">:</span><span class="nb">bytes</span>     <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">HeapAlloc</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">unused</span><span class="p">:</span><span class="nb">bytes</span>      <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">HeapInUse</span> <span class="o">-</span> <span class="n">HeapAlloc</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">stacks</span><span class="p">:</span><span class="nb">bytes</span>      <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">StackInuse</span><span class="p">)</span>
+
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">metadata</span><span class="o">/</span><span class="n">mspan</span><span class="o">/</span><span class="n">inuse</span><span class="p">:</span><span class="nb">bytes</span>             <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">MSpanInUse</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">metadata</span><span class="o">/</span><span class="n">mspan</span><span class="o">/</span><span class="n">free</span><span class="p">:</span><span class="nb">bytes</span>              <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">MSpanSys</span> <span class="o">-</span> <span class="n">MSpanInUse</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">metadata</span><span class="o">/</span><span class="n">mcache</span><span class="o">/</span><span class="n">inuse</span><span class="p">:</span><span class="nb">bytes</span>            <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">MCacheInUse</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">metadata</span><span class="o">/</span><span class="n">mcache</span><span class="o">/</span><span class="n">free</span><span class="p">:</span><span class="nb">bytes</span>             <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">MCacheSys</span> <span class="o">-</span> <span class="n">MCacheInUse</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">metadata</span><span class="o">/</span><span class="n">other</span><span class="p">:</span><span class="nb">bytes</span>                   <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">GCSys</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">metadata</span><span class="o">/</span><span class="n">profiling</span><span class="o">/</span><span class="n">buckets</span><span class="o">-</span><span class="n">inuse</span><span class="p">:</span><span class="nb">bytes</span> <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">BuckHashSys</span><span class="p">)</span>
+
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">other</span><span class="p">:</span><span class="nb">bytes</span>        <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">OtherSys</span><span class="p">)</span>
+<span class="o">/</span><span class="n">memory</span><span class="o">/</span><span class="n">native</span><span class="o">-</span><span class="n">stack</span><span class="p">:</span><span class="nb">bytes</span> <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">StackSys</span> <span class="o">-</span> <span class="n">StackInuse</span><span class="p">)</span>
+
+<span class="o">/</span><span class="n">aggregates</span><span class="o">/</span><span class="n">total</span><span class="o">-</span><span class="n">virtual</span><span class="o">-</span><span class="n">memory</span><span class="p">:</span><span class="nb">bytes</span> <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="nb">sum</span> <span class="n">over</span> <span class="n">everything</span> <span class="ow">in</span> <span class="o">/</span><span class="n">memory</span><span class="o">/**</span><span class="p">)</span>
+
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">objects</span><span class="p">:</span><span class="n">objects</span>       <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">HeapObjects</span><span class="p">)</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">heap</span><span class="o">/</span><span class="n">goal</span><span class="p">:</span><span class="nb">bytes</span>            <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">NextGC</span><span class="p">)</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">cycles</span><span class="o">/</span><span class="n">completed</span><span class="p">:</span><span class="n">gc</span><span class="o">-</span><span class="n">cycles</span> <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">NumGC</span><span class="p">)</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">cycles</span><span class="o">/</span><span class="n">forced</span><span class="p">:</span><span class="n">gc</span><span class="o">-</span><span class="n">cycles</span>    <span class="n">KindUint64</span> <span class="o">//</span> <span class="p">(</span><span class="o">==</span> <span class="n">NumForcedGC</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="new-gc-metrics">
+<h2>New GC metrics<a class="headerlink" href="#new-gc-metrics" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">pause</span> <span class="n">times</span><span class="p">,</span> <span class="n">replaces</span> <span class="n">PauseNs</span> <span class="ow">and</span> <span class="n">PauseTotalNs</span><span class="o">.</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">pause</span><span class="o">-</span><span class="n">latency</span><span class="o">-</span><span class="n">distribution</span><span class="p">:</span><span class="n">seconds</span> <span class="n">KindFloat64Histogram</span>
+
+<span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">unsmoothed</span> <span class="n">trigger</span> <span class="n">ratio</span><span class="o">.</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">pacer</span><span class="o">/</span><span class="n">trigger</span><span class="o">-</span><span class="n">ratio</span><span class="o">-</span><span class="n">distribution</span><span class="p">:</span><span class="n">ratio</span> <span class="n">KindFloat64Histogram</span>
+
+<span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">what</span> <span class="n">fraction</span> <span class="n">of</span> <span class="n">CPU</span> <span class="n">time</span> <span class="n">was</span> <span class="n">spent</span> <span class="n">on</span> <span class="n">GC</span> <span class="ow">in</span> <span class="n">each</span> <span class="n">GC</span> <span class="n">cycle</span><span class="o">.</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">pacer</span><span class="o">/</span><span class="n">utilization</span><span class="o">-</span><span class="n">distribution</span><span class="p">:</span><span class="n">cpu</span><span class="o">-</span><span class="n">percent</span> <span class="n">KindFloat64Histogram</span>
+
+<span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">objects</span> <span class="n">by</span> <span class="n">size</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">Buckets</span> <span class="n">correspond</span> <span class="n">directly</span> <span class="n">to</span> <span class="n">size</span> <span class="n">classes</span> <span class="n">up</span> <span class="n">to</span> <span class="mi">32</span> <span class="n">KiB</span><span class="p">,</span>
+<span class="o">//</span> <span class="n">after</span> <span class="n">that</span> <span class="n">it</span><span class="s1">&#39;s approximated by an HDR histogram.</span>
+<span class="o">//</span> <span class="n">allocs</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="n">size</span> <span class="n">replaces</span> <span class="n">BySize</span><span class="p">,</span> <span class="n">TotalAlloc</span><span class="p">,</span> <span class="ow">and</span> <span class="n">Mallocs</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">frees</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="n">size</span> <span class="n">replaces</span> <span class="n">BySize</span> <span class="ow">and</span> <span class="n">Frees</span><span class="o">.</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">allocs</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="n">size</span><span class="p">:</span><span class="nb">bytes</span> <span class="n">KindFloat64Histogram</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">frees</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="n">size</span><span class="p">:</span><span class="nb">bytes</span>  <span class="n">KindFloat64Histogram</span>
+
+<span class="o">//</span> <span class="n">How</span> <span class="n">many</span> <span class="n">hits</span> <span class="ow">and</span> <span class="n">misses</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">mcache</span><span class="o">.</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">hits</span><span class="p">:</span><span class="n">allocations</span>   <span class="n">KindUint64</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">misses</span><span class="p">:</span><span class="n">allocations</span> <span class="n">KindUint64</span>
+
+<span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">sampled</span> <span class="nb">object</span> <span class="n">lifetimes</span> <span class="ow">in</span> <span class="n">number</span> <span class="n">of</span> <span class="n">GC</span> <span class="n">cycles</span><span class="o">.</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">lifetime</span><span class="o">-</span><span class="n">distribution</span><span class="p">:</span><span class="n">gc</span><span class="o">-</span><span class="n">cycles</span> <span class="n">KindFloat64Histogram</span>
+
+<span class="o">//</span> <span class="n">How</span> <span class="n">many</span> <span class="n">page</span> <span class="n">cache</span> <span class="n">hits</span> <span class="ow">and</span> <span class="n">misses</span> <span class="n">there</span> <span class="n">were</span><span class="o">.</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">page</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">hits</span><span class="p">:</span><span class="n">allocations</span>   <span class="n">KindUint64</span>
+<span class="o">/</span><span class="n">malloc</span><span class="o">/</span><span class="n">page</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">misses</span><span class="p">:</span><span class="n">allocations</span> <span class="n">KindUint64</span>
+
+<span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">stack</span> <span class="n">scanning</span> <span class="n">latencies</span><span class="o">.</span> <span class="n">HDR</span> <span class="n">histogram</span><span class="o">.</span>
+<span class="o">/</span><span class="n">gc</span><span class="o">/</span><span class="n">stack</span><span class="o">-</span><span class="n">scan</span><span class="o">-</span><span class="n">latency</span><span class="o">-</span><span class="n">distribution</span><span class="p">:</span><span class="n">seconds</span> <span class="n">KindFloat64Histogram</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scheduler-metrics">
+<h2>Scheduler metrics<a class="headerlink" href="#scheduler-metrics" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">sched</span><span class="o">/</span><span class="n">goroutines</span><span class="p">:</span><span class="n">goroutines</span>     <span class="n">KindUint64</span>
+<span class="o">/</span><span class="n">sched</span><span class="o">/</span><span class="n">preempt</span><span class="o">/</span><span class="k">async</span><span class="p">:</span><span class="n">preemptions</span> <span class="n">KindUint64</span>
+<span class="o">/</span><span class="n">sched</span><span class="o">/</span><span class="n">preempt</span><span class="o">/</span><span class="n">sync</span><span class="p">:</span><span class="n">preemptions</span>  <span class="n">KindUint64</span>
+
+<span class="o">//</span> <span class="n">Distribution</span> <span class="n">of</span> <span class="n">how</span> <span class="n">long</span> <span class="n">goroutines</span> <span class="n">stay</span> <span class="ow">in</span> <span class="n">runnable</span>
+<span class="o">//</span> <span class="n">before</span> <span class="n">transitioning</span> <span class="n">to</span> <span class="n">running</span><span class="o">.</span> <span class="n">HDR</span> <span class="n">histogram</span><span class="o">.</span>
+<span class="o">/</span><span class="n">sched</span><span class="o">/</span><span class="n">time</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">run</span><span class="o">-</span><span class="n">distribution</span><span class="p">:</span><span class="n">seconds</span> <span class="n">KindFloat64Histogram</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="backwards-compatibility">
+<h2>Backwards Compatibility<a class="headerlink" href="#backwards-compatibility" title="Permalink to this headline">¶</a></h2>
+<p>Note that although the set of metrics the runtime exposes will not be stable
+across Go versions, the API to discover and access those metrics will be.</p>
+<p>Therefore, this proposal strictly increases the API surface of the Go standard
+library without changing any existing functionality and is therefore Go 1
+compatible.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="37720-gopls-workspaces.html" class="btn btn-neutral float-right" title="Proposal: Multi-project gopls workspaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="36606-64-bit-field-alignment.html" class="btn btn-neutral float-left" title="Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

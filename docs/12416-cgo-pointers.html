@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Rules for passing pointers between Go and C &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Localization support in Go" href="12750-localization.html" />
+    <link rel="prev" title="Proposal: A minimal release process for Go repositories" href="12302-release-proposal.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Rules for passing pointers between Go and C</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#consequences">Consequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#support">Support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Rules for passing pointers between Go and C</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/12416-cgo-pointers.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-rules-for-passing-pointers-between-go-and-c">
+<h1>Proposal: Rules for passing pointers between Go and C<a class="headerlink" href="#proposal-rules-for-passing-pointers-between-go-and-c" title="Permalink to this headline">¶</a></h1>
+<p>Author: Ian Lance Taylor
+Last updated: October, 2015</p>
+<p>Discussion at https://golang.org/issue/12416.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>List specific rules for when it is safe to pass pointers between Go
+and C using cgo.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Go programmers need to know the rules for how to use cgo safely to
+share memory between Go and C.
+When using cgo, there is memory allocated by Go and memory allocated
+by C.
+For this discussion, we define a <em>Go pointer</em> to be a pointer to Go
+memory, and a <em>C pointer</em> to be a pointer to C memory.
+The rules that need to be defined are when and how Go code can use C
+pointers and C code can use Go pointers.</p>
+<p>Note that for this discussion a Go pointer may be any pointer type,
+including a pointer to a type defined in C.
+Note that some Go values contain Go pointers implicitly, such as
+strings, slices, maps, channels, and function values.</p>
+<p>It is a generally accepted (but not actually documented) rule that Go
+code can use C pointers, and they will work as well or as poorly as C
+code holding C pointers.
+So the only question is this: when can C code use Go pointers?</p>
+<p>The de-facto rule for 1.4 is: you can pass any Go pointer to C.
+C code may use it freely.
+If C code stores the Go pointer in C memory then there must be a live
+copy of the pointer in Go as well.
+You can allocate Go memory in C code by calling the Go function
+<code class="docutils literal notranslate"><span class="pre">_cgo_allocate</span></code>.</p>
+<p>The de-facto rule for 1.5 adds restrictions.
+You can still pass any Go pointer to C.
+However, C code may not store a Go pointer in Go memory (C code can
+still store a Go pointer in C memory, with the same restrictions as
+in 1.4).
+The <code class="docutils literal notranslate"><span class="pre">_cgo_allocate</span></code> function has been removed.</p>
+<p>We do not want to document the 1.5 de-facto restrictions as the
+permanent rules because they are somewhat confusing, they limit future
+garbage collection choices, and in particular they prohibit any future
+development of a moving garbage collector.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I propose that we permit Go code to pass Go pointers to C code, while
+preserving the following invariant:</p>
+<ul class="simple">
+<li><p>The Go garbage collector must be aware of the location of all Go
+pointers, except for a known set of pointers that are temporarily
+<em>visible to C code</em>.
+The pointers visible to C code exist in an area that the garbage
+collector can not see, and the garbage collector may not modify or
+release them.</p></li>
+</ul>
+<p>It is impossible to break this invariant in Go code that does not
+import “unsafe” and does not call C.</p>
+<p>I propose the following rules for passing pointers between Go and C,
+while preserving this invariant:</p>
+<ol class="simple">
+<li><p>Go code may pass a Go pointer to C provided that the Go memory to
+which it points does not contain any Go pointers.</p></li>
+</ol>
+<ul class="simple">
+<li><p>The C code must not store any Go pointers in Go memory, even
+temporarily.</p></li>
+<li><p>When passing a pointer to a field in a struct, the Go memory in
+question is the memory occupied by the field, not the entire
+struct.</p></li>
+<li><p>When passing a pointer to an element in an array or slice, the Go
+memory in question is the entire array or the entire backing array
+of the slice.</p></li>
+<li><p>Passing a Go pointer to C code means that that Go pointer is
+visible to C code; passing one Go pointer does not cause any
+other Go pointers to become visible.</p></li>
+<li><p>The maximum number of Go pointers that can become visible to C
+code in a single function call is the number of arguments to the
+function.</p></li>
+</ul>
+<ol class="simple">
+<li><p>C code may not keep a copy of a Go pointer after the call returns.</p></li>
+</ol>
+<ul class="simple">
+<li><p>A Go pointer passed as an argument to C code is only visible to C
+code for the duration of the function call.</p></li>
+</ul>
+<ol class="simple">
+<li><p>A Go function called by C code may not return a Go pointer.</p></li>
+</ol>
+<ul class="simple">
+<li><p>A Go function called by C code may take C pointers as arguments,
+and it may store non-pointer or C pointer data through those
+pointers, but it may not store a Go pointer in memory pointed to
+by a C pointer.</p></li>
+<li><p>A Go function called by C code may take a Go pointer as an
+argument, but it must preserve the property that the Go memory to
+which it points does not contain any Go pointers.</p></li>
+<li><p>C code calling a Go function can not cause any additional Go
+pointers to become visible to C code.</p></li>
+</ul>
+<ol class="simple">
+<li><p>Go code may not store a Go pointer in C memory.</p></li>
+</ol>
+<ul class="simple">
+<li><p>C code may store a Go pointer in C memory subject to rule 2: it
+must stop storing the pointer before it returns to Go.</p></li>
+</ul>
+<p>The purpose of these four rules is to preserve the above invariant and
+to limit the number of Go pointers visible to C code at any one time.</p>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Go code can pass the address of an element of a byte slice to C, and C
+code can use pointer arithmetic to access all the data in the slice,
+and change it (the C code is of course responsible for doing its own
+bounds checking).</p>
+<p>Go code can pass a Go string to C.  With the current Go compilers it
+will look like a two element struct.</p>
+<p>Go code can pass the address of a struct to C, and C code can use the
+data or change it.
+Go code can pass the address of a struct that has pointer fields, but
+those pointers must be nil or must be C pointers.</p>
+<p>Go code can pass a non-nested Go func value into C, and the C code may
+call a Go function passing the func value as an argument, but it must
+not save the func value in C memory between calls, and it must not
+call the func value directly.</p>
+<p>A Go function called by C code may not return a string.</p>
+</div>
+<div class="section" id="consequences">
+<h3>Consequences<a class="headerlink" href="#consequences" title="Permalink to this headline">¶</a></h3>
+<p>This proposal restricts the Go garbage collector: any Go pointer
+passed to C code must be pinned for the duration of the C call.
+By definition, since that memory block may not contain any Go
+pointers, this will only pin a single block of memory.</p>
+<p>Because C code can call back into Go code, and that Go code may need
+to copy the stack, we can never pass a Go stack pointer into C code.
+Any pointer passed into C code must be treated by the compiler as
+escaping, even though the above rules mean that we know it will not
+escape.
+This is an additional cost to the already high cost of calling C code.</p>
+<p>Although these rules are written in terms of cgo, they also apply to
+SWIG, which uses cgo internally.</p>
+<p>Similar rules may apply to the syscall package.  Individual functions
+in the syscall package will have to declare what Go pointers are
+permitted.  This particularly applies to Windows.</p>
+<p>That completes the rules for sharing memory and the implementation
+restrictions on Go code.</p>
+</div>
+<div class="section" id="support">
+<h3>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h3>
+<p>We turn now to helping programmers use these rules correctly.
+There is little we can do on the C side.
+Programmers will have to learn that C code may not store Go pointers
+in Go memory, and may not keep copies of Go pointers after the
+function returns.</p>
+<p>We can help programmers on the Go side, by implementing restrictions
+within the cgo program.
+Let us assume that the C code and any unsafe Go code behaves perfectly.
+We want to have a way to test that the Go code never breaks the
+invariant.</p>
+<p>We propose an expensive dynamic check that may be enabled upon
+request, similar to the race detector.
+The dynamic checker will be turned on via a new option to go build:
+<code class="docutils literal notranslate"><span class="pre">-checkcgo</span></code>.
+The dynamic checker will have the following effects:</p>
+<ul class="simple">
+<li><p>We will turn on the write barrier at all times.
+Whenever a pointer is written to memory, we will check whether the
+pointer is a Go pointer.
+If it is, we will check whether we are writing it to Go
+memory (including the heap, the stack, global variables).
+If we are not, we will report an error.</p></li>
+<li><p>We will change cgo to add code to check any pointer value passed to
+a C function.
+If the value points to memory containing a Go pointer, we will
+report an error.</p></li>
+<li><p>We will change cgo to add the same check to any pointer value passed
+to an exported Go function, except that the check will be done on
+function return rather than function entry.</p></li>
+<li><p>We will change cgo to check that any pointer returned by an exported
+Go function is not a Go pointer.</p></li>
+</ul>
+<p>These rules taken together preserve the invariant.
+It will be impossible to write a Go pointer to non-Go memory.
+When passing a Go pointer to C, only that Go pointer will be made
+visible to C.
+The cgo check ensures that no other pointers are exposed.
+Although the Go pointer may contain pointer to C memory, the write barrier
+ensures that that C memory can not contain any Go pointers.
+When C code calls a Go function, no additional Go pointers will become
+visible to C.</p>
+<p>We propose that we enable the above changes, other than the write
+barrier, at all times.
+These checks are reasonably cheap.</p>
+<p>These checks should detect all violations of the invariant on the Go side.
+It is still possible to violate the invariant on the C side.
+There is little we can do about this (in the long run we could imagine
+writing a Go specific memory sanitizer to catch errors.)</p>
+<p>A particular unsafe area is C code that wants to hold on to Go func
+and pointer values for future callbacks from C to Go.
+This works today but is not permitted by the invariant.
+It is hard to detect.
+One safe approach is: Go code that wants to preserve funcs/pointers
+stores them into a map indexed by an int.
+Go code calls the C code, passing the int, which the C code may store
+freely.
+When the C code wants to call into Go, it passes the int to a Go
+function that looks in the map and makes the call.
+An explicit call is required to release the value from the map if it
+is no longer needed, but that was already true before.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>The garbage collector has more flexibility when it has complete
+control over all Go pointers.
+We want to preserve that flexibility as much as possible.</p>
+<p>One simple rule would be to always prohibit passing Go pointers to C.
+Unfortunately that breaks existing packages, like github.com/gonum/blas,
+that pass slices of floats from Go to C for efficiency.
+It also breaks the standard library, which passes the address of a
+<code class="docutils literal notranslate"><span class="pre">C.struct_addrinfo</span></code> to <code class="docutils literal notranslate"><span class="pre">C.getaddrinfo</span></code>.
+It would be possible to require all such code to change to allocate
+their memory in C rather than Go, but it would make cgo considerably
+harder to use.</p>
+<p>This proposal is an attempt at the next simplest rule.
+We permit passing Go pointers to C, but we limit their number, and
+require that the garbage collector be aware of exactly which pointers
+have been passed.
+If a later garbage collector implements moving pointers, cgo will
+introduce temporary pins for the duration of the C call.</p>
+<p>Rules are necessary, but it’s always useful to enforce the rules.
+We can not enforce the rules in C code, but we can attempt to do so in
+Go code.</p>
+<p>If we adopt these rules, we can not change them later, except to
+loosen them.
+We can, however, change the enforcement mechanism, if we think of
+better approaches.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This rules are intended to extend the Go 1 compatibility guidelines to
+the cgo interface.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The implementation of the rules requires adding documentation to the
+cgo command.</p>
+<p>The implementation of the enforcement mechanism requires changes to
+the cgo tool and the go tool.</p>
+<p>The goal is to get agreement on this proposal and to complete the work
+before the 1.6 freeze date.</p>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<p>Can and should we provide library support for certain operations, like
+passing a token for a Go value through C to Go functions called from
+C?</p>
+<p>Should there be a way for C code to allocate Go memory, where of
+course the Go memory may not contain any Go pointers?</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="12750-localization.html" class="btn btn-neutral float-right" title="Proposal: Localization support in Go" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="12302-release-proposal.html" class="btn btn-neutral float-left" title="Proposal: A minimal release process for Go repositories" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

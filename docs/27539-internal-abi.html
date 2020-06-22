@@ -1,0 +1,727 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Create an undefined internal calling convention &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Binary-Only Packages" href="2775-binary-only-packages.html" />
+    <link rel="prev" title="Proposal: Simplify mark termination and eliminate mark 2" href="26903-simplify-mark-termination.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Create an undefined internal calling convention</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#implicit-vs-explicit">Implicit vs explicit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wrappers-vs-single-implementation">Wrappers vs single implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-to-generate-wrappers">When to generate wrappers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#calling-runtime-panic-from-assembly">Calling runtime.panic* from assembly</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Create an undefined internal calling convention</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/27539-internal-abi.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-create-an-undefined-internal-calling-convention">
+<h1>Proposal: Create an undefined internal calling convention<a class="headerlink" href="#proposal-create-an-undefined-internal-calling-convention" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements</p>
+<p>Last updated: 2019-01-14</p>
+<p>Discussion at https://golang.org/issue/27539.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Go’s current calling convention interferes with several significant
+optimizations, such as <a class="reference external" href="https://golang.org/issue/18597">register
+passing</a> (a potential 5% win).
+Despite the obvious appeal of these optimizations, we’ve encountered
+significant roadblocks to their implementation.
+While Go’s calling convention isn’t covered by the <a class="reference external" href="https://golang.org/doc/go1compat">Go 1 compatibility
+promise</a>, it’s impossible to write
+Go assembly code without depending on it, and there are many important
+packages that use Go assembly.
+As a result, much of Go’s calling convention is effectively public and
+must be maintained in a backwards-compatible way.</p>
+<p>We propose a way forward based on having multiple calling conventions.
+We propose maintaining the existing calling convention and introducing
+a new, private calling convention that is explicitly not
+backwards-compatible and not accessible to assembly code, with a
+mechanism to keep different calling convention transparently
+inter-operable.
+This same mechanism can be used to introduce other public, stable
+calling conventions in the future, but the details of that are outside
+the scope of this proposal.</p>
+<p>This proposal is <em>not</em> about any specific new calling convention.
+It’s about <em>enabling</em> new calling conventions to work in the existing
+Go ecosystem.
+This is one step in a longer-term plan.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Language environments depend on <em>application binary interfaces</em> (ABIs)
+to define the machine-level conventions for operating within that
+environment.
+One key aspect of an ABI is the <em>calling convention</em>, which defines
+how function calls in the language operate at a machine-code level.</p>
+<p>Go’s calling convention specifies how functions pass argument values
+and results (on the stack), which registers have fixed functions
+(e.g., R10 on ARM is the “g” register) or may be clobbered by a call
+(all non-fixed function registers), and how to interact with stack
+growth, the scheduler, and the garbage collector.</p>
+<p>Go’s calling convention as of Go 1.11 is simple and nearly universal
+across platforms, but also inefficient and inflexible.
+It is rife with opportunities for improving performance.
+For example, experiments with <a class="reference external" href="https://golang.org/issue/18597">passing arguments and results in
+registers</a> suggest a 5% performance
+win.
+Propagating register clobbers up the call graph could avoid
+unnecessary stack spills.
+Keeping the stack bound in a fixed register could eliminate two
+dependent memory loads on every function entry on x86.
+Passing dynamic allocation scopes could reduce heap allocations.</p>
+<p>And yet, even though the calling convention is invisible to Go
+programs, almost every substantive change we’ve attempted has been
+stymied because changes break existing Go <em>assembly</em> code.
+While there’s relatively little Go assembly (roughly 170 kLOC in
+public GitHub repositories<sup>*</sup>), it tends to lie at the heart
+of important packages like crypto and numerical libraries.</p>
+<p>This proposal operates within two key constraints:</p>
+<ol class="simple">
+<li><p>We can’t break existing assembly code, even though it isn’t
+technically covered by Go 1 compatibility.
+There’s too much of it and it’s too important.
+Hence, we can’t change the calling convention used by existing
+assembly code.</p></li>
+<li><p>We can’t depend on a transition periods after which existing
+assembly would break.
+Too much code simply doesn’t get updated, or if it does, it doesn’t
+get re-vendored.
+Hence, it’s not enough to give people a transition path to a new
+calling convention and some time.
+Existing code must continue to work.</p></li>
+</ol>
+<p>This proposal resolves this tension by introducing multiple calling
+conventions.
+Initially, we propose two: one is stable, documented, and codifies the
+rules of the current calling convention; the other is unstable,
+internal, and may change from release to release.</p>
+<p><sup>*</sup> This counts non-comment, non-whitespace lines of code in
+unique files. It excludes vendored source and source with a “Go
+Authors” copyright notice.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We propose introducing a second calling convention.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ABI0</span></code> is the current calling convention, which passes arguments and
+results on the stack, clobbers all registers on calls, and has a few
+platform-dependent fixed registers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> is unstable and may change from release to release.
+Initially, it will be identical to <code class="docutils literal notranslate"><span class="pre">ABI0</span></code>, but <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> opens
+the door for changes.</p></li>
+</ul>
+<p>Once we’re happy with <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>, we may “snapshot” it as a new
+stable <code class="docutils literal notranslate"><span class="pre">ABI1</span></code>, allowing assembly code to be written against the
+presumably faster, new calling convention.
+This would not eliminate <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>, as <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> could later
+diverge from <code class="docutils literal notranslate"><span class="pre">ABI1</span></code>, though <code class="docutils literal notranslate"><span class="pre">ABI1</span></code> and <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> may be identical
+for some time.</p>
+<p>A text symbol can provide different definitions for different ABIs.
+One of these will be the “native” implementation—<code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> for
+functions defined in Go and <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> for functions defined in
+assembly—while the others will be “ABI wrappers” that simply translate
+to the ABI of the native implementation and call it.
+In the linker, each symbol is already identified with a (name,
+version) pair.
+The implementation will simply map ABIs to linker symbol versions.</p>
+<p>All functions defined in Go will be natively <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>, and the Go
+compiler will assume all functions provide an <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>
+implementation.
+Hence, all cross-package calls and all indirect calls (closure calls
+and interface method calls) will use <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>.
+If the native implementation of the called function is <code class="docutils literal notranslate"><span class="pre">ABI0</span></code>, this
+will call a wrapper, which will call the <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> implementation.
+For direct calls, if the compiler knows the target is a native <code class="docutils literal notranslate"><span class="pre">ABI0</span></code>
+function, it can optimize that call to use <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> directly, but this
+is strictly an optimization.</p>
+<p>All functions defined in assembly will be natively <code class="docutils literal notranslate"><span class="pre">ABI0</span></code>, and all
+references to text symbols from assembly will use the <code class="docutils literal notranslate"><span class="pre">ABI0</span></code>
+definition.
+To introduce another stable ABI in the future, we would extend the
+assembly symbol syntax with a way to specify the ABI, but <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> must
+be assumed for all unqualified symbols for backwards compatibility.</p>
+<p>In order to transparently bridge the two (or more) ABIs, we will
+extend the assembler with a mode to scan for all text symbol
+definitions and references in assembly code, and report these to the
+compiler.
+When these symbols are referenced or defined, respectively, from Go
+code in the same package, the compiler will use the type information
+available in Go declarations and function stubs to produce the
+necessary ABI wrapper definitions.</p>
+<p>The linker will check that all symbol references use the correct ABI
+and ultimately keep everything honest.</p>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>The above approach allows us to introduce an internal calling
+convention without any modifications to any safe Go code, or the vast
+majority of assembly-using packages.
+This is largely afforded by the extra build step that scans for
+assembly symbol definitions and references.</p>
+<p>There are two major trade-off axes that lead to different designs.</p>
+<div class="section" id="implicit-vs-explicit">
+<h3>Implicit vs explicit<a class="headerlink" href="#implicit-vs-explicit" title="Permalink to this headline">¶</a></h3>
+<p>Rather than implicitly scanning assembly code for symbol definitions
+and references, we could instead introduce pragma comments that users
+could use to explicitly inform the compiler of symbol ABIs.
+This would make these ABI boundaries evident in code, but would likely
+break many more existing packages.</p>
+<p>In order to keep any assembly-using packages working as-is, this
+approach would need default rules.
+For example, body-less function stubs would likely need to default to
+<code class="docutils literal notranslate"><span class="pre">ABI0</span></code>.
+Any Go functions called from assembly would still need explicit
+annotations, though such calls are rare.
+This would cover most assembly-using packages, but function stubs are
+also used for Go symbols pushed across package boundaries using
+<code class="docutils literal notranslate"><span class="pre">//go:linkname</span></code>.
+For link-named symbols, a pragma would be necessary to undo the
+default <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> behavior, and would depend on how the target function
+was implemented.</p>
+<p>Ultimately, there’s no set of default rules that keeps all existing
+code working.
+Hence, this design proposes extracting symbols from assembly source to
+derive the correct ABIs in the vast majority of cases.</p>
+</div>
+<div class="section" id="wrappers-vs-single-implementation">
+<h3>Wrappers vs single implementation<a class="headerlink" href="#wrappers-vs-single-implementation" title="Permalink to this headline">¶</a></h3>
+<p>In this proposal, a single function can provide multiple entry-points
+for different calling conventions.
+One of these is the “native” implementation and the others are
+intended to translate the calling convention and then invoke the
+native implementation.</p>
+<p>An alternative would be for each function to provide a single calling
+convention and require all calls to that function to follow that
+calling convention.
+Other languages use this approach, such as C (e.g.,
+<code class="docutils literal notranslate"><span class="pre">fastcall</span></code>/<code class="docutils literal notranslate"><span class="pre">stdcall</span></code>/<code class="docutils literal notranslate"><span class="pre">cdecl</span></code>) and Rust (<code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code>, etc).
+This works well for direct calls, but for direct calls it’s also
+possible to compile away this proposal’s ABI wrapper.
+However, it dramatically complicates indirect calls since it requires
+the calling convention to become <em>part of the type</em>.
+Hence, in Go, we would either have to extend the type system, or
+declare that only <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> functions can be used in closures and
+interface satisfaction, both of which are less than ideal.</p>
+<p>Using ABI wrappers has the added advantage that calls to a Go function
+from Go can use the fastest available ABI, while still allowing calls
+via the stable ABI from assembly.</p>
+</div>
+<div class="section" id="when-to-generate-wrappers">
+<h3>When to generate wrappers<a class="headerlink" href="#when-to-generate-wrappers" title="Permalink to this headline">¶</a></h3>
+<p>Finally, there’s flexibility in this design around when exactly to
+generate ABI wrappers.
+In the current proposal, ABI wrappers are always generated in the
+package where both the definition and the reference to a symbol
+appear.
+However, ABI wrappers can be generated anywhere Go type information is
+available.</p>
+<p>For example, the compiler could generate an <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>→<code class="docutils literal notranslate"><span class="pre">ABI0</span></code>
+wrapper when an <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> function is stored in a closure or method
+table, regardless of which package that happens in.
+And the compiler could generate an <code class="docutils literal notranslate"><span class="pre">ABI0</span></code>→<code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> wrapper when
+it encounters an <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> reference from assembly by finding the
+function’s type either in the current package or via export info from
+another package.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposed change does not affect the functioning of any safe Go
+code.
+It can affect code that goes outside the <a class="reference external" href="https://golang.org/doc/go1compat">compatibility
+guidelines</a>, but is designed to
+minimize this impact.
+Specifically:</p>
+<ol class="simple">
+<li><p>Unsafe Go code can observe the calling convention, though doing so
+requires violating even the <a class="reference external" href="https://golang.org/pkg/unsafe/#Pointer">allowed uses of
+unsafe.Pointer</a>.
+This does arise in the internal implementation of the runtime and
+in cgo, both of which will have to be adjusted when we actually
+change the calling convention.</p></li>
+<li><p>Cross-package references where the definition and the reference are
+different ABIs may no longer link.</p></li>
+</ol>
+<p>There are various ways to form cross-package references in Go, though
+all depends on <code class="docutils literal notranslate"><span class="pre">//go:linkname</span></code> (which is explicitly unsafe) or
+complicated assembly symbol naming.
+Specifically, the following types of cross-package references may no
+longer link:</p>
+<table>
+<thead>
+<tr>
+<th colspan="2" rowspan="2"></th>
+<th colspan="4">def</th>
+</tr>
+<tr>
+<th>Go</th>
+<th>Go+push</th>
+<th>asm</th>
+<th>asm+push</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th rowspan="4">ref</th>
+<th>Go</th>      <td>✓</td><td>✓</td><td>✓</td><td>✗¹</td>
+</tr>
+<tr>
+<th>Go+pull</th> <td>✓</td><td>✓</td><td>✗¹</td><td>✗¹</td>
+</tr>
+<tr>
+<th>asm</th>     <td>✓</td><td>✗²</td><td>✓</td><td>✓</td>
+</tr>
+<tr>
+<th>asm+xref</th><td>✗²</td><td>✗²</td><td>✓</td><td>✓</td>
+</tr>
+</tbody></table><p>In this table “push” refers to a symbol that is implemented in one
+package, but its symbol name places it in a different package.
+In Go this is accomplished with <code class="docutils literal notranslate"><span class="pre">//go:linkname</span></code> and in assembly this
+is accomplished by explicitly specifying the package in a symbol name.
+There are a total of two instances of “asm+push” on all of public
+GitHub, both of which are already broken under current rules.</p>
+<p>“Go+pull” refers to when an unexported symbol defined in one package
+is referenced from another package via <code class="docutils literal notranslate"><span class="pre">//go:linkname</span></code>.
+“asm+xref” refers to any cross-package symbol reference from assembly.
+The vast majority of “asm+xref” references in public GitHub
+repositories are to a small set of runtime package functions like
+<code class="docutils literal notranslate"><span class="pre">entersyscall</span></code>, <code class="docutils literal notranslate"><span class="pre">exitsyscall</span></code>, and <code class="docutils literal notranslate"><span class="pre">memmove</span></code>.
+These are serious abstraction violations, but they’re also easy to
+keep working.</p>
+<p>There are two general groups of link failures in the above table,
+indicated by superscripts.</p>
+<p>In group 1, the compiler will create an <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> reference to a
+symbol that may only provide an <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> implementation.
+This can be worked-around by ensuring there’s a Go function stub for
+the symbol in the defining package.
+For “asm” definitions this is usually the case anyway, and “asm+push”
+definitions do not happen in practice outside the runtime.
+In all of these cases, type information is available at the reference
+site, so the compiler could record assembly ABI definitions in the
+export info and produce the stubs in the referencing package, assuming
+the defining package is imported.</p>
+<p>In group 2, the assembler will create an <code class="docutils literal notranslate"><span class="pre">ABI0</span></code> reference to a symbol
+that may only provide an <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> implementation.
+In general, calls from assembly to Go are quite rare because they
+require either stack maps for the assembly code, or for the Go
+function and everything it calls recursively to be <code class="docutils literal notranslate"><span class="pre">//go:nosplit</span></code>
+(which is, in general, not possible to guarantee because of
+compiler-inserted calls).
+This can be worked-around by creating a dummy reference from assembly
+in the defining package.
+For “asm+xref” references to exported symbols, it would be possible to
+address this transparently by using export info to construct the ABI
+wrapper when compiling the referer package, again assuming the
+defining package is imported.</p>
+<p>The situations that cause these link failures are vanishingly rare in
+public code corpora (outside of the standard library itself), all
+depend on unsafe code, and all have reasonable workarounds.
+Hence, we conclude that the potential compatibility issues created by
+this proposal are worth the upsides.</p>
+<div class="section" id="calling-runtime-panic-from-assembly">
+<h3>Calling runtime.panic* from assembly<a class="headerlink" href="#calling-runtime-panic-from-assembly" title="Permalink to this headline">¶</a></h3>
+<p>One compatibility issue we found in public GitHub repositories was
+references from assembly to <code class="docutils literal notranslate"><span class="pre">runtime.panic*</span></code> functions.
+These calls to an unexported function are an obvious violation of
+modularity, but also a violation of the Go ABI because the callers
+invariably lack a stack map.
+If a stack growth or GC were to happen during this call, it would
+result in a fatal panic.</p>
+<p>In these cases, we recommend wrapping the assembly function in a Go
+function that performs the necessary checks and then calls the
+assembly function.
+Typically, this Go function will be inlined into its caller, so this
+will not introduce additional call overhead.</p>
+<p>For example, take a function that computes the pair-wise sums of two
+slices and requires its arguments to be the same length:</p>
+<div class="highlight-asm notranslate"><div class="highlight"><pre><span></span>// func AddVecs(x, y []float64)
+TEXT ·AddVecs(SB), NOSPLIT, $16
+	// ... check lengths, put panic message on stack ...
+    CALL runtime·panic(SB)
+</pre></div>
+</div>
+<p>This should instead be written as a Go function that uses language
+facilities to panic, followed by a call to the assembly
+implementation that implements the operation:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">AddVecs</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="p">[]</span><span class="kt">float64</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;slices must be the same length&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">addVecsAsm</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this example, <code class="docutils literal notranslate"><span class="pre">AddVecs</span></code> is small enough that it will be inlined, so
+there’s no additional overhead.</p>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Austin Clements will implement this proposal for Go 1.12.
+This will allow the ABI split to soak for a release while the two
+calling conventions are in fact identical.
+Assuming that goes well, we can move on to changing the internal
+calling convention in Go 1.13.</p>
+<p>Since both calling conventions will initially be identical, the
+implementation will initially use “ABI aliases” rather than full ABI
+wrappers.
+ABI aliases will be fully resolved by the Go linker, so in the final
+binary every symbol will still have one implementation and all calls
+(regardless of call ABI) will resolve to that implementation.</p>
+<p>The rough implementation steps are as follows:</p>
+<ol class="simple">
+<li><p>Reserve space in the linker’s symbol version numbering to represent
+symbol ABIs.
+Currently, all non-static symbols have version 0, so any linker
+code that depends on this will need to be updated.</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">-gensymabis</span></code> flag to <code class="docutils literal notranslate"><span class="pre">cmd/asm</span></code> that scans assembly sources
+for text symbol definitions and references and produces a “symbol
+ABIs” file rather than assembling the code.</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">-symabis</span></code> flag to <code class="docutils literal notranslate"><span class="pre">cmd/compile</span></code> that accepts this symbol
+ABIs file.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">cmd/go</span></code>, <code class="docutils literal notranslate"><span class="pre">cmd/dist</span></code>, and any other mini-build systems in
+the standard tree to invoke <code class="docutils literal notranslate"><span class="pre">asm</span></code> in <code class="docutils literal notranslate"><span class="pre">-gensymabis</span></code> mode and feed
+the result to <code class="docutils literal notranslate"><span class="pre">compile</span></code>.</p></li>
+<li><p>Add support for recording symbol ABIs and ABI alias symbols to the
+object file format.</p></li>
+<li><p>Modify <code class="docutils literal notranslate"><span class="pre">cmd/link</span></code> to resolve ABI aliases.</p></li>
+<li><p>Modify <code class="docutils literal notranslate"><span class="pre">cmd/compile</span></code> to produce <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> symbols for all Go
+functions, produce <code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code>→<code class="docutils literal notranslate"><span class="pre">ABI0</span></code> ABI aliases for Go
+functions referenced from assembly, and produce
+<code class="docutils literal notranslate"><span class="pre">ABI0</span></code>→<code class="docutils literal notranslate"><span class="pre">ABIInternal</span></code> ABI aliases for assembly functions referenced
+from Go.</p></li>
+</ol>
+<p>Once we’re ready to modify the internal calling convention, the first
+step will be to produce actual ABI wrappers.
+We’ll then likely want to start with a simple change, such as putting
+the stack bound in a fixed register.</p>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<p>There are a few open issues in this proposal.</p>
+<ol class="simple">
+<li><p>How should tools that render symbols from object files (e.g., <code class="docutils literal notranslate"><span class="pre">nm</span></code>
+and <code class="docutils literal notranslate"><span class="pre">objdump</span></code>) display symbol ABIs?
+With ABI aliases, there’s little need to show this (though it can
+affect how a symbol is resolved), but with full ABI wrappers it
+will become more pressing.
+Ideally this would be done in a way that doesn’t significantly
+clutter the output.</p></li>
+<li><p>How do we represent symbols with different ABI entry-points in
+platform object files, particularly in shared objects?
+In the initial implementation using ABI aliases, we can simply
+erase the ABI.
+It may be that we need to use minor name mangling to encode the
+symbol ABI in its name (though this does not have to affect the Go
+symbol name).</p></li>
+<li><p>How should ABI wrappers and <code class="docutils literal notranslate"><span class="pre">go:nosplit</span></code> interact?
+In general, the wrapper needs to be <code class="docutils literal notranslate"><span class="pre">go:nosplit</span></code> if and only if the
+wrapped function is <code class="docutils literal notranslate"><span class="pre">go:nosplit</span></code>.
+However, for assembly functions, the wrapper is generated by the
+compiler and the compiler doesn’t currently know whether the
+assembly function is <code class="docutils literal notranslate"><span class="pre">go:nosplit</span></code>.
+It could conservatively make wrappers for assembly functions
+<code class="docutils literal notranslate"><span class="pre">go:nosplit</span></code>, or the toolchain could include that information in
+the symabis file.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="2775-binary-only-packages.html" class="btn btn-neutral float-right" title="Proposal: Binary-Only Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="26903-simplify-mark-termination.html" class="btn btn-neutral float-left" title="Proposal: Simplify mark termination and eliminate mark 2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

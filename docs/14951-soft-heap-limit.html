@@ -1,0 +1,589 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Separate soft and hard heap size goal &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Go should have generics" href="15292-generics.html" />
+    <link rel="prev" title="Proposal: Zip-based Go package archives" href="14386-zip-package-archives.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Separate soft and hard heap size goal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#problem">Problem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#proposed-solution">Proposed solution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evaluation">Evaluation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#throughput">Throughput</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#alternatives-and-additional-solutions">Alternatives and additional solutions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Separate soft and hard heap size goal</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/14951-soft-heap-limit.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-separate-soft-and-hard-heap-size-goal">
+<h1>Proposal: Separate soft and hard heap size goal<a class="headerlink" href="#proposal-separate-soft-and-hard-heap-size-goal" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements</p>
+<p>Inspired by discussion with Rick Hudson and Rhys Hiltner</p>
+<p>Last updated: 2017-10-31</p>
+<p>Discussion at https://golang.org/issue/14951.</p>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The GC pacer is responsible for determining when to start a GC cycle
+and how much back-pressure to put on allocation to prevent exceeding
+the goal heap size.
+It aims to balance two goals:</p>
+<ol class="simple">
+<li><p>Complete marking before the allocated heap exceeds the GOGC-based
+goal heap size.</p></li>
+<li><p>Minimize GC CPU consumed beyond the 25% reservation.</p></li>
+</ol>
+<p>In order to satisfy the first goal, the pacer forces the mutator to
+assist with marking if it is allocating too quickly.
+These mark assists are what cause GC CPU to exceed the 25%, since the
+scheduler dedicates 25% to background marking without assists.
+Hence, to satisfy the second goal, the pacer’s trigger controller sets
+the GC trigger heap size with the goal of starting GC early enough
+that no assists are necessary.
+In addition to reducing GC CPU overhead, minimizing assists also
+reduces the per-goroutine latency variance caused by assists.</p>
+<p>In practice, however, the trigger controller does not achieve the goal
+of minimizing mark assists because it stabilizes on the wrong steady
+state.
+This document explains what happens and why and then proposes a
+solution.</p>
+<p>For a detailed description of the pacer, see the <a class="reference external" href="http://golang.org/s/go15gcpacing">pacer design
+document</a>.
+This document follows the nomenclature set out in the original design,
+so it may be useful to review the original design document first.</p>
+</div>
+<div class="section" id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
+<p>The trigger controller is a simple proportional feedback system based
+on two measurements that directly parallel the pacer’s two goals:</p>
+<ol class="simple">
+<li><p>The <em>actual</em> heap growth <em>h<sub>a</sub></em> at which marking
+terminates, as a fraction of the heap goal size.
+Specifically, it uses the overshoot ratio
+<em>h</em> = (<em>h<sub>a</sub></em> − <em>h<sub>T</sub></em>)/(<em>h<sub>g</sub><em>−</em>h<sub>T</sub></em>),
+which is how far between the trigger <em>h<sub>T</sub></em> and the goal
+<em>h<sub>g</sub></em> the heap was at completion.
+Ideally, the pacer would achieve <em>h</em> = 1.</p></li>
+<li><p>The <em>actual</em> GC CPU consumed <em>u<sub>a</sub></em> as a fraction of the
+total CPU available.
+Here, the goal is fixed at <em>u<sub>g</sub></em> = 0.25.</p></li>
+</ol>
+<p>Using these, the trigger controller computes the error in the trigger
+and adjusts the trigger based on this error for the next GC cycle.
+Specifically, the error term is</p>
+<p><img alt="_images/error-term.png" src="_images/error-term.png" /></p>
+<p>However, <em>e</em>(<em>n</em>) = 0 not only in the desired case of
+<em>h</em> = 1, <em>u<sub>a</sub></em> = <em>u<sub>g</sub></em>, but in
+any state where <em>h</em> = <em>u<sub>g</sub></em>/<em>u<sub>a</sub></em>.
+As a result, the trigger controller can stabilize in a state that
+undershoots the heap goal and overshoots the CPU goal.
+We can see this in the following
+<a class="reference external" href="https://gist.github.com/aclements/f7a770f9cb5682e038fe3f6ebd66bcba">plot</a>
+of <em>e</em>(<em>n</em>), which shows positive error in blue, negative error in
+red, and zero error in white:</p>
+<p><img alt="_images/error-plot.png" src="_images/error-plot.png" /></p>
+<p>Coupled with how GC paces assists, this is exactly what happens when
+the heap size is stable.
+To satisfy the heap growth constraint, assist pacing conservatively
+assumes that the entire heap is live.
+However, with a GOGC of 100, only <em>half</em> of the heap is live in steady
+state.
+As a result, marking terminates when the allocated heap is only half
+way between the trigger and the goal, i.e., at <em>h</em> = 0.5
+(more generally, at <em>h</em> = 100/(100+GOGC)).
+This causes the trigger controller to stabilize at
+<em>u<sub>a</sub></em> = 0.5, or 50% GC CPU usage, rather than
+<em>u<sub>a</sub></em> = 0.25.
+This chronic heap undershoot leads to chronic CPU overshoot.</p>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>The garbage benchmark demonstrates this problem nicely when run as
+<code class="docutils literal notranslate"><span class="pre">garbage</span> <span class="pre">-benchmem</span> <span class="pre">512</span> <span class="pre">-benchtime</span> <span class="pre">30s</span></code>.
+Even once the benchmark has entered steady state, we can see a
+significant amount of time spent in mark assists (the narrow cyan
+regions on every other row):</p>
+<p><img alt="_images/trace-assists.png" src="_images/trace-assists.png" /></p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">GODEBUG=gcpacertrace=1</span></code>, we can
+<a class="reference external" href="https://gist.github.com/aclements/6701446d1ef39e42f3337f00a6f94973">plot</a>
+the exact evolution of the pacing parameters:</p>
+<p><img alt="_images/evolution-bad.png" src="_images/evolution-bad.png" /></p>
+<p>The thick black line shows the balance of heap growth and GC CPU at
+which the trigger error is 0.
+The crosses show the actual values of these two at the end of each GC
+cycle as the benchmark runs.
+During warmup, the pacer is still adjusting to the rapidly changing
+heap.
+However, once the heap enters steady state, GC reliably finishes at
+50% of the target heap growth, which causes the pacer to dutifully
+stabilize on 50% GC CPU usage, rather than the desired 25%, just as
+predicted above.</p>
+</div>
+</div>
+<div class="section" id="proposed-solution">
+<h2>Proposed solution<a class="headerlink" href="#proposed-solution" title="Permalink to this headline">¶</a></h2>
+<p>I propose separating the heap goal into a soft goal, <em>h<sub>g</sub></em>,
+and a hard goal, <em>h<sub>g</sub>’</em>, and setting the assist pacing such
+the allocated heap size reaches the soft goal in <em>expected
+steady-state</em> (no live heap growth), but does not exceed the hard goal
+even in the worst case (the entire heap is reachable).
+The trigger controller would use the soft goal to compute the trigger
+error, so it would be stable in the steady state.</p>
+<p>Currently the work estimate used to compute the assist ratio is simply
+<em>W<sub>e</sub></em> = <em>s</em>, where <em>s</em> is the bytes of scannable
+heap (that is, the total allocated heap size excluding no-scan tails
+of objects).
+This worst-case estimate is what leads to over-assisting and
+undershooting the heap goal in steady state.</p>
+<p>Instead, between the trigger and the soft goal, I propose using an
+adjusted work estimate
+<em>W<sub>e</sub></em> = <em>s</em>/(1+<em>h<sub>g</sub></em>).
+In the steady state, this would cause GC to complete when the
+allocated heap was roughly the soft heap goal, which should cause the
+trigger controller to stabilize on 25% CPU usage.</p>
+<p>If allocation exceeds the soft goal, the pacer would switch to the
+worst-case work estimate <em>W<sub>e</sub></em> = <em>s</em> and aim for
+the hard goal with the new work estimate.</p>
+<p>This leaves the question of how to set the soft and hard goals.
+I propose setting the soft goal the way we currently set the overall
+heap goal: <em>h<sub>g</sub></em> = GOGC/100, and setting the hard
+goal to allow at most 5% extra heap growth:
+<em>h<sub>g</sub>’</em> = 1.05<em>h<sub>g</sub></em>.
+The consequence of this is that we would reach the GOGC-based goal in
+the steady state.
+In a heap growth state, this would allow heap allocation to overshoot
+the GOGC-based goal slightly, but this is acceptable (maybe even
+desirable) during heap growth.
+This also has the advantage of allowing GC to run less frequently by
+targeting the heap goal better, thus consuming less total CPU for GC.
+It will, however, generally increase heap sizes by more accurately
+targeting the intended meaning of GOGC.</p>
+<p>With this change, the pacer does a significantly better job of
+achieving its goal on the garbage benchmark:</p>
+<p><img alt="_images/evolution-good.png" src="_images/evolution-good.png" /></p>
+<p>As before, the first few cycles have high variance from the goal
+because the heap is growing rapidly, so the pacer cannot find a stable
+point.
+However, it then quickly converges near the optimal point of reaching
+the soft heap goal at 25% GC CPU usage.</p>
+<p>Interestingly, while most of the variance in the original design was
+around GC CPU usage, that variance has been traded to the heap ratio
+in this new design.
+This is because the scheduler <em>does not allow</em> GC CPU usage to drop
+below 25%.
+Hence, the controller saturates and the inherent variance shifts to
+the less constrained dimension.</p>
+<p>To address this, I propose making one further change: dedicate only
+20% of the CPU to background marking, with the expectation that 5%
+will be used for mark assists in the steady state.
+This keeps the controller out of saturation and gives it some “wiggle
+room”, while still minimizing time spent in mark assists The result is
+very little variance from the goal in either dimension in the steady
+state:</p>
+<p><img alt="_images/evolution-best.png" src="_images/evolution-best.png" /></p>
+</div>
+<div class="section" id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+<p>To evaluate this change, we use the go1 and x/benchmarks suites.
+All results are based on <a class="reference external" href="http://golang.org/cl/59970">CL 59970 (PS2)</a>
+and <a class="reference external" href="http://golang.org/cl/59971">CL 59971 (PS3)</a>.
+Raw results from the go1 benchmarks can be viewed
+<a class="reference external" href="https://perf.golang.org/search?q%3Dupload:20171031.1">here</a> and the
+x/benchmarks can be viewed
+<a class="reference external" href="https://perf.golang.org/search?q%3Dupload:20171031.2">here</a>.</p>
+<div class="section" id="throughput">
+<h3>Throughput<a class="headerlink" href="#throughput" title="Permalink to this headline">¶</a></h3>
+<p>The go1 benchmarks show little effect in throughput, with a geomean
+slowdown of 0.16% and little variance.
+The x/benchmarks likewise show relatively little slowdown, except for
+the garbage benchmark with a 64MB live heap, which slowed down by
+4.27%.
+This slowdown is almost entirely explained by additional time spent in
+the write barrier, since the mark phase is now enabled longer.
+It’s likely this can be mitigated by optimizing the write barrier.</p>
+<!-- TODO: trace.cl59970.2.pre vs trace.cl59971.3 is quite good.
+There's still something bringing down the per-goroutine minimum by
+causing rare really long assists (with little debt), though the MMU is
+still better and the MUT is much better. --><!-- TODO: Throughput, heap size, MMU, execution trace, effect of GOGC,
+other benchmarks --></div>
+</div>
+<div class="section" id="alternatives-and-additional-solutions">
+<h2>Alternatives and additional solutions<a class="headerlink" href="#alternatives-and-additional-solutions" title="Permalink to this headline">¶</a></h2>
+<p><strong>Adjust error curve.</strong> Rather than adjusting the heap goal and work
+estimate, an alternate approach would be to adjust the zero error
+curve to account for the expected steady-state heap growth.
+For example, the modified error term</p>
+<p><img alt="_images/error-term-mod.png" src="_images/error-term-mod.png" /></p>
+<p>results in zero error when
+<em>h</em> = <em>u<sub>g</sub></em>/(<em>u<sub>a</sub></em>(1+<em>h<sub>g</sub></em>)),
+which crosses <em>u<sub>a</sub></em> = <em>u<sub>g</sub></em> at
+<em>h</em> = 1/(1+<em>h<sub>g</sub></em>), which is exactly the expected
+heap growth in steady state.</p>
+<p>This mirrors the adjusted heap goal approach, but does so by starting
+GC earlier rather than allowing it to finish later.
+This is a simpler change, but has some disadvantages.
+It will cause GC to run more frequently rather than less, so it will
+consume more total CPU.
+It also interacts poorly with large GOGC by causing GC to finish so
+early in the steady-state that it may largely defeat the purpose of
+large GOGC.
+Unlike with the proposed heap goal approach, there’s no clear parallel
+to the hard heap goal to address the problem with large GOGC in the
+adjusted error curve approach.</p>
+<p><strong>Bound assist ratio.</strong> Significant latency issues from assists may
+happen primarily when the assist ratio is high.
+High assist ratios create a large gap between the performance of
+allocation when assisting versus when not assisting.
+However, the assist ratio can be estimated as soon as the trigger and
+goal are set for the next GC cycle.
+We could set the trigger earlier if this results in an assist ratio
+high enough to have a significant impact on allocation performance.</p>
+<p><strong>Accounting for floating garbage.</strong> GOGC’s effect is defined in terms
+of the “live heap size,” but concurrent garbage collectors never truly
+know the live heap size because of <em>floating garbage</em>.
+A major source of floating garbage in Go is allocations that happen
+while GC is active, since all such allocations are retained by that
+cycle.
+These <em>pre-marked allocations</em> increase the runtime’s estimate of the
+live heap size (in a way that’s dependent on the trigger, no less),
+which in turn increases the GOGC-based goal, which leads to larger
+heaps.</p>
+<p>We could account for this effect by using the fraction of the heap
+that is live as an estimate of how much of the pre-marked memory is
+actually live.
+This leads to the following estimate of the live heap:
+<img alt="_images/heap-est.png" src="_images/heap-est.png" />, where <em>m</em> is the bytes of marked heap and
+<em>H<sub>T</sub></em> and <em>H<sub>a</sub></em> are the absolute trigger and
+actual heap size at completion, respectively.</p>
+<p>This estimate is based on the known <em>post-marked live heap</em> (marked
+heap that was allocated before GC started),
+<img alt="_images/post-marked-live-heap.png" src="_images/post-marked-live-heap.png" />.
+From this we can estimate that the overall fraction of the heap that
+is live is <img alt="_images/est-fraction.png" src="_images/est-fraction.png" />.
+This yields an estimate of how much of the pre-marked heap is live:
+<img alt="_images/est-pre-marked.png" src="_images/est-pre-marked.png" />.
+The live heap estimate is then simply the sum of the post-marked live
+heap and the pre-marked live heap estimate.</p>
+<p><strong>Use work credit as a signal.</strong> Above, we suggested decreasing the
+background mark worker CPU to 20% in order to avoid saturating the
+trigger controller in the regime where there are no assists.
+Alternatively, we could use work credit as a signal in this regime.
+If GC terminates with a significant amount of remaining work credit,
+that means marking significantly outpaced allocation, and the next GC
+cycle can trigger later.</p>
+<p>TODO: Think more about this.
+How do we balance withdrawals versus the final balance?
+How does this relate to the heap completion size?
+What would the exact error formula be?</p>
+<p><strong>Accounting for idle.</strong> Currently, the trigger controller simply
+ignores idle worker CPU usage when computing the trigger error because
+changing the trigger won’t directly affect idle CPU.
+However, idle time marking does affect the heap completion ratio, and
+because it contributes to the work credit, it also reduces assists.
+As a result, the trigger becomes dependent on idle marking anyway,
+which can lead to unstable trigger behavior: if the application has a
+period of high idle time, GC will repeatedly finish early and the
+trigger will be set very close to the goal.
+If the application then switches to having low idle time, GC will
+trigger too late and assists will be forced to make up for the work
+that idle marking was previously performing.
+Since idle time can be highly variable and unpredictable in real
+applications, this leads to bad GC behavior.</p>
+<p>To address this, the trigger controller could account for idle
+utilization by scaling the heap completion ratio to estimate what it
+would have been without help from idle marking.
+This would be like assuming the next cycle won’t have any idle time.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="15292-generics.html" class="btn btn-neutral float-right" title="Proposal: Go should have generics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="14386-zip-package-archives.html" class="btn btn-neutral float-left" title="Proposal: Zip-based Go package archives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

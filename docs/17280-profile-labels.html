@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Support for pprof profiler labels &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Eliminate STW stack re-scanning" href="17503-eliminate-rescan.html" />
+    <link rel="prev" title="Proposal: Add support for CIDR notation in no_proxy variable" href="16704-cidr-notation-no-proxy.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Support for pprof profiler labels</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#context-changes"><code class="docutils literal notranslate"><span class="pre">Context</span></code> changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-changes">Runtime changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Support for pprof profiler labels</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/17280-profile-labels.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-support-for-pprof-profiler-labels">
+<h1>Proposal: Support for pprof profiler labels<a class="headerlink" href="#proposal-support-for-pprof-profiler-labels" title="Permalink to this headline">¶</a></h1>
+<p>Author: Michael Matloob</p>
+<p>Last updated: 15 May 2017 (to reflect actual implementation)</p>
+<p>Discussion at https://golang.org/issue/17280.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This document proposes support for adding labels to pprof profiler records.
+Labels are a key-value map that is used to distinguish calls of the same
+function in different contexts when looking at profiles.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="golang.org/issue/16093">Proposal #16093</a> proposes to generate profiles in the
+gzipped profile proto format that’s now the standard format pprof expects
+profiles to be in.
+This format supports adding labels to profile records, but currently the Go
+profiler does not produce those labels.
+We propose adding a mechanism for setting profiler labels in Go.</p>
+<p>These profiler labels are attached to profile samples, which correspond to a
+snapshot of a goroutine’s stack.
+Because of this, we need the labels to be associated with a goroutine so that
+they can be accessible at profile sampling time, which may occur during memory
+allocation, lock acquisition, or in the handler for SIGPROF, an asynchronous
+signal.</p>
+</div>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>Profiles contain a limited amount of context for each sample: essentially the
+call stack at the time each sample was taken.
+But a user profiling their code may need additional context when debugging a
+problem: Was there a particular user or RPC or other context-dependent data that
+accounted for the code being executed?
+This change allows users to annotate profiles with that information for more
+fine-grained profiling.</p>
+<p>It is natural to use <code class="docutils literal notranslate"><span class="pre">context.Context</span></code> types to store this information, because
+their purpose is to hold context-dependent data. So the <code class="docutils literal notranslate"><span class="pre">runtime/pprof</span></code> package
+API adds labels to and changes labels on opaque <code class="docutils literal notranslate"><span class="pre">context.Context</span></code> values.</p>
+<p>Supporting profiler labels necessarily changes the runtime package, because
+that’s where profiling is implemented.
+The <code class="docutils literal notranslate"><span class="pre">runtime</span></code> package will expose internal hooks to package <code class="docutils literal notranslate"><span class="pre">runtime/pprof</span></code> which
+it uses to implement its <code class="docutils literal notranslate"><span class="pre">Context</span></code>-based API.</p>
+<p>One goal of the design is to avoid creating a mechanism that could be used to
+implement goroutine-local storage.
+That’s why it’s possible to set profile labels but not retrieve them.</p>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p>The following types and functions will be added to the
+<a class="reference external" href="golang.org/pkg/runtime/pprof">runtime/pprof</a> package.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>package pprof
+
+// SetGoroutineLabels sets the current goroutine&#39;s labels to match ctx.
+// This is a lower-level API than Do, which should be used instead when possible.
+func SetGoroutineLabels(ctx context.Context) {
+    ctxLabels, _ := ctx.Value(labelContextKey{}).(*labelMap)
+    runtime_setProfLabel(unsafe.Pointer(ctxLabels))
+}
+
+// Do calls f with a copy of the parent context with the
+// given labels added to the parent&#39;s label map.
+// Each key/value pair in labels is inserted into the label map in the
+// order provided, overriding any previous value for the same key.
+// The augmented label map will be set for the duration of the call to f
+// and restored once f returns.
+func Do(ctx context.Context, labels LabelSet, f func(context.Context)) {
+    defer SetGoroutineLabels(ctx)
+    ctx = WithLabels(ctx, labels)
+    SetGoroutineLabels(ctx)
+    f(ctx)
+}
+
+// LabelSet is a set of labels.
+type LabelSet struct {
+    list []label
+}
+
+// Labels takes an even number of strings representing key-value pairs
+// and makes a LabelList containing them.
+// A label overwrites a prior label with the same key.
+func Labels(args ...string) LabelSet {
+    if len(args)%2 != 0 {
+        panic(&quot;uneven number of arguments to pprof.Labels&quot;)
+    }
+    labels := LabelSet{}
+    for i := 0; i+1 &lt; len(args); i += 2 {
+        labels.list = append(labels.list, label{key: args[i], value: args[i+1]})
+    }
+    return labels
+}
+
+// Label returns the value of the label with the given key on ctx, and a boolean indicating
+// whether that label exists.
+func Label(ctx context.Context, key string) (string, bool) {
+    ctxLabels := labelValue(ctx)
+    v, ok := ctxLabels[key]
+    return v, ok
+}
+
+// ForLabels invokes f with each label set on the context.
+// The function f should return true to continue iteration or false to stop iteration early.
+func ForLabels(ctx context.Context, f func(key, value string) bool) {
+    ctxLabels := labelValue(ctx)
+    for k, v := range ctxLabels {
+        if !f(k, v) {
+            break
+        }
+    }
+}
+</pre></div>
+</div>
+<div class="section" id="context-changes">
+<h3><code class="docutils literal notranslate"><span class="pre">Context</span></code> changes<a class="headerlink" href="#context-changes" title="Permalink to this headline">¶</a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Context</span></code> may have a set of profiler labels associated with it.
+<code class="docutils literal notranslate"><span class="pre">Do</span></code> calls <code class="docutils literal notranslate"><span class="pre">f</span></code> with a new context whose labels map is
+the the parent context’s labels map with the additional label arguments added.
+Consider the tree of function calls during an execution of the program,
+treating concurrent and deferred calls like any other.  The labels of a
+function are those installed by the first call to DoWithLabels found by
+walking up from that function toward the root of the tree.  Each profiler
+sample records the labels of the currently executing function.</p>
+</div>
+<div class="section" id="runtime-changes">
+<h3>Runtime changes<a class="headerlink" href="#runtime-changes" title="Permalink to this headline">¶</a></h3>
+<p>The profiler will annotate all profile samples of each goroutine by the set of
+labels associated with that goroutine.</p>
+<p>Two hooks in the runtime, <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">runtime_setProfLabel(labels</span> <span class="pre">unsafe.Pointer)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">runtime_getProfLabel()</span> <span class="pre">unsafe.Pointer</span></code> are linknamed
+into <code class="docutils literal notranslate"><span class="pre">runtime/pprof</span></code> and are used for setting and getting profile labels from the
+current goroutine. These functions are only accessible from <code class="docutils literal notranslate"><span class="pre">runtime/pprof</span></code>, which
+prevents them from being misused to implement a Goroutine-local storage facility.
+The profile label implementation structure is left opaque to the runtime.</p>
+<p><code class="docutils literal notranslate"><span class="pre">runtime.CPUProfile</span></code> is deprecated. <code class="docutils literal notranslate"><span class="pre">runtime_pprof_readProfile</span></code>,
+another runtime function linknamed into <code class="docutils literal notranslate"><span class="pre">runtime/pprof</span></code>, is added as a way for <code class="docutils literal notranslate"><span class="pre">runtime/pprof</span></code> to retrieve the raw label-annotated profile data.</p>
+<p>New goroutines inherit the labels set on their creator.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>There are no compatibility issues with this change. The compressed binary format
+emitted by the profiler already records labels (see
+<a class="reference external" href="golang.org/issue/16093">proposal 16093</a>), but the profiler does not populate
+them.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">context.Context</span></code> will have an internal label set representation associated with it.
+This leaves the option open to change the implementation in the future to improve
+the performance characteristics of using profiler labels.</p>
+<p>The initial implementation of the label set is a
+<code class="docutils literal notranslate"><span class="pre">map[string]string</span></code> that is copied when new labels are added. However, the
+specification permits more sophisticated implementations that scale to large
+numbers of label changes such as persistent set structures or diff arrays. This
+would allow a set of <em>n</em> labels to be built up in at most
+O(<em>n</em> log <em>n</em>) time.</p>
+<p>This change requires the profile signal handler to interact with pointers, which
+means it has to interact with the garbage collector.
+There are two complications to this:</p>
+<ol class="simple">
+<li><p>This requires the profile signal handler to save the label set structure in the
+CPU profile structure, which is allocated off-heap.
+Addressing this will require either adding the CPU profile structure as a new GC
+root, or allocating the CPU profile structure in the garbage-collected heap.</p></li>
+<li><p>Normally, writing the label set structure to the CPU profile structure would
+require a write barrier, but write barriers are disallowed in a signal handler.
+This can be addressed by treating the CPU profile structure similar to stacks,
+which also do not have write barriers.
+This could mean a STW re-scan of the CPU profile structure, or shading the old
+label set structure when <code class="docutils literal notranslate"><span class="pre">SetGoroutineLabels</span></code> replaces it.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="17503-eliminate-rescan.html" class="btn btn-neutral float-right" title="Proposal: Eliminate STW stack re-scanning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="16704-cidr-notation-no-proxy.html" class="btn btn-neutral float-left" title="Proposal: Add support for CIDR notation in no_proxy variable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

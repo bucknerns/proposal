@@ -1,0 +1,668 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Dense mark bits and sweep-free allocation &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Monotonic Elapsed Time Measurements in Go" href="12914-monotonic.html" />
+    <link rel="prev" title="Proposal: Localization support in Go" href="12750-localization.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Dense mark bits and sweep-free allocation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dense-mark-bitmaps">Dense mark bitmaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dense-mark-bitmap-performance">Dense mark bitmap performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sweep-free-allocation">Sweep-free allocation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#finalizers">Finalizers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#related-work">Related work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#possible-extensions">Possible extensions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bit-heap-bitmap">1-bit heap bitmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reducing-atomic-access-to-mark-bitmap">Reducing atomic access to mark bitmap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Dense mark bits and sweep-free allocation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/12800-sweep-free-alloc.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-dense-mark-bits-and-sweep-free-allocation">
+<h1>Proposal: Dense mark bits and sweep-free allocation<a class="headerlink" href="#proposal-dense-mark-bits-and-sweep-free-allocation" title="Permalink to this headline">¶</a></h1>
+<p>or, <em>How I learned to stop worrying and love the bitmap</em></p>
+<p>Author: Austin Clements</p>
+<p>Last updated: 2015-09-30</p>
+<p>Discussion at https://golang.org/issue/12800.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This document proposes a change to memory allocation to eliminate the
+need for the sweeper and a new representation for the mark bitmap that
+enables this. This reduces the cost of allocation, significantly
+improves the locality of the mark bitmap, and paves the way for future
+advances to the Go GC that require multiple mark bits.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>All current releases of Go up to and including Go 1.5 use a
+<em>mark-sweep</em> garbage collector. As of Go 1.5, this works by
+alternating between a mostly-concurrent mark phase and a concurrent
+sweep phase. The mark phase finds all reachable objects and <em>marks</em>
+them, leaving all unreachable objects <em>unmarked</em>. The sweep phase
+walks through the entire heap, finds all unmarked objects, and adds
+them to free lists, which the allocator in turn uses to allocate new
+objects.</p>
+<p>However, this sweep phase is, in a sense, redundant. It primarily
+transforms one representation of the free heap—the mark bits—into
+another representation of the free heap—the free lists. Not only does
+this take time, but the free list representation is unfriendly to
+modern CPUs since it is not very cacheable and accesses to it are hard
+to predict. Furthermore, the current mark representation is also
+cache-unfriendly, which adds even more to the cost of sweeping.</p>
+<p>This document proposes a design for eliminating the sweeper. The key
+idea is to allocate directly using the mark bitmap, foregoing the free
+list representation entirely. Doing this efficiently requires a new,
+dense representation for mark bits that enables fast scanning and
+clearing. This representation also makes it easy to maintain multiple
+mark bitmaps simultaneously. We introduce the dense bitmap
+representation first. We then present a simple system for allocation
+based on two mark bitmaps that eliminates the free list and hence the
+need for the sweeper.</p>
+</div>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>Typical Go programs spend about 5% of their CPU in the sweeper or in
+cache misses induced by the free list representation. Hence, if we can
+significantly reduce or eliminate the cost of the sweeping from
+allocation and improve the free set representation, we can improve
+overall program performance.</p>
+<p>To measure this, we ran the go1 benchmark suite, just the BinaryTree17
+benchmark with <code class="docutils literal notranslate"><span class="pre">-benchtime</span> <span class="pre">5s</span></code>, and the x/benchmarks garbage benchmark
+with <code class="docutils literal notranslate"><span class="pre">-benchmem</span> <span class="pre">1024</span></code>. These represent a range of CPU-intensive and
+allocation-intensive benchmarks. In all cases, GOMAXPROCS is 4. The
+CPU time breaks down as follows:</p>
+<p>|     | go1 (all) | BinaryTree17 | garbage 1GB |
+| — | ———:| ————:| ———–:|
+| CPU in mark                                       |  2.8% |  4.0% | 34.7% |
+| CPU in sweep                                      |  3.3% | 20.6% |  5.2% |
+| CPU in mallocgc (excl. sweep, GC)                 |  6.8% | 39.0% | 15.8% |
+|   % of mallocgc spent walking free list | 19.2% | 17.5% | 14.3% |</p>
+<p>(Times were collected using pprof. mark shows samples matching
+<code class="docutils literal notranslate"><span class="pre">\.gc$|gcBgMarkWorker|gcAssistAlloc|gchelper</span></code>. sweep shows
+<code class="docutils literal notranslate"><span class="pre">mSpan_Sweep</span></code>. mallocgc shows <code class="docutils literal notranslate"><span class="pre">mallocgc</span> <span class="pre">-gcAssistAlloc</span> <span class="pre">-mSpan_Sweep</span></code>.)</p>
+<p>This proposal replaces sweepone with a scan that should require
+roughly 1ms of CPU time per heap GB per GC cycle. For BinaryTree17,
+that’s less than 0.1% of its CPU time, versus 21% for the current
+sweep. It replaces the cost of walking the free list in mallocgc with
+what is likely to be a smaller cost of sequentially scanning a bitmap.
+It’s likely to have negligible effect on mark performance. Finally, it
+should increase the heap footprint by roughly 0.02%.</p>
+</div>
+<div class="section" id="dense-mark-bitmaps">
+<h2>Dense mark bitmaps<a class="headerlink" href="#dense-mark-bitmaps" title="Permalink to this headline">¶</a></h2>
+<p>Currently, the mark bits are stored in the <em>heap bitmap</em>, which is a
+structure that stores two bits for every word of the heap, using a
+simple formula to map between a heap address and a bitmap address. The
+mark bit is stored in one of the bits for the first word of every
+object. Because mark bits are “on the side,” spans can be efficiently
+subdivided into smaller object sizes (especially power-of-two sizes).
+However, this sparse bitmap is expensive to scan and clear, as it
+requires a strided, irregular traversal of memory, as shown in
+figure 1. It also makes it difficult (albeit not impossible) to
+maintain two sets of mark bits on word-sized objects, which is
+necessary for sweep-free allocation.</p>
+<p><img alt="_images/sparse.png" src="_images/sparse.png" /></p>
+<p><strong>Figure 1.</strong> In Go 1.5, mark bits are sparse and irregularly strided.</p>
+<p>Therefore, this proposal separates the mark bits from the heap bitmap
+into a dedicated mark bitmap structure. The difficulty here is,
+because objects are different sizes and a given span can be freed and
+reused for a different size class any number of times, a dense mark
+bitmap cannot be addressed solely based on an object’s address. It
+must be indirected through the object’s span.</p>
+<p>One solution is to store the mark bits for the objects in each span as
+a dense bit array in the span itself, either before or after the
+objects. This dense representation is more efficient to scan and clear
+than the sparse representation, but still requires visiting every span
+to do so. Furthermore, it increases memory fragmentation, especially
+for power-of-two allocations, which currently have zero external
+fragmentation.</p>
+<p>We propose maintaining a dense mark bitmap, but placing it outside of
+the spans and in mostly contiguous memory by allocating the mark
+bitmap anew <em>for every GC cycle</em>. In both the current sparse bitmap
+and the strawman dense bitmap above, an object’s mark bit is in the
+same location for the lifetime of that object. However, an object’s
+mark only needs to persist for two GC cycles. By allocating the mark
+bitmap anew for each GC cycle, we can avoid impacting span
+fragmentation and use contiguous memory to enable bulk clearing of the
+bitmap. Furthermore, discarding and recreating the bitmap on every
+cycle lets us use a trivial scheme for allocating mark bitmaps to
+spans while simultaneously dealing with changing heap layouts: even
+though spans are reused for different size classes, any given span can
+change size class at most once per GC cycle, so there’s no need for
+sophisticated management of a mark bitmap that will only last two
+cycles.</p>
+<p>Between GC cycles, the runtime will prepare a fresh mark bitmap for
+the upcoming mark phase, as shown in figure 2. It will traverse the
+list of in-use spans and use a simple arena-style linear allocator to
+assign each span a mark bitmap sized for the number of objects in that
+span. The arena allocator will obtain memory from the system in
+reasonably large chunks (e.g., 64K) and bulk zero it. Likewise, any
+span that transitions from free to in-use during this time will also
+be allocated a mark bitmap.</p>
+<p><img alt="_images/dense.png" src="_images/dense.png" /></p>
+<p><strong>Figure 2.</strong> Proposed arena allocation of dense mark bitmaps. For
+illustrative purposes, bitmaps are shown allocated without alignment
+constraints.</p>
+<p>When the mark phase begins, all in-use spans will have zeroed mark
+bitmaps. The mark phase will set the mark bit for every reachable
+object. Then, during mark termination, the garbage collector will
+transfer this bitmap to the allocator, which can use it to find free
+objects in spans that were in-use at the beginning of the mark phase.
+Any spans that are allocated after the mark phase (including after
+mark termination) will have a nil allocation bitmap, which is
+equivalent to all objects in that span being unmarked and allows for
+bump-pointer allocation within that span. Finally, when the allocator
+is done with the mark bitmap, the whole arena can be bulk freed.</p>
+</div>
+<div class="section" id="dense-mark-bitmap-performance">
+<h2>Dense mark bitmap performance<a class="headerlink" href="#dense-mark-bitmap-performance" title="Permalink to this headline">¶</a></h2>
+<p>The entire process of allocating and clearing the new mark bitmap will
+require only about 1 ms of CPU time per heap GB. Walking the list of
+in-use spans requires about 1 ms per heap GB and, thanks to the arena
+allocation, zeroing the bitmap should add only 40 µs per heap GB,
+assuming 50 GB/sec sequential memory bandwidth and an average object
+size of 64 bytes.</p>
+<p>Furthermore, the memory overhead of the mark bitmap is minimal. The
+instantaneous average object size of “go build std” and “go test
+-short std” is 136 bytes and 222 bytes, respectively. At these sizes,
+and assuming two bitmaps, the mark bitmaps will have an overhead of
+only 0.18% (1.9 MB per heap GB) and 0.11% (1.2 MB per heap GB),
+respectively. Even given a very conservative average object size of 16
+bytes, the overhead is only 1.6% (16 MB per heap GB).</p>
+<p>Dense mark bits should have negligible impact on mark phase
+performance. Because of interior pointers, marking an object already
+requires looking up that object’s span and dividing by the span’s
+object size to compute the object index. With the sparse mark bitmap,
+it requires multiplying and adding to compute the object’s base
+address; three subtractions, three shifts, and a mask to compute the
+location and value of the mark bit; and a random atomic memory write
+to set the mark bit. With the dense mark bitmap, it requires reading
+the mark bitmap pointer from the span (which can be placed on the same
+cache line as the metadata already read); an addition, two shifts, and
+a mask to compute the location and value of the mark bit; and a random
+atomic memory write to set the mark bit.</p>
+<p>Dense mark bits should simplify some parts of mark that currently
+require checks and branches to treat the heap bitmap for the first two
+object words differently from the heap bitmap for the remaining words.
+This may improve branch predictor behavior and hence performance of
+object scanning.</p>
+<p>Finally, dense mark bits may slightly improve the performance of
+unrolling the heap bitmap during allocation. Currently, small objects
+require atomic writes to the heap bitmap because they may race with
+the garbage collector marking objects. By separating out the mark
+bits, the sole writer to any word of the heap bitmap is the P
+allocating from that span, so all bitmap writes can be non-atomic.</p>
+</div>
+<div class="section" id="sweep-free-allocation">
+<h2>Sweep-free allocation<a class="headerlink" href="#sweep-free-allocation" title="Permalink to this headline">¶</a></h2>
+<p>The key idea behind eliminating the sweeper is to use the mark bitmap
+directly during allocation to find free objects that can be
+reallocated, rather than transforming this bitmap into a free list and
+then allocating using the free list. However, in a concurrent garbage
+collector some second copy of the heap free set is necessary for the
+simple reason that the mutator continues to allocate objects from the
+free set at the same time the concurrent mark phase is constructing
+the new free set.</p>
+<p>In the current design, this second copy is the free list, which is
+fully constructed from the mark bits by the time the next mark phase
+begins. This requires essentially no space because the free list can
+be threaded through the free objects. It also gives the system a
+chance to clear all mark bits in preparation for the next GC cycle,
+which is expensive in the sparse mark bitmap representation, so it
+needs to be done incrementally and simultaneously with sweeping the
+marks. The flow of information in the current sweeper is shown in
+figure 3.</p>
+<p><img alt="_images/sweep-flow.png" src="_images/sweep-flow.png" /></p>
+<p><strong>Figure 3.</strong> Go 1.5 flow of free object information.</p>
+<p>We propose simply using two sets of mark bits. At the end of the mark
+phase, the object allocator switches to using the mark bitmap
+constructed by the mark phase and the object allocator’s current mark
+bitmap is discarded. During the time between mark phases, the runtime
+allocates and bulk zeroes the mark bitmap for the next mark phase. The
+flow of information about free objects in this design is shown in
+figure 4.</p>
+<p><img alt="_images/mark-flow.png" src="_images/mark-flow.png" /></p>
+<p><strong>Figure 4.</strong> Proposed flow of free object information.</p>
+<p>To allocate an object, the object allocator obtains a cached span or
+allocates a new span from the span allocator as it does now. The span
+allocator works much like it does now, with the exception that where
+the span allocator currently sweeps the span, it will now simply reset
+its bitmap pointer to the beginning of the span’s bitmap. With a span
+in hand, the object allocator scans its bitmap for the next unmarked
+object, updates the span’s bitmap pointer, and initializes the object.
+If there are no more unmarked objects in the span, the object
+allocator acquires another span. Note that this may happen repeatedly
+if the allocator obtains spans that are fully marked (in contrast,
+this is currently handled by the sweeper, so span allocation will
+never return a fully marked span).</p>
+<p>Most likely, it makes sense to cache an inverted copy of the current
+word of the bitmap in the span. Allocation can then find the next set
+bit using processor ctz intrinsics or efficient software ctz and bit
+shifts to maintain its position in the word. This also simplifies the
+handling of fresh spans that have nil allocation bitmaps.</p>
+<div class="section" id="finalizers">
+<h3>Finalizers<a class="headerlink" href="#finalizers" title="Permalink to this headline">¶</a></h3>
+<p>One complication of this approach is that sweeping is currently also
+responsible for queuing finalizers for unmarked objects. One solution
+is to simply check the mark bits of all finalized objects between GC
+cycles. This could be done in the same loop that allocates new mark
+bits to all spans after mark termination, and would add very little
+cost. In order to do this concurrently, if the allocator obtained a
+span before the garbage collector was able to check it for finalizers,
+the allocator would be responsible for queuing finalizers for objects
+on that span.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal only affects the performance of the runtime. It does not
+change any user-facing Go APIs, and hence it satisfies Go 1
+compatibility.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>This work will be carried out by Austin Clements and Rick Hudson
+during the Go 1.6 development cycle.</p>
+<p>Figure 5 shows the components of this proposal and the dependencies
+between implementing them.</p>
+<p><img alt="_images/plan.png" src="_images/plan.png" /></p>
+<p><strong>Figure 5.</strong> Implementation dependency diagram.</p>
+<p>We will implement dense mark bitmaps first because it should be fairly
+easy to update the current sweeper to use the dense bitmaps and this
+will enable multiple mark bitmaps. We will then build sweep-free
+allocation on top of this. Sweep-free allocation makes it difficult to
+detect completely unmarked spans and return them to the span
+allocator, so we will most likely want to implement eager freeing of
+unmarked spans first, as discussed in issue
+<a class="reference external" href="https://golang.org/issue/11979">#11979</a>, though this is not strictly
+necessary. At any point after dense mark bitmaps are in place, we can
+implement the optimizations to the heap bitmap discussed in “Dense
+mark bitmap performance.”</p>
+</div>
+<div class="section" id="related-work">
+<h2>Related work<a class="headerlink" href="#related-work" title="Permalink to this headline">¶</a></h2>
+<p>Dense mark bitmaps have a long history in garbage collectors that use
+segregated-fits allocation. The Boehm conservative collector
+[Boehm, 1988] used dense mark bitmaps, but stored each span’s bitmap
+along with that span’s objects, rather than as part of large,
+contiguous allocations. Similarly, Garner [2007] explores a mark-sweep
+collector that supports both mark bits in object headers and dense
+“side bitmaps.” Garner observes the advantages of dense mark bitmaps
+for bulk zeroing, and concludes that both approaches have similar
+marking performance, which supports our prediction that switching to
+dense mark bitmaps will have negligible impact on mark phase
+performance.</p>
+<p>Traditionally, mark-sweep garbage collectors alternate between marking
+and sweeping. However, there have various approaches to enabling
+simultaneous mark and sweep in a concurrent garbage collector that
+closely resemble our approach of allowing simultaneous mark and
+allocation. Lamport [1976] introduced a “purple” extension to the
+traditional tri-color abstraction that made it possible for the
+sweeper to distinguish objects that were not marked in the previous
+mark phase (and hence should be swept) from objects that are not yet
+marked in the current mark phase, but may be marked later in the
+phase. To reduce the cost of resetting these colors, Lamport’s
+algorithm cycles through three different interpretations of the color
+encoding. In contrast, our approach adheres to the tri-color
+abstraction and simply alternates between two different bitmaps. This
+means we have to reset the colors for every mark phase, but we arrange
+the bitmap such that this cost is negligible. Queinnec’s “mark during
+sweep” algorithm [Queinnec, 1989] alternates between two bitmaps like
+our approach. However, unlike our approach, both Queinnec and Lamport
+still depend on a sweeper to transform the mark bits into a free list
+and to reset the mark bits back to white.</p>
+</div>
+<div class="section" id="possible-extensions">
+<h2>Possible extensions<a class="headerlink" href="#possible-extensions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bit-heap-bitmap">
+<h3>1-bit heap bitmap<a class="headerlink" href="#bit-heap-bitmap" title="Permalink to this headline">¶</a></h3>
+<p>With the mark bits no longer part of the heap bitmap, it’s possible we
+could pack the heap bitmap more tightly, which would reduce its memory
+footprint, improve cache locality, and may improve the performance of
+the heap bitmap unroller (the most expensive step of malloc). One of
+the two bits encoded in the heap bitmap for every word is a “dead”
+bit, which forms a unary representation of the index of the last
+pointer word of the object. Furthermore, it’s always safe to increase
+this number (this is how we currently steal a bit for the mark bit).
+We could store this information in base 2 in an object-indexed
+structure and reduce overhead by only storing it for spans with a
+sufficiently large size class (where the dead bit optimization
+matters). Alternatively, we could continue storing it in unary, but at
+lower fidelity, such as one dead bit per eight heap words.</p>
+</div>
+<div class="section" id="reducing-atomic-access-to-mark-bitmap">
+<h3>Reducing atomic access to mark bitmap<a class="headerlink" href="#reducing-atomic-access-to-mark-bitmap" title="Permalink to this headline">¶</a></h3>
+<p>If the cost of atomically setting bits in the mark bitmap turns out to
+be high, we could instead dedicate a byte per object for the mark.
+This idea is mentioned in GC literature [Garner, 2007]. Obviously,
+this involves an 8× increase in memory overhead. It’s likely that on
+modern hardware, the cost of the atomic bit operation is small, while
+the cost of increasing the cache footprint of the mark structure is
+probably large.</p>
+<p>Another way to reduce atomic access to the mark bitmap is to keep an
+additional mark bitmap per P. When the garbage collector checks if an
+object is marked, it first consults the shared bitmap. If it is not
+marked there, it updates the shared bitmap by reading the entire word
+(or cache line) containing the mark bit from each per-P mark bitmap,
+combining these words using bitwise-or, and writing the entire word to
+the shared bitmap. It can then re-check the bit. When the garbage
+collector marks an object, it simply sets the bit in its per-P bitmap.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Hans-Juergen Boehm and Mark Weiser. 1988. Garbage collection in an
+uncooperative environment. Software Practice and Experience 18, 9
+(September 1988), 807–820.</p>
+<p>Robin Garner, Stephen M. Blackburn, and Daniel Frampton. 2007.
+Effective prefetch for mark-sweep garbage collection. In Proceedings
+of the 6th international symposium on Memory management (ISMM ‘07).
+ACM, New York, NY, USA, 43–54.</p>
+<p>Leslie Lamport. 1976. Garbage collection with multiple processes: An
+exercise in parallelism. In International Conference on Parallel
+Processing (ICPP). 50–54.</p>
+<p>Christian Queinnec, Barbara Beaudoing, and Jean-Pierre Queille. 1989.
+Mark DURING Sweep rather than Mark THEN Sweep. In Proceedings of the
+Parallel Architectures and Languages Europe, Volume I: Parallel
+Architectures (PARLE ‘89), Eddy Odijk, Martin Rem, and Jean-Claude
+Syre (Eds.). Springer-Verlag, London, UK, UK, 224–237.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="12914-monotonic.html" class="btn btn-neutral float-right" title="Proposal: Monotonic Elapsed Time Measurements in Go" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="12750-localization.html" class="btn btn-neutral float-left" title="Proposal: Localization support in Go" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

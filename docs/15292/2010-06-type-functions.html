@@ -1,0 +1,977 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Type Functions &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Type Functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/15292/2010-06-type-functions.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="type-functions">
+<h1>Type Functions<a class="headerlink" href="#type-functions" title="Permalink to this headline">¶</a></h1>
+<p>This is a proposal for adding generics to Go, written by Ian Lance
+Taylor in June, 2010.
+This proposal will not be adopted.
+It is being presented as an example for what a complete generics
+proposal must cover.</p>
+<div class="section" id="defining-a-type-function">
+<h2>Defining a type function<a class="headerlink" href="#defining-a-type-function" title="Permalink to this headline">¶</a></h2>
+<p>We introduce <em>type functions</em>.
+A type function is a named type with zero or more parameters.
+The syntax for declaring a type function is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">name</span><span class="p">(</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="n">definition</span>
+</pre></div>
+</div>
+<p>Each parameter to a type function is simply an identifier.
+The <em>definition</em> of the type function is any type, just as with an
+ordinary type declaration.
+The definition of a type function may use the type parameters any
+place a type name may appear.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">[]</span><span class="n">t</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-a-type-function">
+<h2>Using a type function<a class="headerlink" href="#using-a-type-function" title="Permalink to this headline">¶</a></h2>
+<p>Any use of a type function must provide a value for each type
+parameter.
+The value must itself be a type, though in some cases the exact type
+need not be known at compile time.</p>
+<p>We say that a specific use of a type function is concrete if all the
+values passed to the type function are concrete.
+All predefined types are concrete and all type literals composed using
+only concrete types are concrete.
+A concrete type is known statically at compile time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">VectorInt</span> <span class="n">Vector</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>      <span class="o">//</span> <span class="n">Concrete</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>When a type function is used outside of a func or the definition of a
+type function, it must be concrete.
+That is, global variables and constants are required to have concrete
+types.</p>
+<p>In this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>the name of the type of the variable <code class="docutils literal notranslate"><span class="pre">v</span></code> will be <code class="docutils literal notranslate"><span class="pre">Vector(int)</span></code>, and
+the value of v will have the representation of <code class="docutils literal notranslate"><span class="pre">[]int</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">Vector(t)</span></code> has any methods, they will be attached to the type of
+<code class="docutils literal notranslate"><span class="pre">v</span></code> (methods of type functions are discussed further below).</p>
+</div>
+<div class="section" id="generic-types">
+<h2>Generic types<a class="headerlink" href="#generic-types" title="Permalink to this headline">¶</a></h2>
+<p>A type function need not be concrete when used as the type of a
+function receiver, parameter, or result, or anywhere within a
+function.
+A specific use of a type function that is not concrete is known as
+generic.
+A generic type is not known at compile time.</p>
+<p>A generic type is named by using a type function with one or more
+unbound type parameters, or by writing a type function with parameters
+attached to generic types.
+When writing an unbound type parameter, it can be ambiguous whether
+the intent is to use a concrete type or whether the intent is to use
+an unbound parameter.
+This ambiguity is resolved by using the <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword after each
+unbound type parameter.</p>
+<p>(Another way would be to use a different syntax for type variables.
+For example, <code class="docutils literal notranslate"><span class="pre">$t</span></code>.  This has the benefit of keeping the grammar
+simpler and not needing to worry about where types are introduced
+vs. used.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Bound</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+<span class="n">func</span> <span class="n">Unbound</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword may also be used without invoking a type function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Generic</span><span class="p">(</span><span class="n">v</span> <span class="n">t</span> <span class="nb">type</span><span class="p">)</span> <span class="n">t</span>
+</pre></div>
+</div>
+<p>In this example the return type is the same as the parameter type.
+Examples below show cases where this can be useful.</p>
+<p>A value (parameter, variable, etc.) with a generic type is represented
+at runtime as a generic value.
+A generic value is a dynamic type plus a value of that type.
+The representation of a generic value is thus the same as the
+representation of an empty interface value.
+However, it is important to realize that the dynamic type of a generic
+value may be an interface type.
+This of course can never happen with an ordinary interface value.</p>
+<p>Note that if <code class="docutils literal notranslate"><span class="pre">x</span></code> is a value of type <code class="docutils literal notranslate"><span class="pre">Vector(t)</span></code>, then although <code class="docutils literal notranslate"><span class="pre">x</span></code> is
+a generic value, the elements of the slice are not.
+The elements have type <code class="docutils literal notranslate"><span class="pre">t</span></code>, even though that type is not known.
+That is, boxing a generic value only occurs at the top level.</p>
+</div>
+<div class="section" id="generic-type-identity">
+<h2>Generic type identity<a class="headerlink" href="#generic-type-identity" title="Permalink to this headline">¶</a></h2>
+<p>Two generic types are identical if they have the same name and the
+parameters are identical.
+This can only be determined statically at compile time if the names
+are the same.
+For example, within a function, <code class="docutils literal notranslate"><span class="pre">Vector(t)</span></code> is identical to
+<code class="docutils literal notranslate"><span class="pre">Vector(t)</span></code> if both <code class="docutils literal notranslate"><span class="pre">t</span></code> identifiers denote the same type.
+<code class="docutils literal notranslate"><span class="pre">Vector(int)</span></code> is never identical to <code class="docutils literal notranslate"><span class="pre">Vector(float)</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Vector(t)</span></code> may or may not be identical to <code class="docutils literal notranslate"><span class="pre">Vector(u)</span></code>;
+identity can only be determined at runtime.</p>
+<p>Checking type identity at runtime is implemented by walking through
+the definition of each type and comparing each component.
+At runtime all type parameters are known, so no ambiguity is possible.
+If any literal or concrete type is different, the types are different.</p>
+</div>
+<div class="section" id="converting-a-value-of-concrete-type-to-a-generic-type">
+<h2>Converting a value of concrete type to a generic type<a class="headerlink" href="#converting-a-value-of-concrete-type-to-a-generic-type" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes it is necessary to convert a value of concrete type to a
+generic type.
+This is an operation that may fail at run time.
+This is written as a type assertion: <code class="docutils literal notranslate"><span class="pre">v.(t)</span></code>.
+This will verify at runtime that the concrete type of <code class="docutils literal notranslate"><span class="pre">v</span></code> is identical
+to the generic type <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p>
+<p>(Open issue: Should we use a different syntax for this?)</p>
+<p>(Open issue: In some cases we will want the ability to convert an
+untyped constant to a generic type.
+This would be a runtime operation that would have to implement the
+rules for conversions between numeric types.
+How should this conversion be written?
+Should we simply use <code class="docutils literal notranslate"><span class="pre">N</span></code>, as in <code class="docutils literal notranslate"><span class="pre">v</span> <span class="pre">/</span> <span class="pre">2</span></code>?
+The problem with that syntax is that the runtime conversion can fail
+in some cases, at least when <code class="docutils literal notranslate"><span class="pre">N</span></code> is not in the range 0 to 127 inclusive.
+The same objection applies to T(n).
+That suggests N.(t), but that looks weird.)</p>
+<p>(Open issue: It is possible that we will want the ability to convert
+a value from a known concrete type to a generic type.
+This would also require a runtime conversion.
+I’m not sure whether this is necessary or not.
+What would be the syntax for this?)</p>
+</div>
+<div class="section" id="generic-value-operations">
+<h2>Generic value operations<a class="headerlink" href="#generic-value-operations" title="Permalink to this headline">¶</a></h2>
+<p>A function that uses generic values is only compiled once.
+This is different from C++ templates.</p>
+<p>The only operations permitted on a generic value are those implied by
+its type function.
+Some operations will require extra work at runtime.</p>
+<div class="section" id="declaring-a-local-variable-with-generic-type">
+<h3>Declaring a local variable with generic type.<a class="headerlink" href="#declaring-a-local-variable-with-generic-type" title="Permalink to this headline">¶</a></h3>
+<p>This allocates a new generic value with the appropriate dynamic type.
+Note that in the general case the dynamic type may need to be
+constructed at runtime, as it may itself be a type function with
+generic arguments.</p>
+</div>
+<div class="section" id="assigning-a-generic-value">
+<h3>Assigning a generic value<a class="headerlink" href="#assigning-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>As with any assignment, this is only permitted if the types are
+identical.
+The value is copied as appropriate.
+This is much like assignment of values of empty interface type.</p>
+</div>
+<div class="section" id="using-a-type-assertion-with-a-generic-value">
+<h3>Using a type assertion with a generic value<a class="headerlink" href="#using-a-type-assertion-with-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>Programs may use type assertions with generic values just as with
+interface values.
+The type assertion succeeds if the target type is identical to the
+value’s dynamic type.
+In general this will require a runtime check of type identity as
+described above.</p>
+<p>(Open issue: Should it be possible to use a type assertion to convert
+a generic value to a generic type, or only to a concrete type?
+Converting to a generic type is a somewhat different operation from
+a standard type assertion.
+Should it use a different syntax?)</p>
+</div>
+<div class="section" id="using-a-type-switch-with-a-generic-value">
+<h3>Using a type switch with a generic value<a class="headerlink" href="#using-a-type-switch-with-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>Programs may use type switches with generic values just as with
+interface values.</p>
+</div>
+<div class="section" id="using-a-conversion-with-a-generic-value">
+<h3>Using a conversion with a generic value<a class="headerlink" href="#using-a-conversion-with-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>Generic values may only be converted to types with identical
+underlying types.
+This is only permitted when the compiler can verify at compile time
+that the conversion is valid.
+That is, a conversion to a generic type T is only permitted if the
+definition of T is identical to the definition of the generic type of
+the value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="n">var</span> <span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">:=</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">)(</span><span class="n">v</span><span class="p">)</span>    <span class="o">//</span> <span class="n">OK</span><span class="o">.</span>
+        <span class="nb">type</span> <span class="n">MyVector</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">[]</span><span class="n">t</span>
+        <span class="n">b</span> <span class="o">:=</span> <span class="n">MyVector</span><span class="p">(</span><span class="n">t</span><span class="p">)(</span><span class="n">v</span><span class="p">)</span>  <span class="o">//</span> <span class="n">OK</span><span class="o">.</span>
+        <span class="n">c</span> <span class="o">:=</span> <span class="n">MyVector</span><span class="p">(</span><span class="n">u</span><span class="p">)(</span><span class="n">v</span><span class="p">)</span>  <span class="o">//</span> <span class="n">OK</span> <span class="n">iff</span> <span class="n">u</span> <span class="ow">and</span> <span class="n">t</span> <span class="n">are</span> <span class="n">known</span> <span class="n">identical</span> <span class="n">types</span><span class="o">.</span>
+        <span class="n">d</span> <span class="o">:=</span> <span class="p">[]</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>        <span class="o">//</span> <span class="n">Not</span> <span class="n">OK</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="taking-the-address-of-a-generic-value">
+<h3>Taking the address of a generic value<a class="headerlink" href="#taking-the-address-of-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>Programs may always take the address of a generic value.
+If the generic value has type <code class="docutils literal notranslate"><span class="pre">T(x)</span></code> this produces a generic value of
+type <code class="docutils literal notranslate"><span class="pre">*T(x)</span></code>.
+The new type may be constructed at runtime.</p>
+</div>
+<div class="section" id="indirecting-through-a-generic-value">
+<h3>Indirecting through a generic value<a class="headerlink" href="#indirecting-through-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>If a generic value has a generic type that is a pointer <code class="docutils literal notranslate"><span class="pre">*T</span></code>, then a
+program may indirect through the generic value.
+This will be similar to a call to <code class="docutils literal notranslate"><span class="pre">reflect.PtrValue.Elem</span></code>.
+The result will be a new generic value of type <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
+</div>
+<div class="section" id="indexing-or-slicing-a-generic-value">
+<h3>Indexing or slicing a generic value<a class="headerlink" href="#indexing-or-slicing-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>If a generic value has a generic type that is a slice or array, then a
+program may index or slice the generic value.
+This will be similar to a call to <code class="docutils literal notranslate"><span class="pre">reflect.ArrayValue.Elem</span></code> or
+<code class="docutils literal notranslate"><span class="pre">reflect.SliceValue.Elem</span></code> or <code class="docutils literal notranslate"><span class="pre">reflect.SliceValue.Slice</span></code> or
+<code class="docutils literal notranslate"><span class="pre">reflect.MakeSlice</span></code>.
+In particular, the operation will require a multiplication by the size
+of the element of the slice, where the size will be fetched from the
+dynamic type.
+The result will be a generic value of the element type of the slice or
+array.</p>
+</div>
+<div class="section" id="range-over-a-generic-value">
+<h3>Range over a generic value<a class="headerlink" href="#range-over-a-generic-value" title="Permalink to this headline">¶</a></h3>
+<p>If a generic value has a generic type that is a slice or array, then a
+program may use range to loop through the generic value.</p>
+</div>
+<div class="section" id="maps">
+<h3>Maps<a class="headerlink" href="#maps" title="Permalink to this headline">¶</a></h3>
+<p>Similarly, if a generic value has a generic type that is a map,
+programs may index into the map, check whether an index is present,
+assign a value to the map, range over a map.</p>
+</div>
+<div class="section" id="channels">
+<h3>Channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h3>
+<p>Similarly, if a generic value has a generic type that is a channel,
+programs may send and receive values of the appropriate generic type,
+and range over the channel.</p>
+</div>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<p>If a generic value has a generic type that is a function, programs may
+call the function.
+Where the function has parameters which are generic types, the
+arguments must have identical generic type or a type assertion much be
+used.
+This is similar to <code class="docutils literal notranslate"><span class="pre">reflect.Call</span></code>.</p>
+</div>
+<div class="section" id="interfaces">
+<h3>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h3>
+<p>If a generic value has a generic type that is an interface, programs
+may call methods on the interface.
+This is much like calling a function.
+Note that a type assertion on a generic value may return an interface
+type, unlike a type assertion on an interface value.
+This in turn means that a double type assertion is meaningful.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="n">a</span><span class="o">.</span><span class="p">(</span><span class="n">InterfaceType</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="structs">
+<h3>Structs<a class="headerlink" href="#structs" title="Permalink to this headline">¶</a></h3>
+<p>If a generic value has a generic type that is a struct, programs may
+get and set struct fields.
+In general this requires finding the description of the field in the
+dynamic type to discover the appropriate concrete type and field
+offsets.</p>
+</div>
+<div class="section" id="that-is-all">
+<h3>That is all<a class="headerlink" href="#that-is-all" title="Permalink to this headline">¶</a></h3>
+<p>Operations that are not explicitly permitted for a generic value are
+forbidden.</p>
+</div>
+<div class="section" id="scope-of-generic-type-parameters">
+<h3>Scope of generic type parameters<a class="headerlink" href="#scope-of-generic-type-parameters" title="Permalink to this headline">¶</a></h3>
+<p>When a generic type is used, the names of the type parameters have
+scope.
+The generic type normally provides the type of some name; the scope of
+the unbound type parameters is the same as the scope of that name.
+In cases where the generic type does not provide the type of some
+name, then the unbound type parameters have no scope.
+Within the scope of an unbound type parameter, it may be used as a
+generic type.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Head</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">first</span> <span class="n">t</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scopes-of-function-parameters">
+<h3>Scopes of function parameters<a class="headerlink" href="#scopes-of-function-parameters" title="Permalink to this headline">¶</a></h3>
+<p>In order to make this work nicely, we change the scope of function
+receivers, parameters, and results.
+We now define their scope to start immediately after they are defined,
+rather than starting in the body of the function.
+This means that a function parameter may refer to the unbound type
+parameters of an earlier function parameter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">SetHead</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">),</span> <span class="n">e</span> <span class="n">t</span><span class="p">)</span> <span class="n">t</span> <span class="p">{</span>
+        <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="k">return</span> <span class="n">e</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The main effect of this change in scope will be to change the
+behaviour of cases where a function parameter has the same name as a
+global type, and that global type was used to define a subsequent
+function parameter.</p>
+<p>(The alternate notation approach would instead define that the
+variables only persist for the top-level statement in which they
+appear, so that</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>func SetHead(v Vector($t), e $t) $t { ... }
+</pre></div>
+</div>
+<p>doesn’t have to worry about which t is the declaration (the ML
+approach).
+Another alternative is to do what C++ does and explicitly introduce
+them.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">generic</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="n">func</span> <span class="n">SetHead</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">e</span> <span class="n">t</span><span class="p">)</span> <span class="n">t</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>)</p>
+</div>
+<div class="section" id="function-call-argument-type-checking">
+<h3>Function call argument type checking<a class="headerlink" href="#function-call-argument-type-checking" title="Permalink to this headline">¶</a></h3>
+<p>As can be seen by the previous example, it is possible to use generic
+types to write functions in which two parameters have related types.
+These types are checked at the point of the function call.
+If the types at the call site are concrete, the type checking is
+always done by the compiler.
+If the types are generic, then the function call is only permitted if
+the argument types are identical to the parameter types.
+The arguments are matched against the required types from left to
+right, determining bindings for the unbound type parameters.
+Any failure of binding causes the compiler to reject the call with a
+type error.
+Any case where one unbound type parameter is matched to a different
+unbound type parameter causes the compiler to reject the call with a
+type error.
+In those cases, the call site must use an explicit type assertion,
+checked at run time, so that the call can be type checked at compile
+time.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        var vi Vector(int)
+        var i int
+        SetHead(vi, 1)          // OK
+        SetHead(vi, i)          // OK
+        var vt Vector(t)
+        var i1 t
+        SetHead(vt, 1)          // OK?  Unclear.  See above.
+        SetHead(vt, i)          // Not OK; needs syntax
+        SetHead(vt, i1)         // OK
+        var i2 q                // q is another generic type
+        SetHead(vt, q)          // Not OK
+        SetHead(vt, q.(t))      // OK (may fail at run time)
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-result-types">
+<h3>Function result types<a class="headerlink" href="#function-result-types" title="Permalink to this headline">¶</a></h3>
+<p>The result type of a function can be a generic type.
+The result will be returned to the caller as a generic value.
+If the call site uses concrete types, then the result type can often
+be determined at compile time.
+The compiler will implicitly insert a type assertion to the expected
+concrete type.
+This type assertion can not fail, because the function will have
+ensured that the result has the matching type.
+In other cases, the result type may be a generic type, in which case
+the returned generic value will be handled like any other generic
+value.</p>
+</div>
+<div class="section" id="making-one-function-parameter-the-same-type-as-another">
+<h3>Making one function parameter the same type as another<a class="headerlink" href="#making-one-function-parameter-the-same-type-as-another" title="Permalink to this headline">¶</a></h3>
+<p>Sometime we want to say that two function parameters have the same
+type, or that a result parameter has the same type as a function
+parameter, without specifying the type of that parameter.
+This can be done like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Choose</span><span class="p">(</span><span class="n">which</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">a</span> <span class="n">t</span> <span class="nb">type</span><span class="p">,</span> <span class="n">b</span> <span class="n">t</span><span class="p">)</span> <span class="n">t</span>
+</pre></div>
+</div>
+<p>(Or func <code class="docutils literal notranslate"><span class="pre">Choose(which</span> <span class="pre">bool,</span> <span class="pre">a</span> <span class="pre">$t,</span> <span class="pre">b</span> <span class="pre">$t)</span> <span class="pre">$t</span></code>)</p>
+<p>The argument <code class="docutils literal notranslate"><span class="pre">a</span></code> is passed as generic value and binds the type
+parameter <code class="docutils literal notranslate"><span class="pre">t</span></code> to <code class="docutils literal notranslate"><span class="pre">a</span></code>’s type.
+The caller must ensure that <code class="docutils literal notranslate"><span class="pre">b</span></code> has the same type as <code class="docutils literal notranslate"><span class="pre">a</span></code>.
+<code class="docutils literal notranslate"><span class="pre">b</span></code> will then also be passed as a generic value.
+The result will be returned as a generic value; it must again have the
+same type.</p>
+<p>Another example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Slice</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">[]</span><span class="n">t</span>
+<span class="n">func</span> <span class="n">Repeat</span><span class="p">(</span><span class="n">x</span> <span class="n">t</span> <span class="nb">type</span><span class="p">,</span> <span class="n">n</span> <span class="nb">int</span><span class="p">)</span> <span class="n">Slice</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">a</span> <span class="o">:=</span> <span class="n">make</span><span class="p">(</span><span class="n">Slice</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+                <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">a</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(Or <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">Repeat(x</span> <span class="pre">$t,</span> <span class="pre">n</span> <span class="pre">int)</span> <span class="pre">[]$t</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code>)</p>
+</div>
+<div class="section" id="nested-generic-types">
+<h3>Nested generic types<a class="headerlink" href="#nested-generic-types" title="Permalink to this headline">¶</a></h3>
+<p>It is of course possible for the argument to a generic type to itself
+be a generic type.
+The above rules are intended to permit this case.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Pair</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="n">struct</span> <span class="p">{</span>
+        <span class="n">first</span> <span class="n">a</span>
+        <span class="n">second</span> <span class="n">b</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">a</span> <span class="n">Pair</span><span class="p">(</span><span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">),</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the first occurrence of <code class="docutils literal notranslate"><span class="pre">t</span></code> uses the <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword to
+declare it as an unbound type parameter.
+The second and third occurrences do not, which means that they are the
+type whose name is <code class="docutils literal notranslate"><span class="pre">t</span></code>.
+The scoping rules mean that that <code class="docutils literal notranslate"><span class="pre">t</span></code> is the same as the one bound by the
+first use of Vector.
+When this function is called, the type checking will match <code class="docutils literal notranslate"><span class="pre">t</span></code> to the
+argument to the first <code class="docutils literal notranslate"><span class="pre">Vector</span></code>, and then require that the same <code class="docutils literal notranslate"><span class="pre">t</span></code>
+appear as the argument to the second <code class="docutils literal notranslate"><span class="pre">Vector</span></code>.</p>
+</div>
+<div class="section" id="unknown-generic-types">
+<h3>Unknown generic types<a class="headerlink" href="#unknown-generic-types" title="Permalink to this headline">¶</a></h3>
+<p>Note that it is possible to have a generic value whose type can not be
+named.
+This can happen when a result variable has a generic type.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Unknown</span><span class="p">()</span> <span class="n">t</span> <span class="nb">type</span>
+</pre></div>
+</div>
+<p>Now if one writes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">:=</span> <span class="n">Unknown</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>then x is a generic value of unknown and unnamed type.
+About all you can do with such a value is assign it using <code class="docutils literal notranslate"><span class="pre">:=</span></code> and use
+it in a type assertion or type switch.
+The only way that <code class="docutils literal notranslate"><span class="pre">Unknown</span></code> could return a value would be to use some
+sort of conversion.</p>
+</div>
+<div class="section" id="methods-on-generic-types">
+<h3>Methods on generic types<a class="headerlink" href="#methods-on-generic-types" title="Permalink to this headline">¶</a></h3>
+<p>A generic type may have methods.
+When a generic type is used as a receiver, the arguments must all be
+simple unbound names.
+Any time a value of this generic type is created, whether the value is
+generic or concrete, it will acquire all the methods defined on the
+generic type.
+When calling these methods, the receiver will of course be passed as a
+generic value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">))</span> <span class="n">At</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span><span class="p">)</span> <span class="n">t</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">))</span> <span class="n">Set</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A longer example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">hashmap</span>
+
+<span class="nb">type</span> <span class="n">bucket</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">valtype</span><span class="p">)</span> <span class="n">struct</span> <span class="p">{</span>
+        <span class="nb">next</span> <span class="o">*</span><span class="n">bucket</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">valtype</span><span class="p">)</span>
+        <span class="n">key</span> <span class="n">keytype</span>
+        <span class="n">val</span> <span class="n">valtype</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">Hashfn</span><span class="p">(</span><span class="n">keytype</span><span class="p">)</span> <span class="n">func</span><span class="p">(</span><span class="n">keytype</span><span class="p">)</span> <span class="n">uint</span>
+
+<span class="nb">type</span> <span class="n">Eqfn</span><span class="p">(</span><span class="n">keytype</span><span class="p">)</span> <span class="n">func</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">keytype</span><span class="p">)</span> <span class="nb">bool</span>
+
+<span class="nb">type</span> <span class="n">Hashmap</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">valtype</span><span class="p">)</span> <span class="n">struct</span> <span class="p">{</span>
+        <span class="n">hashfn</span> <span class="n">Hashfn</span><span class="p">(</span><span class="n">keytype</span><span class="p">)</span>
+        <span class="n">eqfn</span> <span class="n">Eqtype</span><span class="p">(</span><span class="n">keytype</span><span class="p">)</span>
+        <span class="n">buckets</span> <span class="p">[]</span><span class="n">bucket</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">valtype</span><span class="p">)</span>
+        <span class="n">entries</span> <span class="nb">int</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">New</span><span class="p">(</span><span class="n">hashfn</span> <span class="n">Hashfn</span><span class="p">(</span><span class="n">keytype</span> <span class="nb">type</span><span class="p">),</span> <span class="n">eqfn</span> <span class="n">Eqfn</span><span class="p">(</span><span class="n">keytype</span><span class="p">),</span>
+         <span class="n">_</span> <span class="n">valtype</span> <span class="nb">type</span><span class="p">)</span> <span class="o">*</span><span class="n">Hashmap</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">valtype</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">&amp;</span><span class="n">Hashmap</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">){</span><span class="n">hashfn</span><span class="p">,</span> <span class="n">eqfn</span><span class="p">,</span>
+                <span class="n">make</span><span class="p">([]</span><span class="n">bucket</span><span class="p">(</span><span class="n">keytype</span><span class="p">,</span> <span class="n">valtype</span><span class="p">),</span> <span class="mi">16</span><span class="p">),</span>
+                <span class="mi">0</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Note</span> <span class="n">that</span> <span class="n">the</span> <span class="n">dummy</span> <span class="n">valtype</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">New</span> <span class="n">function</span>
+<span class="o">//</span> <span class="n">exists</span> <span class="n">only</span> <span class="n">to</span> <span class="n">get</span> <span class="n">valtype</span> <span class="n">into</span> <span class="n">the</span> <span class="n">function</span> <span class="n">signature</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">This</span> <span class="n">feels</span> <span class="n">wrong</span><span class="o">.</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Hashmap</span><span class="p">(</span><span class="n">keytype</span> <span class="nb">type</span><span class="p">,</span> <span class="n">vvaltype</span> <span class="nb">type</span><span class="p">))</span>
+          <span class="n">Lookup</span><span class="p">(</span><span class="n">key</span> <span class="n">keytype</span><span class="p">)</span> <span class="p">(</span><span class="n">found</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">val</span> <span class="n">valtype</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">h</span> <span class="o">:=</span> <span class="n">p</span><span class="o">.</span><span class="n">hashfn</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">buckets</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="o">:=</span> <span class="n">buckets</span><span class="p">[</span><span class="n">h</span><span class="p">];</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">nil</span><span class="p">;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">next</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">eqfn</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">return</span> <span class="n">true</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the alternate syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>package hash
+
+type bucket($key, $val) struct {
+        next *bucket($key, val)
+        key $key
+        val $val
+}
+
+type Map($key, $val) struct {
+        hash func($key) uint
+        eq func($key, $key) bool
+        buckets []bucket($key, $val)
+        entries int
+}
+
+func New(hash func($key) uint, eq func($key, $key) bool, _ $val)
+                *Map($key, $val) {
+        return &amp;Map($key, $val){
+                hash,
+                eq,
+                make([]bucket($key, $val), 16),
+                0,
+        }
+}
+
+// Again note dummy $val in the arguments to New.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<p>In order to make type functions more precise, we can additionally
+permit the definition of the type function to specify an interface.
+This means that whenever the type function is used, the argument is
+required to satisfy the interface.
+In homage to the proposed but not accepted C++0x notion, we call this
+a concept.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">PrintableVector</span><span class="p">(</span><span class="n">t</span> <span class="n">Stringer</span><span class="p">)</span> <span class="p">[]</span><span class="n">t</span>
+</pre></div>
+</div>
+<p>Now <code class="docutils literal notranslate"><span class="pre">PrintableVector</span></code> may only be used with a type that implements the
+interface <code class="docutils literal notranslate"><span class="pre">Stringer</span></code>.
+This in turn means that given a value whose type is the parameter to
+<code class="docutils literal notranslate"><span class="pre">PrintableVector</span></code>, a program may call the <code class="docutils literal notranslate"><span class="pre">String</span></code> method on that
+value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Concat</span><span class="p">(</span><span class="n">p</span> <span class="n">PrintableVector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">))</span> <span class="n">string</span> <span class="p">{</span>
+        <span class="n">s</span> <span class="o">:=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">p</span> <span class="p">{</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="n">v</span><span class="o">.</span><span class="n">String</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Attempting to pass <code class="docutils literal notranslate"><span class="pre">[]int</span></code> to <code class="docutils literal notranslate"><span class="pre">Concat</span></code> will cause the compiler to
+issue a type checking error.
+But if <code class="docutils literal notranslate"><span class="pre">MyInt</span></code> has a <code class="docutils literal notranslate"><span class="pre">String</span></code> method, then calling <code class="docutils literal notranslate"><span class="pre">Concat</span></code> with
+<code class="docutils literal notranslate"><span class="pre">[]MyInt</span></code> will succeed.</p>
+<p>The interface restriction may also be used with a parameter whose type
+is a generic type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Print</span><span class="p">(</span><span class="n">a</span> <span class="n">t</span> <span class="nb">type</span> <span class="n">Stringer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This example is not useful, as it is pretty much equivalent to passing
+a value of type Stringer, but there is a useful example below.</p>
+<p>Concepts specified in type functions are type checked as usual.
+If the compiler does not know statically that the type implements the
+interface, then the type check fails.
+In such cases an explicit type assertion is required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">MyConcat</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span><span class="p">))</span> <span class="n">string</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">pv</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">v</span><span class="o">.</span><span class="p">(</span><span class="n">PrintableVector</span><span class="p">(</span><span class="n">t</span><span class="p">));</span> <span class="n">ok</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">Concat</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="s2">&quot;unprintable&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(Note that this does a type assertion to a generic type.  Should it
+use a different syntax?)</p>
+<p>The concept must be an interface type, but it may of course be a
+generic interface type.
+When using a generic interface type as a concept, the generic
+interface type may itself use as an argument the type parameter which
+it is restricting.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Lesser</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="n">interface</span> <span class="p">{</span>
+        <span class="n">Less</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="nb">bool</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="n">Min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">t</span> <span class="nb">type</span> <span class="n">Lesser</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="n">t</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">Less</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">a</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">b</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(<code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">Mintype($t</span> <span class="pre">Lesser($t))</span> <span class="pre">$t</span></code>)</p>
+<p>This is complex but useful. OK, the function <code class="docutils literal notranslate"><span class="pre">Min</span></code> is not all that
+useful, but this looks better when we write</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Sort</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span> <span class="nb">type</span> <span class="n">Lesser</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>which can sort any Vector whose element type implements the Lesser
+interface.</p>
+</div>
+<div class="section" id="a-note-on-operator-methods">
+<h2>A note on operator methods<a class="headerlink" href="#a-note-on-operator-methods" title="Permalink to this headline">¶</a></h2>
+<p>You will have noticed that there is no way to use an operator with a
+generic value.
+For example, you can not add two generic values together.
+If we implement operator methods, then it will be possible to use this
+in conjunction with the interface restrictions to write simple generic
+code which uses operators.
+While operator methods are of course a separate extension, I think
+it’s important to ensure that they can work well with generic values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Addable</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="n">interface</span> <span class="p">{</span>
+        <span class="n">Binary</span><span class="o">+</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="n">t</span>
+<span class="p">}</span>
+<span class="nb">type</span> <span class="n">AddableSlice</span><span class="p">(</span><span class="n">t</span> <span class="n">Addable</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="p">[]</span><span class="n">t</span>
+<span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">v</span> <span class="n">AddableSlice</span><span class="p">)</span> <span class="n">t</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="nb">sum</span> <span class="n">t</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">v</span> <span class="p">{</span>
+                <span class="nb">sum</span> <span class="o">=</span> <span class="nb">sum</span> <span class="o">+</span> <span class="n">v</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">sum</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="some-comparisons-to-c-templates">
+<h2>Some comparisons to C++ templates<a class="headerlink" href="#some-comparisons-to-c-templates" title="Permalink to this headline">¶</a></h2>
+<p>Obviously the big difference between this proposal and C++ templates
+is that C++ templates are compiled separately.
+This has various consequences.
+Some C++ template features that can not be implemented using type
+functions:</p>
+<ul class="simple">
+<li><p>C++ templates permit data structures to be instantiated differently for different component types.</p></li>
+<li><p>C++ templates may be instantiated for constants, not just for types.</p></li>
+<li><p>C++ permits specific instantiations for specific types or constants.</p></li>
+</ul>
+<p>The advantages of type functions are:</p>
+<ul class="simple">
+<li><p>Faster compile time.</p></li>
+<li><p>No need for two-phase name lookup.  Only the scope of the definition is relevant, not the scope of use.</p></li>
+<li><p>Clear syntax for separating compile-time errors from run-time errors.  Avoids complex compile-time error messages at the cost of only detecting some problems at runtime.</p></li>
+<li><p>Concepts also permit clear compile time errors.</p></li>
+</ul>
+<p>In general, C++ templates have the advantages and disadvantages of
+preprocessor macros.</p>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>This proposal will not be adopted.
+It’s basically terrible.</p>
+<p>The syntax is confusing: <code class="docutils literal notranslate"><span class="pre">MyVector(t)(v)</span></code> looks like two function
+calls, but it’s actually a type conversion to a type function.</p>
+<p>The notion of an unbound type parameter is confusing, and the
+syntax (a trailing <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword) only increases that confusion.</p>
+<p>Types in Go refer to themselves.
+The discussion of type identity does not discuss this.
+It means that comparing type identity at run time, such as in a type
+assertion, requires avoiding loops.
+Generic type assertions look like ordinary type assertions, but are
+not constant time.</p>
+<p>The need to pass an instance of the value type to <code class="docutils literal notranslate"><span class="pre">hashmap.New</span></code> is a
+symptom of a deeper problem.
+This proposal is trying to treat generic types like interface types,
+but interface types have a simple common representation and generic
+types do not.
+Value representations should probably be expressed in the type system,
+not inferred at run time.</p>
+<p>The proposal suggests that generic functions can be compiled once.
+It also claims that generic types can have methods.
+If I write</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">[]</span><span class="n">t</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="n">Read</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="n">t</span><span class="p">)</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">nil</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>then <code class="docutils literal notranslate"><span class="pre">Vector(byte)</span></code> should implement <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code>.
+But <code class="docutils literal notranslate"><span class="pre">Vector(t).Read</span></code> is going to be implemented using a generic value,
+while <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> expects a concrete value.
+Where is the code that translates from the generic value to the
+concrete value?</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,895 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Scaling the Go page allocator &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Lazy Module Loading" href="36460-lazy-module-loading.html" />
+    <link rel="prev" title="Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case" href="34481-opencoded-defers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Scaling the Go page allocator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tracking-free-memory-with-bitmaps">Tracking free memory with bitmaps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#implementation-details">Implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#allow-a-p-to-cache-bits-from-the-bitmap">Allow a P to cache bits from the bitmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scavenging">Scavenging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#huge-page-awareness">Huge-page Awareness</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fragmentation-concerns">Fragmentation Concerns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prior-art">Prior Art</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#considered-alternatives">Considered Alternatives</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cache-spans-in-a-p">Cache spans in a P</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Scaling the Go page allocator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/35112-scaling-the-page-allocator.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-scaling-the-go-page-allocator">
+<h1>Proposal: Scaling the Go page allocator<a class="headerlink" href="#proposal-scaling-the-go-page-allocator" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Michael Knyszek, Austin Clements</p>
+<p>Last updated: 2019-10-18</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>The Go runtime’s page allocator (i.e. <code class="docutils literal notranslate"><span class="pre">(*mheap).alloc</span></code>) has scalability
+problems.
+In applications with a high rate of heap allocation and a high GOMAXPROCS,
+small regressions in the allocator can quickly become big problems.</p>
+<p>Based on ideas from Austin about making P-specific land-grabs to reduce lock
+contention, and with evidence that most span allocations are one page in size
+and are for small objects (&lt;=32 KiB in size), I propose we:</p>
+<ol class="simple">
+<li><p>Remove the concept of spans for free memory and track free memory with a
+bitmap.</p></li>
+<li><p>Allow a P to cache free pages for uncontended allocation.
+Point (1) simplifies the allocator, reduces some constant overheads, and more
+importantly enables (2), which tackles lock contention directly.</p></li>
+</ol>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The Go runtime’s page allocator (i.e. <code class="docutils literal notranslate"><span class="pre">(*mheap).alloc</span></code>) has serious scalability
+issues.
+These were discovered when working through
+<a class="reference external" href="https://github.com/golang/go/issues/28479">golang/go#28479</a> and
+<a class="reference external" href="https://github.com/kubernetes/kubernetes/issues/75833#issuecomment-477758829">kubernetes/kubernetes#75833</a>
+which were both filed during or after the Go 1.12 release.
+The common thread between each of these scenarios is a high rate of allocation
+and a high level of parallelism (in the Go world, a relatively high GOMAXPROCS
+value, such as 32).</p>
+<p>As it turned out, adding some extra work for a small subset of allocations in Go
+1.12 and removing a fast-path data structure in the page heap caused significant
+regressions in both throughput and tail latency.
+The fundamental issue is the heap lock: all operations in the page heap
+(<code class="docutils literal notranslate"><span class="pre">mheap</span></code>) are protected by the heap lock (<code class="docutils literal notranslate"><span class="pre">mheap.lock</span></code>).
+A high allocation rate combined with a high degree of parallelism leads to
+significant contention on this lock, even though page heap allocations are
+relatively cheap and infrequent.
+For instance, if the most popular allocation size is ~1 KiB, as seen with the
+Kubernetes scalability test, then the runtime accesses the page heap every 10th
+allocation or so.</p>
+<p>The proof that this is really a scalability issue in the design and not an
+implementation bug in Go 1.12 is that we were seeing barging behavior on this
+lock in Go 1.11, which indicates that the heap lock was already in a collapsed
+state before the regressions in Go 1.12 were even introduced.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I believe we can significantly improve the scalability of the page allocator if
+we eliminate as much lock contention in the heap as possible. We can achieve
+this in two ways:</p>
+<ol class="simple">
+<li><p>Make the allocator faster.
+The less time spent with the lock held the better the assumptions of e.g.
+a futex hold up.</p></li>
+<li><p>Come up with a design that avoids grabbing the lock at all in the common
+case.</p></li>
+</ol>
+<p>So, what is this common case? We currently have span allocation data for a
+couple large Go applications which reveal that an incredibly high fraction of
+allocations are for small object spans.
+First, we have data from Kubernetes’ 12-hour load test, which indicates that
+99.89% of all span allocations are for small object spans, with 93% being from
+the first 50 size classes, inclusive.
+Next, data from a large Google internal service shows that 95% of its span
+allocations are for small object spans, even though this application is known to
+make very large allocations relatively frequently.
+94% of all of this application’s span allocations are from the first 50 size
+classes, inclusive.</p>
+<p>Thus, I propose we:</p>
+<ul class="simple">
+<li><p>Track free pages in a bitmap that spans the heap’s address space.</p></li>
+<li><p>Allow a P to cache a set of bits from the bitmap.</p></li>
+</ul>
+<p>The goal is to have most (80%+) small object span allocations allocate quickly,
+and without a lock.
+(1) makes the allocator significantly more cache-friendly, predictable, and
+enables (2), which helps us avoid grabbing the lock in the common case and
+allows us to allocate a small number of pages very quickly.</p>
+<p>Note that this proposal maintains the current first-fit allocation policy and
+highest-address-first scavenging policy.</p>
+<div class="section" id="tracking-free-memory-with-bitmaps">
+<h3>Tracking free memory with bitmaps<a class="headerlink" href="#tracking-free-memory-with-bitmaps" title="Permalink to this headline">¶</a></h3>
+<p>With a first-fit policy, allocation of one page (the common case) amounts to
+finding the first free page in the heap. One promising idea here is to use a
+bitmap because modern microarchitectures are really good at iterating over bits.
+Each bit in the bitmap represents a single runtime page (8 KiB as of this
+writing), where 1 means in-use and 0 means free. “In-use” in the context of the
+new page allocator is now synonymous with “owned by a span”.
+The concept of a free span isn’t useful here.</p>
+<p>I propose that the bitmap be divided up into shards each representing a single
+arena.
+Each shard would then live in its corresponding <code class="docutils literal notranslate"><span class="pre">heapArena</span></code> instance.
+For a 64 MiB arena and 8 KiB page size, this means 8192 bits (1 KiB) per arena.
+The main reason for sharding it in this way is for convenience in
+implementation.
+An alternative could be to maintain one large global bitmap and to map it in as
+needed.</p>
+<p>Simply iterating over one large bitmap is still fairly inefficient, especially
+for dense heaps.
+We want to be able to quickly skip over completely in-use sections of the heap.
+Therefore, I first propose we subdivide our shards further into chunks.
+Next, instead of running over each chunk directly, I propose we attach summary
+information to each chunk such that it’s much faster to filter out chunks which
+couldn’t possibly satisfy the allocation.
+We subdivide the shards further rather than just attaching summary information
+to shards directly in order to keep bitmap iteration work consistent across
+platforms (i.e. independent of arena size).</p>
+<p>What should this summary information contain? I propose we augment each chunk
+with three fields: <code class="docutils literal notranslate"><span class="pre">start,</span> <span class="pre">max,</span> <span class="pre">end</span> <span class="pre">uintptr</span></code>.
+<code class="docutils literal notranslate"><span class="pre">start</span></code> represents the number of contiguous 0 bits at the start of this bitmap
+shard.
+Similarly, <code class="docutils literal notranslate"><span class="pre">end</span></code> represents the number of contiguous 0 bits at the end of the
+bitmap shard.
+Finally, <code class="docutils literal notranslate"><span class="pre">max</span></code> represents the largest contiguous section of 0 bits in the bitmap
+shard.</p>
+<p>The diagram below illustrates an example summary for a bitmap chunk.
+The arrow indicates which direction addresses go (lower to higher).
+The bitmap contains 3 zero bits at its lowest edge and 7 zero bits at its
+highest edge.
+Within the summary, there are 10 contiguous zero bits, which <code class="docutils literal notranslate"><span class="pre">max</span></code> reflects.</p>
+<p><img alt="Diagram of a summary." src="_images/summary-diagram.png" /></p>
+<p>With these three fields, we can determine whether we’ll be able to find a
+sufficiently large contiguous free section of memory in a given arena or
+contiguous set of arenas with a simple state machine.
+Computing this summary information for an arena is less trivial to make fast,
+and effectively amounts to a combination of a table to get per-byte summaries
+and a state machine to merge them until we have a summary which represents the
+whole chunk.
+The state machine for <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> is mostly trivial.
+<code class="docutils literal notranslate"><span class="pre">max</span></code> is only a little more complex: by knowing <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, and <code class="docutils literal notranslate"><span class="pre">end</span></code> for
+adjacent summaries, we can merge the summaries by picking the maximum of each
+summary’s <code class="docutils literal notranslate"><span class="pre">max</span></code> value and the sum of their <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> values.
+I propose we update these summary values eagerly as spans are allocated and
+freed.
+For large allocations that span multiple arenas, we can zero out summary
+information very quickly, and we really only need to do the full computation of
+summary information for the ends of the allocation.</p>
+<p>There’s a problem in this design so far wherein subsequent allocations may end
+up treading the same path over and over.
+Unfortunately, this retreading behavior’s time complexity is <code class="docutils literal notranslate"><span class="pre">O(heap</span> <span class="pre">*</span> <span class="pre">allocs)</span></code>.
+We propose a simple solution to this problem: maintain a hint address.
+A hint address represents an address before which there are definitely no free
+pages in the heap.
+There may not be free pages for some distance after it, hence why it is just a
+hint, but we know for a fact we can prune from the search everything before that
+address.
+In the steady-state, as we allocate from the lower addresses in the heap, we can
+bump the hint forward with every search, effectively eliminating the search
+space until new memory is freed.
+Most allocations are expected to allocate not far from the hint.</p>
+<p>There’s still an inherent scalability issue with this design: larger allocations
+may require iterating over the whole heap, even with the hint address.
+This scalability issue arises from the fact that we now have an allocation
+algorithm with a time complexity linear in the size of the heap.
+Modern microarchitectures are good, but not quite good enough to just go with
+this.</p>
+<p>Therefore, I propose we take this notion of a summary-per-chunk and extend it:
+we can build a tree around this, wherein a given entry at some level of the
+radix tree represents the merge of some number of summaries in the next level.
+The leaf level in this case contains the per-chunk summaries, while each entry
+in the previous levels may reflect 8 chunks, and so on.</p>
+<p>This tree would be constructed from a finite number of arrays of summaries, with
+lower layers being smaller in size than following layers, since each entry
+reflects a larger portion of the address space.
+More specifically, we avoid having an “explicit” pointer-based structure (think
+“implicit” vs. “explicit” when it comes to min-heap structures: the former tends
+to be an array, while the latter tends to be pointer-based).</p>
+<p>Below is a diagram of the complete proposed structure.</p>
+<p><img alt="Diagram of the proposed radix tree." src="_images/radix-tree-diagram.png" /></p>
+<p>The bottom two boxes are the arenas and summaries representing the full address
+space.
+Each red line represents a summary, and each set of dotted lines from a summary
+into the next layer reflects which part of that next layer that summary refers
+to.</p>
+<p>In essence, because this tree reflects our address space, it is in fact a radix
+tree over addresses.
+By left shifting a memory address by different amounts, we can find the exact
+summary which contains that address in each level.</p>
+<p>On allocation, this tree may be searched by looking at <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, and <code class="docutils literal notranslate"><span class="pre">end</span></code>
+at each level: if we see that <code class="docutils literal notranslate"><span class="pre">max</span></code> is large enough, we continue searching in
+the next, more granular, level.
+If <code class="docutils literal notranslate"><span class="pre">max</span></code> is too small, then we look to see if there’s free space spanning two
+adjacent summaries’ memory regions by looking at the first’s <code class="docutils literal notranslate"><span class="pre">end</span></code> value and the
+second’s <code class="docutils literal notranslate"><span class="pre">start</span></code> value.
+Larger allocations are therefore more likely to cross larger boundaries of the
+address space are more likely to get satisfied by levels in the tree which are
+closer to the root.
+Note that if the heap has been exhausted, then we will simply iterate over the
+root level, find all zeros, and return.</p>
+<div class="section" id="implementation-details">
+<h4>Implementation details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h4>
+<p>A number of details were omitted from the previous section for brevity, but
+these details are key for an efficient implementation.</p>
+<p>Firstly, note that <code class="docutils literal notranslate"><span class="pre">start,</span> <span class="pre">max,</span> <span class="pre">end</span> <span class="pre">uintptr</span></code> is an awkward structure in size,
+requiring either 12 bytes or 24 bytes to store naively, neither of which fits
+a small multiple of a cache line comfortably.
+To make this structure more cache-friendly, we can pack them tightly into
+64-bits if we constrain the height of the radix tree.
+The packing is straight-forward: we may dedicate 21 bits to each of these
+three numbers and pack them into 63 bits.
+A small quirk with this scheme is that each of <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, and <code class="docutils literal notranslate"><span class="pre">end</span></code> are
+counts, and so we need to represent zero as well as the maximum value (<code class="docutils literal notranslate"><span class="pre">2^21</span></code>),
+which at first glance requires an extra bit per field.
+Luckily, in that case (i.e. when <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">==</span> <span class="pre">2^21</span></code>), then <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">==</span> <span class="pre">max</span> <span class="pre">&amp;&amp;</span> <span class="pre">max</span> <span class="pre">==</span> <span class="pre">end</span></code>.
+We may use the last remaining bit to represent this case. A summary representing
+a completely full region is also conveniently <code class="docutils literal notranslate"><span class="pre">uint64(0)</span></code> in this
+representation, which enables us to very quickly skip over parts of the address
+space we don’t care about with just one load and branch.</p>
+<p>As mentioned before, a consequence of this packing is that we need to place a
+restriction on our structure: each entry in the root level of the radix tree may
+only represent at most <code class="docutils literal notranslate"><span class="pre">2^21</span></code> 8 KiB pages, or 16 GiB, because we cannot
+represent any more in a single summary.
+From this constraint, it follows that the root level will always be
+<code class="docutils literal notranslate"><span class="pre">2^(heapAddrBits</span> <span class="pre">-</span> <span class="pre">21</span> <span class="pre">-</span> <span class="pre">log2(pageSize))</span></code> in size in entries.
+Should we need to support much larger heaps, we may easily remedy this by
+representing a summary as <code class="docutils literal notranslate"><span class="pre">start,</span> <span class="pre">max,</span> <span class="pre">end</span> <span class="pre">uint32</span></code>, though at the cost of cache
+line alignment and 1.5x metadata overhead.
+We may also consider packing the three values into two <code class="docutils literal notranslate"><span class="pre">uint64</span></code> values, though
+at the cost of twice as much metadata overhead.
+Note that this concern is irrelevant on 32-bit architectures: we can easily
+represent the whole address space with a tree and 21 bits per summary field.
+Unfortunately, we cannot pack it more tightly on 32-bit architectures since at
+least 14 bits are required per summary field.</p>
+<p>Now that we’ve limited the size of the root level, we need to pick the sizes of
+the subsequent levels.
+Each entry in the root level must reflect some number of entries in the
+following level, which gives us our fanout.
+In order to stay cache-friendly, I propose trying to keep the fanout close to
+the size of an L1 cache line or some multiple thereof.
+64 bytes per line is generally a safe bet, and our summaries are 8 bytes wide,
+so that gives us a fanout of 8.</p>
+<p>Taking all this into account, for a 48-bit address space (such as how we treat
+<code class="docutils literal notranslate"><span class="pre">linux/amd64</span></code> in the runtime), I propose the following 5-level array structure:</p>
+<ul class="simple">
+<li><p>Level 0: <code class="docutils literal notranslate"><span class="pre">16384</span></code> entries (fanout = 1, root)</p></li>
+<li><p>Level 1: <code class="docutils literal notranslate"><span class="pre">16384*8</span></code> entries (fanout = 8)</p></li>
+<li><p>Level 2: <code class="docutils literal notranslate"><span class="pre">16384*8*8</span></code> entries (fanout = 8)</p></li>
+<li><p>Level 3: <code class="docutils literal notranslate"><span class="pre">16384*8*8*8</span></code> entries (fanout = 8)</p></li>
+<li><p>Level 4: <code class="docutils literal notranslate"><span class="pre">16384*8*8*8*8</span></code> entries (fanout = 8, leaves)</p></li>
+</ul>
+<p>Note that level 4 has <code class="docutils literal notranslate"><span class="pre">2^48</span> <span class="pre">bytes</span> <span class="pre">/</span> <span class="pre">(512</span> <span class="pre">*</span> <span class="pre">8</span> <span class="pre">KiB)</span></code> entries, which is exactly the
+number of chunks in a 48-bit address space.
+Each entry at this level represents a single chunk.
+Similarly, since a chunk represents 512, or 2^9 pages, each entry in the root
+level summarizes a region of <code class="docutils literal notranslate"><span class="pre">2^21</span></code> contiguous pages, as intended.
+This scheme can be trivially applied to any system with a larger address space,
+since we just increase the size of the root level.
+For a 64-bit address space, the root level can get up to 8 GiB in size, but
+that’s mostly virtual address space which is fairly cheap since we’ll only
+commit to what we use (see below).</p>
+<p>For most heaps, <code class="docutils literal notranslate"><span class="pre">2^21</span></code> contiguous pages or 16 GiB per entry in the root level is
+good enough.
+If we limited ourselves to 8 entries in the root, we would still be able to
+gracefully support up to 128 GiB (and likely double that, thanks to
+prefetchers).
+Some Go applications may have larger heaps though, but as mentioned before we
+can always change the structure of a summary away from packing into 64 bits and
+then add an additional level to the tree, at the expense of some additional
+metadata overhead.</p>
+<p>Overall this uses between KiB and hundreds of MiB of address space on systems
+with smaller address spaces (~600 MiB for a 48-bit address space, ~12 KiB for a
+32-bit address space).
+For a full 64-bit address space, this layout requires ~37 TiB of reserved
+memory.</p>
+<p>At first glance, this seems like an enormous amount, but in reality that’s an
+extremely small fraction (~0.00022%) of the full address space. Furthermore,
+this address space is very cheap since we’ll only commit what we use, and to
+reduce the size of core dumps and eliminate issues with overcommit we will map
+the space as <code class="docutils literal notranslate"><span class="pre">PROT_NONE</span></code> (only <code class="docutils literal notranslate"><span class="pre">MEM_RESERVE</span></code> on Windows) and map it as
+read/write explicitly when we grow the heap (an infrequent operation).</p>
+<p>There are only two known adverse effects of this large mapping on Linux:</p>
+<ol class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ulimit</span> <span class="pre">-v</span></code>, which restricts even <code class="docutils literal notranslate"><span class="pre">PROT_NONE</span></code> mappings.</p></li>
+<li><p>Programs like top, when they report virtual memory footprint, include
+<code class="docutils literal notranslate"><span class="pre">PROT_NONE</span></code> mappings.
+In the grand scheme of things, these are relatively minor consequences.
+The former is not used often, and in cases where it is, it’s used as an
+inaccurate proxy for limiting a process’s physical memory use.
+The latter is mostly cosmetic, though perhaps some monitoring system uses it as
+a proxy for memory use, and will likely result in some harmless questions.</p></li>
+</ol>
+</div>
+</div>
+<div class="section" id="allow-a-p-to-cache-bits-from-the-bitmap">
+<h3>Allow a P to cache bits from the bitmap<a class="headerlink" href="#allow-a-p-to-cache-bits-from-the-bitmap" title="Permalink to this headline">¶</a></h3>
+<p>I propose adding a free page cache to each P.
+The page cache, in essence, is a base address marking the beginning of a 64-page
+aligned chunk, and a 64-bit bitmap representing free pages in that chunk.
+With 8 KiB pages, this makes it so that at most each P can hold onto 512 KiB of
+memory.</p>
+<p>The allocation algorithm would thus consist of a P first checking its own cache.
+If it’s empty, it would then go into the bitmap and cache the first non-zero
+chunk of 64 bits it sees, noting the base address of those 64 bits.
+It then allocates out of its own cache if able.
+If it’s unable to satisfy the allocation from these bits, then it goes back and
+starts searching for contiguous bits, falling back on heap growth if it fails.
+If the allocation request is more than 16 pages in size, then we don’t even
+bother checking the cache.
+The probability that <code class="docutils literal notranslate"><span class="pre">N</span></code> consecutive free pages will be available in the page
+cache decreases exponentially as <code class="docutils literal notranslate"><span class="pre">N</span></code> approaches 64, and 16 strikes a good
+balance between being opportunistic and being wasteful.</p>
+<p>Note that allocating the first non-zero chunk of 64 bits is an equivalent
+operation to allocating one page out of the heap: fundamentally we’re looking
+for the first free page we can find in both cases.
+This means that we can and should optimize for this case, since we expect that
+it will be extremely common.
+Note also that we can always update the hint address in this case, making all
+subsequent allocations (large and small) faster.</p>
+<p>Finally, there’s a little hiccup in doing this and that’s that acquiring an
+<code class="docutils literal notranslate"><span class="pre">mspan</span></code> object currently requires acquiring the heap lock, since these objects
+are just taken out of a locked SLAB allocator.
+This means that even if we can perform the allocation uncontended we still need
+the heap lock to get one of these objects.
+We can solve this problem by adding a pool of <code class="docutils literal notranslate"><span class="pre">mspan</span></code> objects to each P, similar
+to the <code class="docutils literal notranslate"><span class="pre">sudog</span></code> cache.</p>
+</div>
+<div class="section" id="scavenging">
+<h3>Scavenging<a class="headerlink" href="#scavenging" title="Permalink to this headline">¶</a></h3>
+<p>With the elimination of free spans, scavenging must work a little differently as
+well.
+The primary bit of information we’re concerned with here is the <code class="docutils literal notranslate"><span class="pre">scavenged</span></code>
+field currently on each span.
+I propose we add a <code class="docutils literal notranslate"><span class="pre">scavenged</span></code> bitmap to each <code class="docutils literal notranslate"><span class="pre">heapArena</span></code> which mirrors the
+allocation bitmap, and represents whether that page has been scavenged or not.
+Allocating any pages would unconditionally clear these bits to avoid adding
+extra work to the allocation path.</p>
+<p>The scavenger’s job is now conceptually much simpler.
+It takes bits from both the allocation bitmap as well as the <code class="docutils literal notranslate"><span class="pre">scavenged</span></code> bitmap
+and performs a bitwise-OR operation on the two to determine which pages are
+“scavengable”.
+It then scavenges any contiguous free pages it finds in a single syscall,
+marking the appropriate bits in the <code class="docutils literal notranslate"><span class="pre">scavenged</span></code> bitmap.
+Like the allocator, it would have a hint address to avoid walking over the same
+parts of the heap repeatedly.</p>
+<p>Because this new algorithm effectively requires iterating over the heap
+backwards, there’s a slight concern with how much time it could take,
+specifically if it does the scavenge operation with the heap lock held like
+today.
+Instead, I propose that the scavenger iterate over the heap without the lock,
+checking the free and scavenged bitmaps optimistically.
+If it finds what appears to be valid set of contiguous scavengable bits, it’ll
+acquire the heap lock, verify their validity, and scavenge.</p>
+<p>We’re still scavenging with the heap lock held as before, but scaling the
+scavenger is outside the scope of this document (though we certainly have ideas
+there).</p>
+<div class="section" id="huge-page-awareness">
+<h4>Huge-page Awareness<a class="headerlink" href="#huge-page-awareness" title="Permalink to this headline">¶</a></h4>
+<p>Another piece of the scavenging puzzle is how to deal with the fact that the
+current scavenging policy is huge-page aware.
+There are two dimensions to this huge-page awareness: the runtime counts the
+number of free and unscavenged huge pages for pacing purposes, and the runtime
+scavenges those huge pages first.</p>
+<p>For the first part, the scavenger currently uses an explicit ratio calculated
+whenever the GC trigger is updated to determine the rate at which it should
+scavenge, and it uses the number of free and unscavenged huge pages to determine
+this ratio.</p>
+<p>Instead, I propose that the scavenger releases memory one page at a time while
+avoiding breaking huge pages, and it times how long releasing each page takes.
+Given a 1% maximum time spent scavenging for the background scavenger, we may
+then determine the amount of time to sleep, thus effectively letting the
+scavenger set its own rate.
+In some ways this self-pacing is more accurate because we no longer have to make
+order-of-magnitude assumptions about how long it takes to scavenge.
+Also, it represents a significant simplification of the scavenger from an
+engineering perspective; there’s much less state we need to keep around in
+general.</p>
+<p>The downside to this self-pacing idea is that we must measure time spent
+sleeping and time spent scavenging, which may be funky in the face of OS-related
+context switches and other external anomalies (e.g. someone puts their laptop in
+sleep mode).
+We can deal with such anomalies by setting bounds on how high or low our
+measurements are allowed to go.
+Furthermore, I propose we manage an EWMA which we feed into the time spent
+sleeping to account for scheduling overheads and try to drive the actual time
+spent scavenging to 1% of the time the goroutine is awake (the same pace as
+before).</p>
+<p>As far as scavenging huge pages first goes, I propose we just ignore this aspect
+of the current scavenger simplicity’s sake.
+In the original scavenging proposal, the purpose of scavenging huge pages first
+was for throughput: we would get the biggest bang for our buck as soon as
+possible, so huge pages don’t get “stuck” behind small pages.
+There’s a question as to whether this actually matters in practice: conventional
+wisdom suggests a first-fit policy tends to cause large free fragments to
+congregate at higher addresses.
+By analyzing and simulating scavenging over samples of real Go heaps, I think
+this wisdom mostly holds true.</p>
+<p>The graphs below show a simulation of scavenging these heaps using both
+policies, counting how much of the free heap is scavenged at each moment in
+time.
+Ignore the simulated time; the trend is more important.</p>
+<p><img alt="Graph of scavenge throughput." src="_images/scavenge-throughput-graph.png" /></p>
+<p>With the exception of two applications, the rest all seem to have their free and
+unscavenged huge pages at higher addresses, so the simpler policy leads to a
+similar rate of releasing memory.
+The simulation is based on heap snapshots at the end of program execution, so
+it’s a little non-representative since large, long-lived objects, or clusters
+of objects, could have gotten freed just before measurement.
+This misrepresentation actually acts in our favor, however, since it suggests
+an even smaller frequency of huge pages appearing in the middle of the heap.</p>
+</div>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>The purpose of this proposal is to help the memory allocator scale.
+To reiterate: it’s current very easy to put the heap lock in a collapsing state.
+Every page-level allocation must acquire the heap lock, and with 1 KiB objects
+we’re already hitting that page on every 10th allocation.</p>
+<p>To give you an idea of what kinds of timings are involved with page-level
+allocations, I took a trace from a 12-hour load test from Kubernetes when I was
+diagnosing
+<a class="reference external" href="https://github.com/kubernetes/kubernetes/issues/75833#issuecomment-477758829">kubernetes/kubernetes#75833</a>.
+92% of all span allocations were for the first 50 size classes (i.e. up and
+including 8 KiB objects). Each of those, on average, spent 4.0µs in the critical
+section with the heap locked, minus any time spent scavenging.
+The mode of this latency was between 3 and 4µs, with the runner-up being between
+2 and 3µs.
+These numbers were taken with the load test built using Go 1.12.4 and from a
+<code class="docutils literal notranslate"><span class="pre">linux/amd64</span></code> GCE instance.
+Note that these numbers do not include the time it takes to acquire or release
+the heap lock; it is only the time in the critical section.</p>
+<p>I implemented a prototype of this proposal which lives outside of the Go
+runtime, and optimized it over the course of a few days.
+I then took heap samples from large, end-to-end benchmarks to get realistic
+heap layouts for benchmarking the prototype.</p>
+<p>The prototype benchmark then started with these heap samples and allocated out
+of them until the heap was exhausted.
+Without the P cache, allocations took only about 680 ns on average on a similar
+GCE instance to the Kubernetes case, pretty much regardless of heap size.
+This number scaled gracefully relative to allocation size as well.
+To be totally clear, this time includes finding space, marking the space and
+updating summaries.
+It does not include clearing scavenge bits.</p>
+<p>With the P cache included, that number dropped to 20 ns on average.
+The comparison with the P cache isn’t an apples-to-apples comparison since it
+should include heap lock/unlock time on the slow path (and the k8s numbers
+should too).
+However I believe this only strengthens our case: with the P cache, in theory,
+the lock will be acquired less frequently, so an apples-to-apples comparison
+would be even more favorable to the P cache.</p>
+<p>All of this doesn’t even include the cost savings when freeing memory.
+While I do not have numbers regarding the cost of freeing, I do know that the
+free case in the current implementation is a significant source of lock
+contention (<a class="reference external" href="https://github.com/golang/go/issues/28479">golang/go#28479</a>).
+Each free currently requires a treap insertion and maybe one or two removals for
+coalescing.</p>
+<p>In comparison, freeing memory in this new allocator is faster than allocation
+(without the cache): we know exactly which bits in the bitmap to clear from the
+address, and can quickly index into the arenas array to update them as well as
+their summaries.
+While updating the summaries still takes time, we can do even better by freeing
+many pages within the same arena at once, amortizing the cost of this update.
+In fact, the fast page sweeper that Austin added in Go 1.12 already iterates
+over the heap from lowest to highest address, freeing completely free spans.
+It would be straight-forward to batch free operations within the same heap arena
+to achieve this cost amortization.</p>
+<p>In sum, this new page allocator design has the potential to not only solve our
+immediate scalability problem, but also gives us more headroom for future
+optimizations compared to the current treap-based allocator, for which a number
+of various caching strategies, have been designed and/or attempted.</p>
+<div class="section" id="fragmentation-concerns">
+<h3>Fragmentation Concerns<a class="headerlink" href="#fragmentation-concerns" title="Permalink to this headline">¶</a></h3>
+<p>The biggest way fragmentation could worsen with this design is as a result of
+the P cache.
+The P cache makes it so that allocation isn’t quite exactly a serialized
+single-threaded first-fit, and P may hold onto pages which another P may need
+more.</p>
+<p>In practice, given an in-tree prototype, we’ve seen that this fragmentation
+scales with the number of P’s, and we believe this to be a reasonable trade-off:
+more processors generally require more memory to take advantage of parallelism.</p>
+</div>
+<div class="section" id="prior-art">
+<h3>Prior Art<a class="headerlink" href="#prior-art" title="Permalink to this headline">¶</a></h3>
+<p>As far as prior art is concerned, there hasn’t been much work put into bitmap
+allocators in general.
+The reason is likely because most other points in the design space for memory
+management wouldn’t really benefit from a bitmap-based page-level allocator.</p>
+<p>Consider Go against other other managed languages with a GC: Go’s GC sits in a
+fairly unique point in the design space for GCs because it is a non-moving
+collector.
+Most allocators in other managed languages (e.g. Java) tend to be bump
+allocators, since they tend to have moving and compacting GCs.</p>
+<p>When considering non-GC’d languages, e.g C/C++, there has been very little work
+in using bitmaps, except for a few niche cases such as <a class="reference external" href="https://arxiv.org/abs/1810.11765">GPU-accelerated
+allocation</a> and <a class="reference external" href="http://www.gii.upv.es/tlsf/">real-time
+applications</a>.</p>
+<p>A good point of comparison for Go’s current page allocator is TCMalloc, and in
+many ways Go’s memory allocator is based on TCMalloc.
+However, there are some key differences that arise as a result of Go’s GC.
+Notably, TCMalloc manages its per-CPU caches as arrays of pointers, rather than
+through spans directly like Go does.
+The reason for this, as far as I can tell, is because when a free occurs in
+TCMalloc, that object is immediately available for re-use, whereas with Go,
+object lifetimes are effectively rounded up to a GC cycle.
+As a result of this global, bulk (de)allocation behavior resulting in the lack
+of short-term re-use, I suspect Go tends to ask the page allocator for memory
+more often that TCMalloc does.
+This bulk (de)allocation behavior would thus help explain why page allocator
+scalability hasn’t been such a big issue for TCMalloc (again, as far as I’m
+aware).</p>
+<p>In sum, Go sits in a unique point in the memory management design space, and
+therefore warrants a unique solution.
+The bitmap allocator fits this point in the design space well: bulk allocations
+and frees can be grouped together to amortize the cost of updating the summaries
+thanks to the GC.
+Furthermore, since we don’t move objects in the heap, we retain the flexibility
+of dealing with fragments efficiently through the radix tree.</p>
+</div>
+<div class="section" id="considered-alternatives">
+<h3>Considered Alternatives<a class="headerlink" href="#considered-alternatives" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="cache-spans-in-a-p">
+<h4>Cache spans in a P<a class="headerlink" href="#cache-spans-in-a-p" title="Permalink to this headline">¶</a></h4>
+<p>One considered alternative is to keep the current span structure, and instead
+try to cache the spans themselves on a P, splitting them on each allocation
+without acquiring the heap lock.</p>
+<p>While this seems like a good idea in principle, one big limitation is that you
+can only cache contiguous regions of free memory.
+Suppose many heap fragments tend to just be one page in size: one ends up
+having to go back to the page allocator every single time anyway.
+While it is true that one might only cache one page from the heap in the
+proposed design, this case is fairly rare in practice, since it picks up any
+available memory it can find in a given 64-page aligned region.</p>
+<p>The proposed design also tends to have nicer properties: the treap structure
+scales logarithmically (probabilistically) with respect to the number of free
+heap fragments, but even this property doesn’t scale too well to very large
+heaps; one might have to chase down 20 pointers in a 20 GiB heap just for an
+allocation, not to mention the additional removals required.
+Small heaps may see allocations as fast as 100 ns, whereas large heaps may see
+page allocation latencies of 4 µs or more on the same hardware.
+On the other hand, the proposed design has a very consistent performance profile
+since the radix tree is effectively perfectly balanced.</p>
+<p>Furthermore, this idea of caching spans only helps the allocation case.
+In most cases the source of contention is not only allocation but also freeing,
+since we always have to do a treap insertion (and maybe one or two removals) on
+the free path.
+In this proposal, the free path is much more efficient in general (no complex
+operations required, just clearing memory), even though it still requires
+acquiring the heap lock.</p>
+<p>Finally, caching spans doesn’t really offer much headroom in terms of future
+optimization, whereas switching to a bitmap allocator allows us to make a
+variety of additional optimizations because the design space is mostly
+unexplored.</p>
+</div>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal changes no public APIs in either syntax or semantics, and is
+therefore Go 1 backwards compatible.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Michael Knyszek will implement this proposal.</p>
+<p>The implementation will proceed as follows:</p>
+<ol class="simple">
+<li><p>Change the scavenger to be self-paced to facilitate an easier transition.</p></li>
+<li><p>Graft the prototype (without the P cache) into the runtime.
+* The plan is to do this as a few large changes which are purely additive
+and with tests.
+* The two allocators will live side-by-side, and we’ll flip between the two
+in a single small change.</p></li>
+<li><p>Delete unnecessary code from the old allocator.</p></li>
+<li><p>Create a pool of <code class="docutils literal notranslate"><span class="pre">mspan</span></code> objects for each P.</p></li>
+<li><p>Add a page cache to each P.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="36460-lazy-module-loading.html" class="btn btn-neutral float-right" title="Proposal: Lazy Module Loading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="34481-opencoded-defers.html" class="btn btn-neutral float-left" title="Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,560 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Security Policy for Go &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Decentralized GC coordination" href="11970-decentralized-gc.html" />
+    <link rel="prev" title="design documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Security Policy for Go</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reporting-a-security-bug">Reporting a Security Bug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flagging-existing-issues-as-security-related">Flagging Existing Issues as Security-related</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disclosure-process">Disclosure Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#receiving-security-updates">Receiving Security Updates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comments-on-this-policy">Comments on This Policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plaintext-pgp-key-for-security-golang-org">Plaintext PGP Key for security&#64;golang.org</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#early-disclosure">Early Disclosure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#security-review-team-membership">Security Review Team Membership</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Security Policy for Go</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/11502-securitypolicy.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-security-policy-for-go">
+<h1>Proposal: Security Policy for Go<a class="headerlink" href="#proposal-security-policy-for-go" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Jason Buberel</p>
+<p>Last updated: 2015-07-31</p>
+<p>Discussion at https://golang.org/issue/11502.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Go programs are being deployed as part of security-critical applications.
+Although Go has a generally good history of being free of security
+vulnerabilities, the current process for handling security issues is very
+informal. In order to be more transparent and the better coordinate with the
+community, I am proposing that the Go project adopt a well-defined security
+and vulnerability disclosure policy.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The Go standard library includes a complete, modern <a class="reference external" href="https://golang.org/pkg/crypto/">cryptography
+package</a>. Since the initial release of Go,
+there has a single documented security vulnerability [CVE-2014-7189]
+(https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-7189) in the crypto
+package. This is a promising track record, but as Go usage increases the
+language and standard library will come under increasing scrutiny by the
+security research community.</p>
+<p>In order to better manage security issues, a formal security policy for Go
+should be established.</p>
+<p>Other language and library open source projects have established security
+policies. The following policies were reviewed and considered in the creation
+of this proposal:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.python.org/news/security/">Python Security Policy</a></p></li>
+<li><p><a class="reference external" href="http://rubyonrails.org/security/">Ruby on Rails Security Policy</a></p></li>
+<li><p><a class="reference external" href="https://www.rust-lang.org/security.html">Rust Security Policy</a></p></li>
+<li><p><a class="reference external" href="https://www.webkit.org/security/">Webkit Security Policy</a></p></li>
+<li><p><a class="reference external" href="https://www.xenproject.org/security-policy.html">Xen Project Security Policy</a></p></li>
+</ul>
+<p>These policies differ in various aspects, but in general there is a common set
+of guidelines that are typically established:</p>
+<ul class="simple">
+<li><p>How security issues should be reported</p></li>
+<li><p>Who will be responsible for reviewing these reports</p></li>
+<li><p>What is the response time promises made for initial review</p></li>
+<li><p>Exactly what steps will be followed for handing issues</p></li>
+<li><p>What type of embargo period will be applied</p></li>
+<li><p>How will communication of issues be handled, both pre- and post-disclosure</p></li>
+</ul>
+<p>It was also suggested that the Go project consider the use of managed security
+services, such as <a class="reference external" href="https://hackerone.com/">HackerOne</a>. The consensus of
+commenters on this topic was a reluctance to base the Go process on a third-
+party system at this time.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>Among the existing security policies reviewed, the <a class="reference external" href="https://www.rust-lang.org/security.html">Rust
+policy</a> is considered a good starting
+point. Once adopted, this policy will be hosted at
+<a class="reference external" href="https://golang.org/security">https://golang.org/security</a>. The details of the
+policy are in the Implementation section below.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="reporting-a-security-bug">
+<h3>Reporting a Security Bug<a class="headerlink" href="#reporting-a-security-bug" title="Permalink to this headline">¶</a></h3>
+<p>Safety is one of the core principles of Go, and to that end, we would like to
+ensure that Go has a secure implementation. Thank you for taking the time to
+responsibly disclose any issues you find.</p>
+<p>All security bugs in the Go distribution should be reported by email to
+<a class="reference external" href="mailto:security&#37;&#52;&#48;golang&#46;org">security<span>&#64;</span>golang<span>&#46;</span>org</a>. This list is delivered to a
+small security team. Your email will be acknowledged within 24 hours, and
+you’ll receive a more detailed response to your email within 72 hours
+indicating the next steps in handling your report. If you would like, you can
+encrypt your report using our PGP key (listed below).</p>
+<p>Please use a descriptive subject line for your report email. After the initial
+reply to your report, the security team will endeavor to keep you informed of
+the progress being made towards a fix and full announcement. As recommended by
+RFPolicy, these updates will be sent at least every five days. In reality,
+this is more likely to be every 24-48 hours.</p>
+<p>If you have not received a reply to your email within 48 hours, or have not
+heard from the security team for the past five days, please contact the
+following members of the Go security team directly:</p>
+<ul class="simple">
+<li><p>Contact the primary security coordinator - [Andrew Gerrand]
+(mailto:adg&#64;golang.org) - directly.</p></li>
+<li><p>Contact the secondary coordinator - <a class="reference external" href="mailto:agl&#37;&#52;&#48;google&#46;com">Adam Langley</a> -
+<a class="reference external" href="https://www.imperialviolet.org/key.asc">public key</a> directly.</p></li>
+<li><p>Post a message to <a class="reference external" href="mailto:golang-dev&#37;&#52;&#48;golang&#46;org">golang-dev<span>&#64;</span>golang<span>&#46;</span>org</a> or
+[golang-dev web interface]
+(https://groups.google.com/forum/#!forum/golang-dev).</p></li>
+</ul>
+<p>Please note that golang-dev&#64;golang.org is a public discussion forum. When
+escalating on this list, please do not disclose the details of the issue.
+Simply state that you’re trying to reach a member of the security team.</p>
+</div>
+<div class="section" id="flagging-existing-issues-as-security-related">
+<h3>Flagging Existing Issues as Security-related<a class="headerlink" href="#flagging-existing-issues-as-security-related" title="Permalink to this headline">¶</a></h3>
+<p>If you believe that an <a class="reference external" href="https://github.com/golang/go/issues">existing issue</a>
+is security-related, we ask that you send an email to
+<a class="reference external" href="mailto:security&#37;&#52;&#48;golang&#46;org">security<span>&#64;</span>golang<span>&#46;</span>org</a>. The email
+should include the issue ID and a short description of why it should be
+handled according to this security policy.</p>
+</div>
+<div class="section" id="disclosure-process">
+<h3>Disclosure Process<a class="headerlink" href="#disclosure-process" title="Permalink to this headline">¶</a></h3>
+<p>The Go project will use the following disclosure process:</p>
+<ol class="simple">
+<li><p>Once the security report is received it will be assigned a primary handler.
+This person will coordinate the fix and release process.</p></li>
+<li><p>The problem will be confirmed and a list of all affected versions is
+determined.</p></li>
+<li><p>Code will be audited to find any potential similar problems.</p></li>
+<li><p>If it is determined, in consultation with the submitter, that a CVE-ID is
+required the primary handler will be responsible for obtaining via email
+to the [oss-distros]
+(http://oss-security.openwall.org/wiki/mailing-lists/distros) list.</p></li>
+<li><p>Fixes will be prepared for the current stable release and the head/master
+revision. These fixes will not be committed to the public repository.</p></li>
+<li><p>Details of the issue and patch files will be sent to the
+[distros&#64;openwall]
+(http://oss-security.openwall.org/wiki/mailing-lists/distros)
+mailing list.</p></li>
+<li><p>Three working days following this notification, the fixes will be
+applied to the <a class="reference external" href="https://go.googlesource.com/go">public repository</a> and new
+builds deployed to <a class="reference external" href="https://golang.org/dl">https://golang.org/dl</a></p></li>
+<li><p>On the date that the fixes are applied, announcements will be sent to
+[golang-announce]
+(https://groups.google.com/forum/#!forum/golang-announce),
+<a class="reference external" href="https://groups.google.com/forum/#%21forum/golang-dev">golang-dev&#64;golang.org</a>,
+<a class="reference external" href="https://groups.google.com/forum/#%21forum/golang-nuts">golang-nuts&#64;golang.org</a>
+and the <a class="reference external" href="http://www.openwall.com/lists/oss-security/">oss-security&#64;openwall</a>.</p></li>
+<li><p>Within 6 hours of the mailing lists being notified, a copy of the advisory
+will also be published on the <a class="reference external" href="https://blog.golang.org">Go blog</a>.</p></li>
+</ol>
+<p>This process can take some time, especially when coordination is required with
+maintainers of other projects. Every effort will be made to handle the bug in
+as timely a manner as possible, however it’s important that we follow the
+release process above to ensure that the disclosure is handled in a consistent
+manner.</p>
+<p>For those security issues that include the assignment of a CVE-ID, the issue
+will be publicly listed under the [“Golang” product on the CVEDetails
+website]
+(http://www.cvedetails.com/vulnerability-list/vendor_id-14185/Golang.html)
+as well as the [National Vulnerability Disclosure site]
+(https://web.nvd.nist.gov/view/vuln/search).</p>
+</div>
+<div class="section" id="receiving-security-updates">
+<h3>Receiving Security Updates<a class="headerlink" href="#receiving-security-updates" title="Permalink to this headline">¶</a></h3>
+<p>The best way to receive security announcements is to subscribe to the
+[golang-announce]
+(https://groups.google.com/forum/#!forum/golang-announce)
+mailing list. Any messages pertaining to a security issue will be prefixed
+with <code class="docutils literal notranslate"><span class="pre">[security]</span></code>.</p>
+</div>
+<div class="section" id="comments-on-this-policy">
+<h3>Comments on This Policy<a class="headerlink" href="#comments-on-this-policy" title="Permalink to this headline">¶</a></h3>
+<p>If you have any suggestions to improve this policy, please send an email to
+<a class="reference external" href="mailto:golang-dev&#37;&#52;&#48;golang&#46;org">golang-dev<span>&#64;</span>golang<span>&#46;</span>org</a> for discussion.</p>
+</div>
+<div class="section" id="plaintext-pgp-key-for-security-golang-org">
+<h3>Plaintext PGP Key for <a class="reference external" href="mailto:security&#37;&#52;&#48;golang&#46;org">security<span>&#64;</span>golang<span>&#46;</span>org</a><a class="headerlink" href="#plaintext-pgp-key-for-security-golang-org" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-----</span><span class="n">BEGIN</span> <span class="n">PGP</span> <span class="n">PUBLIC</span> <span class="n">KEY</span> <span class="n">BLOCK</span><span class="o">-----</span>
+<span class="n">Comment</span><span class="p">:</span> <span class="n">GPGTools</span> <span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gpgtools</span><span class="o">.</span><span class="n">org</span>
+
+<span class="n">mQINBFXI1h0BEADZdm05GDFWvjmQKutUVb0cJKS</span><span class="o">+</span><span class="n">VR</span><span class="o">+</span><span class="mi">6</span><span class="n">XU3g</span><span class="o">/</span><span class="n">YQZGC8tnIL6i7te</span>
+<span class="o">+</span><span class="n">fPJHfQc2uIw0xeBgZX4Ni</span><span class="o">/</span><span class="n">S8yIqsbIjqYeaToX7QFUufJDQwrmlQRDVAvvT5HBT</span>
+<span class="n">J80JEs7yHRreFoLzB6dnWehWXzWle4gFKeIy</span><span class="o">+</span><span class="n">hvLrYquZVvbeEYTnX7fNzZg0</span><span class="o">+</span><span class="mi">5</span><span class="n">L</span>
+<span class="n">ksvj7lnQlJIy1l3sL</span><span class="o">/</span><span class="mi">7</span><span class="n">uPr9qsm45</span><span class="o">/</span><span class="n">hzd0WjTQS85Ry6Na3tMwRpqGENDh25Blz75</span>
+<span class="mi">8</span><span class="n">JgK9JmtTJa00my1zzeCXU04CKKEMRbkMLozzudOH4ZLiLWcFiKRpeCn860wC8l3</span>
+<span class="n">oJcyyObuTSbr9o05ra3On</span><span class="o">+</span><span class="n">epjCEFkknGX1WxPv</span><span class="o">+</span><span class="n">TV34i0a23AtuVyTCloKb7RYXc</span>
+<span class="mi">7</span><span class="n">mUaskZpU2rFBqIkzZ4MQJ7RDtGlm5oBy36j2QL63jAZ1cKoT</span><span class="o">/</span><span class="n">yvjJNp2ObmWaVF</span>
+<span class="n">X3tk</span><span class="o">/</span><span class="n">nYw2H0YDjTkTCgGtyAOj3Cfqrtsa5L0jG5K2p4RY8mtVgQ5EOh7QxuS</span><span class="o">+</span><span class="n">rmN</span>
+<span class="n">JiA39SWh7O6uFCwkz</span><span class="o">/</span><span class="n">OCXzqeh6</span><span class="o">/</span><span class="n">nP10HAb9S9IC34QQxm7Fhd0ZXzEv9IlBTIRzk</span>
+<span class="n">xddSdACPnLE1gJcFHxBd2LTqS</span><span class="o">/</span><span class="n">lmAFShCsf8S252kagKJfHRebQJZHCIs6kT9PfE</span>
+<span class="mi">0</span><span class="n">muq6KRKeDXv01afAUvoB4QW</span><span class="o">/</span><span class="mi">3</span><span class="n">chUrtgL2HryyO8ugMu7leVGmoZhFkIrQARAQAB</span>
+<span class="n">tCZHbyBTZWN1cml0eSBUZWFtIDxzZWN1cml0eUBnb2xhbmcub3JnPokCPQQTAQoA</span>
+<span class="n">JwUCVcjWHQIbAwUJB4YfgAULCQgHAwUVCgkICwUWAgMBAAIeAQIXgAAKCRA6RtGR</span>
+<span class="n">eVpYOLnDD</span><span class="o">/</span><span class="mi">9</span><span class="n">YVTd6DTwdJq6irVfM</span><span class="o">/</span><span class="n">ICPlPTXB0JLERqCI1Veptcp56eQoJ0XWGQp</span>
+<span class="n">tkGlgbvmCzFo0B</span><span class="o">+</span><span class="mi">65</span><span class="n">Te7YA4R3oyBCXd6JgyWQQPy5p60FHyuuCPVAReclSWyt9f2</span>
+<span class="n">Yj</span><span class="o">/</span><span class="n">u4DjghKhELOvPiI96egcU3g9jrEEcPjm7JYkc9M2gVSNOnnJvcD7wpQJNCzon</span>
+<span class="mi">51</span><span class="n">eMZ1ZyfA5UCBTa0SaT9eXg5zwNlYQnB6ZF6TjXezkhLqlTsBuHxoNVf</span><span class="o">+</span><span class="mi">9</span><span class="n">vCC0o</span>
+<span class="n">ZKIM2ovptMx9eEguTDKWaQ7tero7Zs</span><span class="o">/</span><span class="n">q5fwk</span><span class="o">/</span><span class="n">MDzM</span><span class="o">/</span><span class="n">LGJ9aXy2RCtqBxv46vDS7G</span>
+<span class="n">fCNq</span><span class="o">+</span><span class="n">aPD</span><span class="o">/</span><span class="n">wyFd6hxQkvkua6hgZwYT</span><span class="o">+</span><span class="n">cJWHYA2Yv0LO3BYOJdjfc</span><span class="o">+</span><span class="n">j2hjv</span><span class="o">+</span><span class="n">mC9lF0</span>
+<span class="n">UpWhCVJv3hHoFaxnz62GdROzf2wXz6aR9Saj1rYSvqT9jC20VInxqMufXNN2sbpo</span>
+<span class="n">Kyk6MTbAeepphQpfAWQv</span><span class="o">+</span><span class="n">ltWgBiEjuFxYdwv</span><span class="o">/</span><span class="n">vmw20996JV7O8nqkeCUW84B6su</span><span class="o">+</span>
+<span class="n">Y3bbdP9o3DBtOT0j9LTB</span><span class="o">/</span><span class="n">FucmdNCNHoO</span><span class="o">+</span><span class="n">EnNBKJd6FoYTGLWi3Rq9DLx2V9tdJHo</span>
+<span class="n">Bn67dymcl</span><span class="o">+</span><span class="n">iyp337HJNY</span><span class="o">+</span><span class="n">qS</span><span class="o">+</span><span class="n">KCgoqAWlxkzXRiXKb</span><span class="o">/</span><span class="n">yluhXdIkqhg4kL8JPAJvfS</span>
+<span class="n">cs7Zn67Mx04ixJnRMYCDmxtD4xPsFMzM7g8m3PQp</span><span class="o">+</span><span class="n">nE7WhujM</span><span class="o">/</span><span class="n">ImM7kCDQRVyNYd</span>
+<span class="n">ARAAlw9H</span><span class="o">/</span><span class="mi">1</span><span class="n">ybQs4K3XKA1joII16rta9KS7ew76</span><span class="o">+</span><span class="n">agXo0jeSRwMEQfItOxYvfhmo8</span>
+<span class="o">+</span><span class="n">ydn5TWsTbifGU8L3</span><span class="o">+</span><span class="n">EBTMRRyzWhbaGO0Wizw7BTVJ7n5JW</span><span class="o">+</span><span class="n">ndPrcUpp</span><span class="o">/</span><span class="n">ilUk6AU</span>
+<span class="n">VxaO</span><span class="o">/</span><span class="mi">8</span><span class="o">/</span><span class="n">R</span><span class="o">+</span><span class="mi">9</span><span class="o">+</span><span class="n">VJZpoeoLHXYloFGNuX58GLIy1jSBvLsLl</span><span class="o">/</span><span class="n">Ki5IOrHvD1GK6TftOl5</span>
+<span class="n">j8IPC1LSBrwGJO803x7wUdQP</span><span class="o">/</span><span class="n">tsKN</span><span class="o">/</span><span class="n">QPR8pnBntrEgrQFSI</span><span class="o">+</span><span class="n">Q3qrCvVMmXnBlYum</span>
+<span class="n">jfOBt8pKMgB9</span><span class="o">/</span><span class="n">ix</span><span class="o">+</span><span class="n">HWN8piQNQiJxD</span><span class="o">+</span><span class="n">XjEM6XwUmQqIR7y5GINKWgundCmtYIzVgY</span>
+<span class="mi">9</span><span class="n">p2Br6UPrTJi12LfKv5s2R6NnxFHv</span><span class="o">/</span><span class="n">ad29CpPTeLJRsSqFfqBL969BCpj</span><span class="o">/</span><span class="n">isXmQE</span>
+<span class="n">m4FtziZidARXo12KiGAnPF9otirNHp4</span><span class="o">+</span><span class="mi">8</span><span class="n">hwNB3scf7cI53y8nZivO9cwI7BoClY6</span>
+<span class="n">ZIabjDcJxjK</span><span class="o">+</span><span class="mi">24</span><span class="n">emoz3mJ5SHpZpQLSb9o8GbLLfXOq</span><span class="o">+</span><span class="mi">4</span><span class="n">uzEX2A30fhrtsQb</span><span class="o">/</span><span class="n">x0GM</span>
+<span class="mi">4</span><span class="n">v3EU1aP2mjuksyYbgldtY64tD35wqAA9mVl5Ux</span><span class="o">+</span><span class="n">g1HoUBvLw0h</span><span class="o">+</span><span class="n">lzwh370NJw</span><span class="o">//</span>
+<span class="n">ITvBQVUtDMB96rfIP4fL5pYl5pmRz</span><span class="o">+</span><span class="n">vsuJ0iXzm05qBgKfSqO7To9SWxQPdX89R4</span>
+<span class="n">u0</span><span class="o">/</span><span class="n">XVAlw0Ak9Zceq3W96vseEUTR3aoZCMIPiwfcDaq60rWUAEQEAAYkCJQQYAQoA</span>
+<span class="n">DwUCVcjWHQIbDAUJB4YfgAAKCRA6RtGReVpYOEg</span><span class="o">/</span><span class="n">EADZcIYw4q1jAbDkDy3LQG07</span>
+<span class="n">AR8QmLp</span><span class="o">/</span><span class="n">RDp72RKbCSIYyvyXEnmrhUg98lUG676qTH</span><span class="o">+</span><span class="n">Y7dlEX107dLhFuKEYyV8D</span>
+<span class="n">ZalrFQO</span><span class="o">/</span><span class="mi">3</span><span class="n">WpLWdIAmWrj</span><span class="o">/</span><span class="n">wq14qii1rgmy96Nh3EqG3CS50HEMGkW1llRx2rgBvGl</span>
+<span class="n">pgoTcwOfT</span><span class="o">+</span><span class="n">h8s0HlZdIS</span><span class="o">/</span><span class="n">cv2wXqwPgMWr1PIk3as1fu1OH8n</span><span class="o">/</span><span class="n">BjeGQQnNJEaoBV7</span>
+<span class="n">El2C</span><span class="o">/</span><span class="n">hz3oqf2uYQ1QvpU23F1NrstekxukO8o2Y</span><span class="o">/</span><span class="n">fqsgMJqAiNJApUCl</span><span class="o">/</span><span class="n">dNhK</span><span class="o">+</span><span class="n">W57</span>
+<span class="n">iicjvPirUQk8MUVEHXKhWIzYxon6aEUTx</span><span class="o">+</span><span class="n">xyNMBpRJIZlJ61FxtnZhoPiAFtXVPb</span>
+<span class="o">+</span><span class="mi">95</span><span class="n">BRJA9npidlVFjqz9QDK</span><span class="o">/</span><span class="mi">4</span><span class="n">NSnJ3KaERR9tTDcvq4zqT22Z1Ai5gWQKqogTz5Mk</span>
+<span class="n">F</span><span class="o">+</span><span class="n">nZwVizW0yi33id9qDpAuApp8o6AiyH5Ql1Bo23bvqS2lMrXPIS</span><span class="o">/</span><span class="n">QmPPsA76CBs</span>
+<span class="n">lYjQwwz8abUD1pPdzyYtMKZUMwhicSFOHFDM4oQN16k2KJuntuih8BKVDCzIOq</span><span class="o">+</span><span class="n">E</span>
+<span class="n">KHyeh1BqWplUtFh1ckxZlXW9p9F7TsWjtfcKaY8hkX0Cr4uVjwAFIjLcAxk67ROe</span>
+<span class="n">huEb3Gt</span><span class="o">+</span><span class="n">lwJz6aNnZUU87ukMAxRVR2LL0btdxgc6z8spl66GXro</span><span class="o">/</span><span class="n">LUkXmAdyOEMV</span>
+<span class="n">UDrmjf9pr7o00hC7lCHFzw</span><span class="o">==</span>
+<span class="o">=</span><span class="n">WE0r</span>
+<span class="o">-----</span><span class="n">END</span> <span class="n">PGP</span> <span class="n">PUBLIC</span> <span class="n">KEY</span> <span class="n">BLOCK</span><span class="o">-----</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="early-disclosure">
+<h3>Early Disclosure<a class="headerlink" href="#early-disclosure" title="Permalink to this headline">¶</a></h3>
+<p>The Go security policy does not contain a provision for the early disclosure
+of vulnerabilities to a small set of “trusted” partners. The Xen and WebKit
+policies do contain provisions for this. According to several members of the
+security response team at Google (Ben Laurie, Adam Langley), it is incredibly
+difficult to retain secrecy of embargoed issues once they have been shared
+with even a small number of partners.</p>
+</div>
+<div class="section" id="security-review-team-membership">
+<h3>Security Review Team Membership<a class="headerlink" href="#security-review-team-membership" title="Permalink to this headline">¶</a></h3>
+<p>The Go security policy does not contain formal provisions for nomination or
+removal of members of the security review team. WebKit, for example, specifies
+how new members can become members of the security review team. This may be
+needed for the Go project at some point in the future; it does not seem
+necessary at this time.</p>
+</div>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>PGP key pair needed for security&#64;golang.org address.</p></li>
+<li><p>Need to designate a primary and secondary alternative contact.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="11970-decentralized-gc.html" class="btn btn-neutral float-right" title="Proposal: Decentralized GC coordination" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="design documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

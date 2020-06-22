@@ -1,0 +1,749 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Mid-stack inlining in the Go compiler &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: XML Stream" href="19480-xml-stream.html" />
+    <link rel="prev" title="Proposal: Go 2 Number Literal Changes" href="19308-number-literals.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#changes-to-the-compiler">Changes to the compiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changes-to-the-object-writer">Changes to the object writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changes-to-the-linker">Changes to the linker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changes-to-the-runtime">Changes to the runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changes-to-the-runtime-public-api">Changes to the runtime public API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Mid-stack inlining in the Go compiler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/19348-midstack-inlining.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-mid-stack-inlining-in-the-go-compiler">
+<h1>Proposal: Mid-stack inlining in the Go compiler<a class="headerlink" href="#proposal-mid-stack-inlining-in-the-go-compiler" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): David Lazar, Austin Clements</p>
+<p>Last updated: 2017-03-10</p>
+<p>Discussion at: https://golang.org/issue/19348</p>
+<p>See also: https://golang.org/s/go19inliningtalk</p>
+</div>
+<div class="section" id="abstract">
+<h1>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h1>
+<p>As of Go 1.8, the compiler does not inline mid-stack functions (functions
+that call other non-inlineable functions) by default.
+This is because the runtime does not have sufficient information to generate
+accurate tracebacks for inlined code.</p>
+<p>We propose fixing this limitation of tracebacks and enabling mid-stack
+inlining by default.
+To do this, we will add a new PC-value table to functions with inlined
+calls that the runtime can use to generate accurate tracebacks, generate
+DWARF inlining information for debuggers, modify runtime.Callers and
+related functions to operate in terms of “logical” stack frames, and
+modify tools that work with stack traces such as pprof and trace.</p>
+<p>Preliminary results show that mid-stack inlining can improve performance by 9%
+(Go1 benchmarks on both amd64 and ppc64) with a 15% increase in binary size.
+Follow-on work will focus on improving the inlining heuristics to hopefully
+achieve this performance with less increase in binary size.</p>
+</div>
+<div class="section" id="background">
+<h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
+<p>Inlining is a fundamental compiler optimization that replaces a function
+call with the body of the called function.
+This eliminates call overhead but more importantly enables other compiler
+optimizations, such as constant folding, common subexpression elimination,
+loop-invariant code motion, and better register allocation.
+As of Go 1.8, inlining happens at the AST level.
+To illustrate how the Go 1.8 compiler does inlining, consider the code in
+the left column of the table below.
+Using heuristics, the compiler decides that the call to PutUint32 in app.go
+can be inlined. It replaces the call with a copy of the AST nodes that make
+up the body of PutUint32, creating new AST nodes for the arguments.
+The resulting code is shown in the right column.</p>
+<table>
+<tr><th>Before inlining</th><th>After inlining</th></tr>
+<tr><td>
+<pre>
+binary.go:20 func PutUint32(b []byte, v uint32) {
+binary.go:21     b[0] = byte(v >> 24)
+binary.go:22     b[1] = byte(v >> 16)
+binary.go:23     b[2] = byte(v >> 8)
+binary.go:24     b[3] = byte(v)
+binary.go:25 }<p>app.go:5 func main() {
+app.go:6     // …
+app.go:7     PutUint32(data, input)
+app.go:8     // …
+app.go:9 }
+</pre></p>
+</td><td>
+<pre>
+app.go:5 func main() {
+app.go:6     // ...
+app.go:7     var b []byte, v uint32
+app.go:7     b, v = data, input
+app.go:7     b[0] = byte(v >> 24)
+app.go:7     b[1] = byte(v >> 16)
+app.go:7     b[2] = byte(v >> 8)
+app.go:7     b[3] = byte(v)
+app.go:8     // ...
+app.go:9 }
+</pre>
+</td></tr>
+</table><p>Notice that the compiler replaces the source positions of the inlined AST
+nodes with the source position of the call.
+If the inlined code panics (due to an index out of range error), the
+resulting stack trace is missing a stack frame for PutUint32 and the user
+doesn’t get an accurate line number for what caused the panic:</p>
+<pre>
+panic: runtime error: index out of range
+
+main.main()
+	/home/gopher/app.go:7 +0x114
+</pre><p>Thus, even without aggressive inlining, the user might see inaccurate
+tracebacks due to inlining.</p>
+<p>To mitigate this problem somewhat, the Go 1.8 compiler does not inline
+functions that contain calls.
+This reduces the likelihood that the user will see an inaccurate traceback,
+but it has a negative impact on performance.
+Suppose in the example below that <code class="docutils literal notranslate"><span class="pre">intrinsicLog</span></code> is a large function that
+won’t be inlined.
+By default, the compiler will not inline the calls to <code class="docutils literal notranslate"><span class="pre">Log</span></code> or <code class="docutils literal notranslate"><span class="pre">LogBase</span></code>
+since these functions make calls to non-inlineable functions.
+However, we can force the compiler to inline these call to using the
+compiler flag <code class="docutils literal notranslate"><span class="pre">-l=4</span></code>.</p>
+<table>
+<tr><th>Before inlining</th><th>After inlining (-l=4)</th></tr>
+<tr><td>
+<pre>
+math.go:41 func Log(x float64) float64 {
+math.go:42     if x <= 0 {
+math.go:43         panic("log x <= 0")
+math.go:44     }
+math.go:45     return intrinsicLog(x)
+math.go:46 }<p>math.go:93 func LogBase(x float64, base float64) float64 {
+math.go:94     n := Log(x)
+math.go:95     d := Log(base)
+math.go:96     return n / d
+math.go:97 }</p>
+<p>app.go:5 func main() {
+app.go:6     // …
+app.go:7     val := LogBase(input1, input2)
+app.go:8     // …
+app.go:9 }
+</pre></p>
+</td><td>
+<pre>
+app.go:5 func main() {
+app.go:6     // ...
+app.go:7     x, base := input1, input2
+app.go:7     x1 := x
+app.go:7     if x1 <= 0 {
+app.go:7         panic("log x <= 0")
+app.go:7     }
+app.go:7     r1 := intrinsicLog(x1)
+app.go:7     x2 := base
+app.go:7     if x2 <= 0 {
+app.go:7         panic("log x <= 0")
+app.go:7     }
+app.go:7     r2 := intrinsicLog(x2)
+app.go:7     n := r1
+app.go:7     d := r2
+app.go:7     r3 := n / d
+app.go:7     val := r3
+app.go:8     // ...
+app.go:9 }
+</pre>
+</td></tr>
+</table><p>Below we have the corresponding stack traces for these two versions of code,
+caused by a call to <code class="docutils literal notranslate"><span class="pre">Log(0)</span></code>.
+With mid-stack inlining, there is no stack frame or line number information
+available for <code class="docutils literal notranslate"><span class="pre">LogBase</span></code>, so the user is unable to determine which input was 0.</p>
+<table>
+<tr><th>Stack trace before inlining</th><th>Stack trace after inlining (-l=4)</th></tr>
+<tr><td>
+<pre>
+panic(0x497140, 0xc42000e340)
+	/usr/lib/go/src/runtime/panic.go:500 +0x1a1
+main.Log(0x0, 0x400de6bf542e3d2d)
+	/home/gopher/math.go:43 +0xa0
+main.LogBase(0x4045000000000000, 0x0, 0x0)
+	/home/gopher/math.go:95 +0x49
+main.main()
+	/home/gopher/app.go:7 +0x4c
+</pre>
+</td><td>
+<pre>
+panic(0x497140, 0xc42000e340)
+	/usr/lib/go/src/runtime/panic.go:500 +0x1a1
+main.main()
+	/home/gopher/app.go:7 +0x161
+</pre>
+</td></tr>
+</table><p>The goal of this proposed change is to produce complete tracebacks in the
+presence of inlining and to enable the compiler to inline non-leaf functions
+like <code class="docutils literal notranslate"><span class="pre">Log</span></code> and <code class="docutils literal notranslate"><span class="pre">LogBase</span></code> without sacrificing debuggability.</p>
+</div>
+<div class="section" id="proposal">
+<h1>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="changes-to-the-compiler">
+<h2>Changes to the compiler<a class="headerlink" href="#changes-to-the-compiler" title="Permalink to this headline">¶</a></h2>
+<p>Our approach is to modify the compiler to retain the original source
+position information of inlined AST nodes and to store information about
+the call site in a separate data structure.
+Here is what the inlined example from above would look like instead:</p>
+<pre>
+app.go:5   func main() {
+app.go:6       // ...
+app.go:7       x, base := input1, input2 ┓ LogBase
+math.go:94     x1 := x                   ┃ app.go:7 ┓ Log
+math.go:42     if x1 <= 0 {              ┃          ┃ math.go:94
+math.go:43         panic("log x <= 0")   ┃          ┃
+math.go:44     }                         ┃          ┃
+math.go:45     r1 := intrinsicLog(x1)    ┃          ┛
+math.go:95     x2 := base                ┃          ┓ Log
+math.go:42     if x2 <= 0 {              ┃          ┃ math.go:95
+math.go:43         panic("log x <= 0")   ┃          ┃
+math.go:44     }                         ┃          ┃
+math.go:45     r2 := intrinsicLog(x2)    ┃          ┛
+math.go:94     n := r1                   ┃
+math.go:95     d := r2                   ┃
+math.go:96     r3 := n / d               ┛
+app.go:7       val := r3
+app.go:8       // ...
+app.go:9   }
+</pre><p>Information about inlined calls is stored in a compiler-global data
+structure called the <em>global inlining tree</em>.
+Every time a call is inlined, the compiler adds a new node to the global
+inlining tree that contains information about the call site (line number,
+file name, and function name).
+If the parent function of the inlined call is also inlined, the node for
+the inner inlined call points to the node for the parent’s inlined call.
+For example, here is the inlining tree for the code above:</p>
+<pre>
+┌──────────┐
+│ LogBase  │
+│ app.go:7 │
+└──────────┘
+   ↑    ↑   ┌────────────┐
+   │    └───┤ Log        │
+   │        │ math.go:94 │
+   │        └────────────┘
+   │        ┌────────────┐
+   └────────┤ Log        │
+            │ math.go:95 │
+            └────────────┘
+</pre><p>The inlining tree is encoded as a table with one row per node in the tree.
+The parent column is the row index of the node’s parent in the table, or -1
+if the node has no parent:</p>
+<p>| Parent | File           | Line | Function Name     |
+| —— | ————– | —- | —————– |
+| -1     | app.go         | 7    | LogBase           |
+| 0      | math.go        | 94   | Log               |
+| 0      | math.go        | 95   | Log               |</p>
+<p>Every AST node is associated to a row index in the global inlining
+tree/table (or -1 if the node is not the result of inlining).
+We maintain this association by extending the <code class="docutils literal notranslate"><span class="pre">src.PosBase</span></code> type with a new
+field called the <em>inlining index</em>.
+Here is what our AST looks like now:</p>
+<pre>
+app.go:5   func main() {
+app.go:6       // ...
+app.go:7       x, base := input1, input2 ┃ 0
+math.go:94     x1 := x                   ┓
+math.go:42     if x1 <= 0 {              ┃
+math.go:43         panic("log x <= 0")   ┃ 1
+math.go:44     }                         ┃
+math.go:45     r1 := intrinsicLog(x1)    ┛
+math.go:95     x2 := base                ┓
+math.go:42     if x2 <= 0 {              ┃
+math.go:43         panic("log x <= 0")   ┃ 2
+math.go:44     }                         ┃
+math.go:45     r2 := intrinsicLog(x2)    ┛
+math.go:94     n := r1                   ┓
+math.go:95     d := r2                   ┃ 0
+math.go:96     r3 := n / d               ┛
+app.go:7       val := r3
+app.go:8       // ...
+app.go:9   }
+</pre><p>As the AST nodes are lowered, their <code class="docutils literal notranslate"><span class="pre">src.PosBase</span></code> values are copied to
+the resulting <code class="docutils literal notranslate"><span class="pre">Prog</span></code> pseudo-instructions.
+The object writer reads the global inlining tree and the inlining index of
+each <code class="docutils literal notranslate"><span class="pre">Prog</span></code> and writes this information compactly to object files.</p>
+</div>
+<div class="section" id="changes-to-the-object-writer">
+<h2>Changes to the object writer<a class="headerlink" href="#changes-to-the-object-writer" title="Permalink to this headline">¶</a></h2>
+<p>The object writer creates two new tables per function.
+The first table is the <em>local inlining tree</em> which contains all the
+branches from the global inlining tree that are referenced by the Progs
+in that function.
+The second table is a PC-value table called the <em>pcinline table</em> that maps
+each PC to a row index in the local inlining tree, or -1 if the PC does not
+correspond to a function that has been inlined.</p>
+<p>The local inlining tree and pcinline table are written to object files as
+part of each function’s pcln table.
+The file names and function names in the local inlining tree are represented
+using symbol references which are resolved to name offsets by the linker.</p>
+</div>
+<div class="section" id="changes-to-the-linker">
+<h2>Changes to the linker<a class="headerlink" href="#changes-to-the-linker" title="Permalink to this headline">¶</a></h2>
+<p>The linker reads the new tables produced by the object writer and writes
+the tables to the final binary.
+We reserve <code class="docutils literal notranslate"><span class="pre">pcdata[1]</span></code> for the pcinline table and <code class="docutils literal notranslate"><span class="pre">funcdata[2]</span></code> for the
+local inlining tree.
+The linker writes the pcinline table to <code class="docutils literal notranslate"><span class="pre">pcdata[1]</span></code> unmodified.</p>
+<p>The local inlining tree is encoded using 16 bytes per row (4 bytes per column).
+The parent and line numbers are encoded directly as int32 values.
+The file name and function names are encoded as int32 offsets into existing
+global string tables.
+This table must be written by the linker rather than the compiler because the
+linker deduplicates these names and resolves them to global name offsets.</p>
+<p>If necessary, we can encode the inlining tree more compactly using a varint
+for each column value.
+In the compact encoding, the parent column and the values in the pcinline
+table would be byte offsets into the local inlining tree instead of row
+indices.
+In this case, the linker would have to regenerate the pcinline table.</p>
+</div>
+<div class="section" id="changes-to-the-runtime">
+<h2>Changes to the runtime<a class="headerlink" href="#changes-to-the-runtime" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">runtime.gentraceback</span></code> function generates tracebacks and is modified
+to produce logical stack frames for inlined functions.
+The <code class="docutils literal notranslate"><span class="pre">gentraceback</span></code> function has two modes that are affected by inlining:
+printing mode, used to print a stack trace when the runtime panics, and
+pcbuf mode, which returns a buffer of PC values used by <code class="docutils literal notranslate"><span class="pre">runtime.Callers</span></code>.
+In both modes, <code class="docutils literal notranslate"><span class="pre">gentraceback</span></code> checks if the current PC is mapped to a node
+in the function’s inlining tree by decoding the pcinline table for the
+current function until it finds the value at the current PC.
+If the value is -1, this instruction is not a result of inlining, so the
+traceback proceeds normally.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">gentraceback</span></code> decodes the inlining tree and follows the path
+up the tree to create the traceback.</p>
+<p>Suppose that <code class="docutils literal notranslate"><span class="pre">pcPos</span></code> is the position information for the current PC
+(obtained from the pcline and pcfile tables), <code class="docutils literal notranslate"><span class="pre">pcFunc</span></code> is the function
+name for the current PC, and <code class="docutils literal notranslate"><span class="pre">st[0]</span> <span class="pre">-&gt;</span> <span class="pre">st[1]</span> <span class="pre">-&gt;</span> <span class="pre">...</span> <span class="pre">-&gt;</span> <span class="pre">st[k]</span></code> is the
+path up the inlining tree for the current PC.
+To print an accurate stack trace, <code class="docutils literal notranslate"><span class="pre">gentraceback</span></code> prints function names
+and their corresponding position information in this order:</p>
+<p>| Function name | Source position |
+| ————- | ————— |
+| st[0].Func    | pcPos           |
+| st[1].Func    | st[0].Pos       |
+|     …       |       …       |
+| st[k].Func    | st[k-1].Pos     |
+| pcFunc        | st[k].Pos       |</p>
+<p>This process repeats for every PC in the traceback.
+Note that the runtime only has sufficient information to print function
+arguments and PC offsets for the last entry in this table.
+Here is the resulting stack trace from the example above with our changes:</p>
+<pre>
+main.Log(...)
+	/home/gopher/math.go:43
+main.LogBase(...)
+	/home/gopher/math.go:95
+main.main()
+	/home/gopher/app.go:7 +0x1c8
+</pre></div>
+<div class="section" id="changes-to-the-runtime-public-api">
+<h2>Changes to the runtime public API<a class="headerlink" href="#changes-to-the-runtime-public-api" title="Permalink to this headline">¶</a></h2>
+<p>With inlining, a PC may represent multiple logical calls, so we need to
+clarify the meaning of some runtime APIs related to tracebacks.
+For example, the <code class="docutils literal notranslate"><span class="pre">skip</span></code> argument passed to <code class="docutils literal notranslate"><span class="pre">runtime.Caller</span></code> and
+<code class="docutils literal notranslate"><span class="pre">runtime.Callers</span></code> will be interpreted as the number of logical calls to skip
+(rather than the number of physical stack frames to skip).</p>
+<p>Unfortunately, the runtime.Callers API requires some modification to be
+compatible with mid-stack inlining.
+The result value of runtime.Callers is a slice of program counters
+([]uintptr) representing physical stack frames.
+If the <code class="docutils literal notranslate"><span class="pre">skip</span></code> parameter to runtime.Callers skips part-way into a physical
+frame, there is no convenient way to encode that in the resulting slice.
+To avoid changing the API in an incompatible way, our solution is to store
+the number of skipped logical calls of the first frame in the <em>second</em>
+uintptr returned by runtime.Callers.
+Since this number is a small integer, we encode it as a valid PC value
+into a small symbol called <code class="docutils literal notranslate"><span class="pre">runtime.skipPleaseUseCallersFrames</span></code>.
+For example, if f() calls g(), g() calls <code class="docutils literal notranslate"><span class="pre">runtime.Callers(2,</span> <span class="pre">pcs)</span></code>, and
+g() is inlined into f, then the frame for f will be partially skipped,
+resulting in the following slice:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pcs</span> <span class="o">=</span> <span class="p">[]</span><span class="n">uintptr</span><span class="p">{</span><span class="n">pc_in_f</span><span class="p">,</span> <span class="n">runtime</span><span class="o">.</span><span class="n">skipPleaseUseCallersFrames</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">runtime.CallersFrames</span></code> function will check if the second PC is
+in <code class="docutils literal notranslate"><span class="pre">runtime.skipPleaseUseCallersFrames</span></code> and skip the corresponding
+number of logical calls.
+We store the skip PC in <code class="docutils literal notranslate"><span class="pre">pcs[1]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">pcs[0]</span></code> so that <code class="docutils literal notranslate"><span class="pre">pcs[i:]</span></code>
+will truncate the captured stack trace rather than grow it for all i
+(otherwise <code class="docutils literal notranslate"><span class="pre">pcs[1:]</span></code> would grow the stack trace).</p>
+<p>Code that iterates over the PC slice from <code class="docutils literal notranslate"><span class="pre">runtime.Callers</span></code> calling
+<code class="docutils literal notranslate"><span class="pre">FuncForPC</span></code> will have to be updated as described below to continue
+observing complete stack traces.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h1>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h1>
+<p>Even with just leaf inlining, the new inlining tables increase the
+size of binaries (see Preliminary Results).
+However, this increase is unavoidable if the runtime is to print complete
+stack traces.
+Turning on mid-stack inlining increases binary size more significantly,
+but we can tweak the inlining heuristic to find a good tradeoff between
+binary size, performance, and build times.</p>
+<p>We considered several alternative designs before we reached the design
+described in this document.
+One tempting alternative is to reuse the existing file and line PC-value
+tables and simply add a new PC-value table for the “parent” PC of each
+instruction, rather than a new funcdata table.
+This appears to represent the same information as the proposed funcdata table.
+However, some PCs might not have a parent PC to point at, for example
+if an inlined call is the very first instructions in a function.
+We considered adding NOP instructions to represent the parent of an inlined
+call, but concluded that a separate inlining tree is more compact.</p>
+<p>Another alternative design involves adding push and pop operations to the
+PC-value table decoder for representing the inlined call stack.
+We didn’t prototype this design since the other designs seemed conceptually
+simpler.</p>
+</div>
+<div class="section" id="compatibility">
+<h1>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h1>
+<p>Prior to Go 1.7, the recommended way to use <code class="docutils literal notranslate"><span class="pre">runtime.Callers</span></code> was to loop
+over the returned PCs and call functions like <code class="docutils literal notranslate"><span class="pre">runtime.FuncForPC</span></code> on each
+PC directly.
+With mid-stack inlining, code using this pattern will observe incomplete
+call stacks, since inlined frames will be omitted.
+In preparation for this, the <code class="docutils literal notranslate"><span class="pre">runtime.Frames</span></code> API was introduced in Go 1.7
+as a higher-level way to interpret the results of <code class="docutils literal notranslate"><span class="pre">runtime.Callers</span></code>.
+We consider this to be a minor issue, since users will have had two releases
+to update to <code class="docutils literal notranslate"><span class="pre">runtime.Frames</span></code> and any remaining direct uses of
+<code class="docutils literal notranslate"><span class="pre">runtime.FuncForPC</span></code> will continue to work, simply in a degraded fashion.</p>
+</div>
+<div class="section" id="implementation">
+<h1>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h1>
+<p>David will implement this proposal during the Go 1.9 time frame.
+As of the beginning of the Go 1.9 development cycle, a mostly complete
+prototype of the changes the compiler, linker, and runtime is already
+working.</p>
+<p>The initial implementation goal is to make all tests pass with <code class="docutils literal notranslate"><span class="pre">-l=4</span></code>.
+We will then focus on bringing tools and DWARF information up-to-date
+with mid-stack inlining.
+Once this support is complete, we plan to make <code class="docutils literal notranslate"><span class="pre">-l=4</span></code> the default setting.</p>
+<p>We should also update the <code class="docutils literal notranslate"><span class="pre">debug/gosym</span></code> package to expose the new inlining
+information.</p>
+<p><em>Update</em> (2017-03-04): CLs that add inlining info and fix stack traces
+have been merged into master.
+CLs that fix runtime.Callers are under submission.</p>
+</div>
+<div class="section" id="prerequisite-changes">
+<h1>Prerequisite Changes<a class="headerlink" href="#prerequisite-changes" title="Permalink to this headline">¶</a></h1>
+<p>Prior to this work, Go had the <code class="docutils literal notranslate"><span class="pre">-l=4</span></code> flag to turn on mid-stack inlining,
+but this mode had issues beyond incomplete stack traces.</p>
+<p>For example, before we could run experiments with <code class="docutils literal notranslate"><span class="pre">-l=4</span></code>, we had to fix
+inlining of variadic functions (<a class="reference external" href="golang.org/cl/33671">CL 33671</a>),
+mark certain cgo functions as uninlineable (<a class="reference external" href="golang.org/cl/33722">CL 33722</a>),
+and include linknames in export data (<a class="reference external" href="golang.org/cl/33911">CL 33911</a>).</p>
+<p>Before we turn on mid-stack inlining, we will have to update uses
+of runtime.Callers in the runtime to use runtime.CallersFrames.
+We will also have to make tests independent of inlining
+(e.g., <a class="reference external" href="golang.org/cl/37237">CL 37237</a>).</p>
+</div>
+<div class="section" id="preliminary-results">
+<h1>Preliminary Results<a class="headerlink" href="#preliminary-results" title="Permalink to this headline">¶</a></h1>
+<p>Mid-stack inlining (<code class="docutils literal notranslate"><span class="pre">-l=4</span></code>) gives a 9% geomean improvement on the Go1
+benchmarks on amd64:</p>
+<p>https://perf.golang.org/search?q=upload:20170309.1</p>
+<p>The same experiment on ppc64 also showed a 9-10% improvement.</p>
+<p>The new inlining tables increase binary size by 4% without mid-stack inlining.
+Mid-stack inlining increases the size of the Go1 benchmark binary by an
+additional 11%.</p>
+</div>
+<div class="section" id="open-issues">
+<h1>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h1>
+<p>One limitation of this approach is that the runtime is unable to print
+the arguments to inlined calls in a stack trace.
+This is because the runtime gets arguments by assuming a certain stack
+layout, but there is no stack frame for inlined calls.</p>
+<p>This proposal does not propose significant changes to the existing
+inlining heuristics.
+Since mid-stack inlining is now a possibility, we should revisit the
+inlining heuristics in follow-on work.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="19480-xml-stream.html" class="btn btn-neutral float-right" title="Proposal: XML Stream" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="19308-number-literals.html" class="btn btn-neutral float-left" title="Proposal: Go 2 Number Literal Changes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

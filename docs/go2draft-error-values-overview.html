@@ -1,0 +1,776 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Error Values — Problem Overview &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Generics — Problem Overview" href="go2draft-generics-overview.html" />
+    <link rel="prev" title="Error Printing — Draft Design" href="go2draft-error-printing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Error Values — Problem Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#draft-design">Draft Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#error-inspection">Error inspection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-formatting">Error formatting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#discussion-and-open-questions">Discussion and Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-go-designs">Other Go Designs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prehistoric-go">Prehistoric Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github-com-spacemonkeygo-errors">github.com/spacemonkeygo/errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github-com-juju-errgo">github.com/juju/errgo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gopkg-in-errgo-v1-and-gopkg-in-errgo-v2">gopkg.in/errgo.v1 and gopkg.in/errgo.v2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github-com-hashicorp-errwrap">github.com/hashicorp/errwrap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github-com-pkg-errors">github.com/pkg/errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#upspin-io-error">upspin.io/error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#designs-in-other-languages">Designs in Other Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Error Values — Problem Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/go2draft-error-values-overview.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="error-values-problem-overview">
+<h1>Error Values — Problem Overview<a class="headerlink" href="#error-values-problem-overview" title="Permalink to this headline">¶</a></h1>
+<p>Russ Cox<br />August 27, 2018</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This overview and the accompanying
+detailed draft designs
+are part of a collection of <a class="reference internal" href="go2draft.html"><span class="doc">Go 2 draft design documents</span></a>.
+The overall goal of the Go 2 effort is to address
+the most significant ways that Go fails to scale
+to large code bases and large developer efforts.</p>
+<p>One way that Go programs fail to scale well is in the capability of typical errors.
+A variety of popular helper packages add functionality
+beyond the standard error interface,
+but they do so in incompatible ways.
+As part of Go 2, we are considering whether to standardize any
+“optional interfaces” for errors,
+to allow helper packages to interoperate
+and ideally to reduce the need for them.</p>
+<p>As part of Go 2, we are also considering,
+as a separate concern,
+more convenient <a class="reference internal" href="go2draft-error-handling-overview.html"><span class="doc">syntax for error checks and handling</span></a>.</p>
+</div>
+<div class="section" id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
+<p>Large programs must be able to test for
+and react to errors programmatically and also report them well.</p>
+<p>Because an error value is any value implementing the <a class="reference external" href="https://golang.org/ref/spec#Errors"><code class="docutils literal notranslate"><span class="pre">error</span></code> interface</a>,
+there are four ways that Go programs conventionally test for specific errors.
+First, programs can test for equality with sentinel errors like <code class="docutils literal notranslate"><span class="pre">io.EOF</span></code>.
+Second, programs can check for an error implementation type using a <a class="reference external" href="https://golang.org/ref/spec#Type_assertions">type assertion</a> or <a class="reference external" href="https://golang.org/ref/spec#Type_switches">type switch</a>.
+Third, ad-hoc checks like
+<a class="reference external" href="https://golang.org/pkg/os/#IsNotExist"><code class="docutils literal notranslate"><span class="pre">os.IsNotExist</span></code></a>
+check for a specific kind of error,
+doing limited unwrapping.
+Fourth, because neither of these approaches works in general when the error has been wrapped in additional context,
+programs often do substring searches in the error text reported by <code class="docutils literal notranslate"><span class="pre">err.Error()</span></code>.
+Obviously this last approach is the least desirable,
+and it would be better to support the first three checks even in the presence of arbitrary wrapping.</p>
+<p>The most common kind of wrapping is use of fmt.Errorf, as in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;write users database: %v&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Wrapping in an error type is more work but more useful for programmatic tests, like in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="n">WriteError</span><span class="p">{</span><span class="n">Database</span><span class="p">:</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="n">Err</span><span class="p">:</span> <span class="n">err</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Either way, if the original <code class="docutils literal notranslate"><span class="pre">err</span></code> is a known sentinel or known error implementation type,
+then wrapping, whether by <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> or a new type like <code class="docutils literal notranslate"><span class="pre">WriteError</span></code>,
+breaks both equality checks and type assertions looking for the original error.
+This discourages wrapping, leading to less useful errors.</p>
+<p>In a complex program, the most useful description of an error
+would include information about all the different operations leading to the error.
+For example, suppose that the error writing to the database
+earlier was due to an RPC call.
+Its implementation called <code class="docutils literal notranslate"><span class="pre">net.Dial</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;myserver&quot;</span></code>,
+which in turn read <code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code>, which maybe today was accidentally unreadable.
+The resulting error’s <code class="docutils literal notranslate"><span class="pre">Error</span></code> method might return this string (split onto two lines for this document):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">write</span> <span class="n">users</span> <span class="n">database</span><span class="p">:</span> <span class="n">call</span> <span class="n">myserver</span><span class="o">.</span><span class="n">Method</span><span class="p">:</span> \
+    <span class="n">dial</span> <span class="n">myserver</span><span class="p">:</span><span class="mi">3333</span><span class="p">:</span> <span class="nb">open</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">resolv</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span> <span class="n">permission</span> <span class="n">denied</span>
+</pre></div>
+</div>
+<p>The implementation of this error is five different levels (four wrappings):</p>
+<ol class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">WriteError</span></code>, which provides <code class="docutils literal notranslate"><span class="pre">&quot;write</span> <span class="pre">users</span> <span class="pre">database:</span> <span class="pre">&quot;</span></code> and wraps</p></li>
+<li><p>an <code class="docutils literal notranslate"><span class="pre">RPCError</span></code>, which provides <code class="docutils literal notranslate"><span class="pre">&quot;call</span> <span class="pre">myserver.Method:</span> <span class="pre">&quot;</span></code> and wraps</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">net.OpError</span></code>, which provides <code class="docutils literal notranslate"><span class="pre">&quot;dial</span> <span class="pre">myserver:3333:</span> <span class="pre">&quot;</span></code> and wraps</p></li>
+<li><p>an <code class="docutils literal notranslate"><span class="pre">os.PathError</span></code>, which provides <code class="docutils literal notranslate"><span class="pre">&quot;open</span> <span class="pre">/etc/resolv.conf:</span> <span class="pre">&quot;</span></code> and wraps</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">syscall.EPERM</span></code>, which provides <code class="docutils literal notranslate"><span class="pre">&quot;permission</span> <span class="pre">denied&quot;</span></code></p></li>
+</ol>
+<p>There are many questions you might want to ask programmatically of err,
+including:
+(i) is it an RPCError?
+(ii) is it a net.OpError?
+(iii) does it satisfy the net.Error interface?
+(iv) is it an os.PathError?
+(v) is it a permission error?</p>
+<p>The first problem is that it is too hard to ask these kinds of questions.
+The functions <a class="reference external" href="https://golang.org/pkg/os/#IsExist"><code class="docutils literal notranslate"><span class="pre">os.IsExist</span></code></a>,
+<a class="reference external" href="https://golang.org/pkg/os/#IsNotExist"><code class="docutils literal notranslate"><span class="pre">os.IsNotExist</span></code></a>,
+<a class="reference external" href="https://golang.org/pkg/os/#IsPermission"><code class="docutils literal notranslate"><span class="pre">os.IsPermission</span></code></a>,
+and
+<a class="reference external" href="https://golang.org/pkg/os/#IsTimeout"><code class="docutils literal notranslate"><span class="pre">os.IsTimeout</span></code></a>
+are symptomatic of the problem.
+They lack generality in two different ways:
+first, each function tests for only one specific kind of error,
+and second, each understands only a very limited number of wrapping types.
+In particular, these functions understand a few wrapping errors,
+notably <a class="reference external" href="https://golang.org/pkg/os/#PathError"><code class="docutils literal notranslate"><span class="pre">os.PathError</span></code></a>, but
+not custom implementations like our hypothetical <code class="docutils literal notranslate"><span class="pre">WriteError</span></code>.</p>
+<p>The second problem is less critical but still important:
+the reporting of deeply nested errors is too difficult to read
+and leaves no room for additional detail,
+like relevant file positions in the program.</p>
+<p>Popular helper packages exist to address these problems,
+but they disagree on the solutions and in general do not interoperate.</p>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<p>There are two goals, corresponding to the two main problems.
+First, we want to make error inspection by programs easier
+and less error-prone, to improve the error handling and
+robustness of real programs.
+Second, we want to make it possible to print errors
+with additional detail, in a standard form.</p>
+<p>Any solutions must keep existing code working
+and fit with existing source trees.
+In particular, the concepts of comparing for equality with error sentinels
+like <code class="docutils literal notranslate"><span class="pre">io.ErrUnexpectedEOF</span></code> and testing for errors of a particular type must be preserved.
+Existing error sentinels must continue to be supported,
+and existing code will not change to return different error types.
+That said, it would be okay to expand functions like
+<a class="reference external" href="https://golang.org/pkg/os/#IsPermission"><code class="docutils literal notranslate"><span class="pre">os.IsPermission</span></code></a> to understand arbitrary wrappings instead of a fixed set.</p>
+<p>When considering solutions for printing additional error detail,
+we prefer solutions that make it possible—or at least avoid making it impossible—to
+localize and translate errors using
+<a class="reference external" href="https://godoc.org/golang.org/x/text/message">golang.org/x/text/message</a>.</p>
+<p>Packages must continue to be able to define their own error types easily.
+It would be unacceptable to define a new, generalized “one true error implementation”
+and require all code to use that implementation.
+It would be equally unacceptable to add so many additional requirements
+on error implementations that only a few packages would bother.</p>
+<p>Errors must also remain efficient to create.
+Errors are not exceptional.
+It is common for errors to be generated, handled, and discarded,
+over and over again, as a program executes.</p>
+<p>As a cautionary tale, years ago at Google a program written
+in an exception-based language was found to be spending
+all its time generating exceptions.
+It turned out that a function on a deeply-nested stack was
+attempting to open each of a fixed list of file paths,
+to find a configuration file.
+Each failed open operation threw an exception;
+the generation of that exception spent a lot of time recording
+the very deep execution stack;
+and then the caller discarded all that work and continued around its loop.
+The generation of an error in Go code must remain a fixed cost,
+regardless of stack depth or other context.
+(In a panic, deferred handlers run <em>before</em> stack unwinding
+for the same reason: so that handlers that do care about
+the stack context can inspect the live stack,
+without an expensive snapshot operation.)</p>
+</div>
+<div class="section" id="draft-design">
+<h2>Draft Design<a class="headerlink" href="#draft-design" title="Permalink to this headline">¶</a></h2>
+<p>The two main problems—error inspection and error formatting—are
+addressed by different draft designs.
+The constraints of keeping interoperation with existing code
+and allowing packages to continue to define their own error types
+point strongly in the direction of defining
+optional interfaces that an error implementation can satisfy.
+Each of the two draft designs adds one such interface.</p>
+<div class="section" id="error-inspection">
+<h3>Error inspection<a class="headerlink" href="#error-inspection" title="Permalink to this headline">¶</a></h3>
+<p>For error inspection, the draft design follows the lead of existing packages
+like <a class="reference external" href="https://github.com/pkg/errors">github.com/pkg/errors</a>
+and defines an optional interface for an error to return the next error
+in the chain of error wrappings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">errors</span>
+
+<span class="nb">type</span> <span class="n">Wrapper</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">Unwrap</span><span class="p">()</span> <span class="n">error</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For example, our hypothetical <code class="docutils literal notranslate"><span class="pre">WriteError</span></code> above would need to implement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span><span class="n">WriteError</span><span class="p">)</span> <span class="n">Unwrap</span><span class="p">()</span> <span class="n">error</span> <span class="p">{</span> <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">Err</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>Using this method, the draft design adds two new functions to package errors:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Is</span> <span class="n">reports</span> <span class="n">whether</span> <span class="n">err</span> <span class="ow">or</span> <span class="nb">any</span> <span class="n">of</span> <span class="n">the</span> <span class="n">errors</span> <span class="ow">in</span> <span class="n">its</span> <span class="n">chain</span> <span class="ow">is</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">target</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Is</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">target</span> <span class="n">error</span><span class="p">)</span> <span class="nb">bool</span>
+
+<span class="o">//</span> <span class="n">As</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">err</span> <span class="ow">or</span> <span class="nb">any</span> <span class="n">of</span> <span class="n">the</span> <span class="n">errors</span> <span class="ow">in</span> <span class="n">its</span> <span class="n">chain</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">value</span> <span class="n">of</span> <span class="nb">type</span> <span class="n">E</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">so</span><span class="p">,</span> <span class="n">it</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">discovered</span> <span class="n">value</span> <span class="n">of</span> <span class="nb">type</span> <span class="n">E</span><span class="p">,</span> <span class="k">with</span> <span class="n">ok</span> <span class="nb">set</span> <span class="n">to</span> <span class="n">true</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">If</span> <span class="ow">not</span><span class="p">,</span> <span class="n">it</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">zero</span> <span class="n">value</span> <span class="n">of</span> <span class="nb">type</span> <span class="n">E</span><span class="p">,</span> <span class="k">with</span> <span class="n">ok</span> <span class="nb">set</span> <span class="n">to</span> <span class="n">false</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">As</span><span class="p">(</span><span class="nb">type</span> <span class="n">E</span><span class="p">)(</span><span class="n">err</span> <span class="n">error</span><span class="p">)</span> <span class="p">(</span><span class="n">e</span> <span class="n">E</span><span class="p">,</span> <span class="n">ok</span> <span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the second function has a type parameter, using the
+<a class="reference internal" href="go2draft-generics-overview.html"><span class="doc">contracts draft design</span></a>.
+Both functions would be implemented as a loop first testing
+<code class="docutils literal notranslate"><span class="pre">err</span></code>, then <code class="docutils literal notranslate"><span class="pre">err.Unwrap()</span></code>, and so on, to the end of the chain.</p>
+<p>Existing checks would be rewritten as needed to be “wrapping-aware”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span><span class="o">.</span><span class="n">Is</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">ErrUnexpectedEOF</span><span class="p">)</span>     <span class="o">//</span> <span class="n">was</span> <span class="n">err</span> <span class="o">==</span> <span class="n">io</span><span class="o">.</span><span class="n">ErrUnexpectedEOF</span>
+<span class="n">pe</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">errors</span><span class="o">.</span><span class="n">As</span><span class="p">(</span><span class="o">*</span><span class="n">os</span><span class="o">.</span><span class="n">PathError</span><span class="p">)(</span><span class="n">err</span><span class="p">)</span> <span class="o">//</span> <span class="n">was</span> <span class="n">pe</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">err</span><span class="o">.</span><span class="p">(</span><span class="o">*</span><span class="n">os</span><span class="o">.</span><span class="n">PathError</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For details, see the <a class="reference internal" href="go2draft-error-inspection.html"><span class="doc">error inspection draft design</span></a>.</p>
+</div>
+<div class="section" id="error-formatting">
+<h3>Error formatting<a class="headerlink" href="#error-formatting" title="Permalink to this headline">¶</a></h3>
+<p>For error formatting, the draft design defines an optional interface implemented by errors:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">errors</span>
+
+<span class="nb">type</span> <span class="n">Formatter</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">Format</span><span class="p">(</span><span class="n">p</span> <span class="n">Printer</span><span class="p">)</span> <span class="p">(</span><span class="nb">next</span> <span class="n">error</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The argument to <code class="docutils literal notranslate"><span class="pre">Format</span></code> is a <code class="docutils literal notranslate"><span class="pre">Printer</span></code>, provided by the package formatting the error
+(usually <a class="reference external" href="https://golang.org/pkg/fmt"><code class="docutils literal notranslate"><span class="pre">fmt</span></code></a>, but possibly a localization package like
+<a class="reference external" href="https://godoc.org/golang.org/x/text/message"><code class="docutils literal notranslate"><span class="pre">golang.org/x/text/message</span></code></a> instead).
+The <code class="docutils literal notranslate"><span class="pre">Printer</span></code> provides methods <code class="docutils literal notranslate"><span class="pre">Print</span></code> and <code class="docutils literal notranslate"><span class="pre">Printf</span></code>, which emit output,
+and <code class="docutils literal notranslate"><span class="pre">Detail</span></code>, which reports whether extra detail should be printed.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fmt</span></code> package would be adjusted to format errors printed using <code class="docutils literal notranslate"><span class="pre">%+v</span></code> in a multiline format,
+with additional detail.</p>
+<p>For example, our database <code class="docutils literal notranslate"><span class="pre">WriteError</span></code> might implement the new <code class="docutils literal notranslate"><span class="pre">Format</span></code> method and the old <code class="docutils literal notranslate"><span class="pre">Error</span></code> method as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span><span class="n">WriteError</span><span class="p">)</span> <span class="n">Format</span><span class="p">(</span><span class="n">p</span> <span class="n">errors</span><span class="o">.</span><span class="n">Printer</span><span class="p">)</span> <span class="p">(</span><span class="nb">next</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">p</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;write </span><span class="si">%s</span><span class="s2"> database&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">Database</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">Detail</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">p</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s2">&quot;more detail here&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">Err</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span><span class="n">WriteError</span><span class="p">)</span> <span class="n">Error</span><span class="p">()</span> <span class="n">string</span> <span class="p">{</span> <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprint</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>And then printing the original database error using <code class="docutils literal notranslate"><span class="pre">%+v</span></code> would look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">write</span> <span class="n">users</span> <span class="n">database</span><span class="p">:</span>
+    <span class="n">more</span> <span class="n">detail</span> <span class="n">here</span>
+<span class="o">---</span> <span class="n">call</span> <span class="n">myserver</span><span class="o">.</span><span class="n">Method</span><span class="p">:</span>
+<span class="o">---</span> <span class="n">dial</span> <span class="n">myserver</span><span class="p">:</span><span class="mi">3333</span><span class="p">:</span>
+<span class="o">---</span> <span class="nb">open</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">resolv</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+<span class="o">---</span> <span class="n">permission</span> <span class="n">denied</span>
+</pre></div>
+</div>
+<p>The errors package might also provide a convenient implementation
+for recording the line number of the code creating the error and printing it back when <code class="docutils literal notranslate"><span class="pre">p.Detail</span></code> returns true.
+If all the wrappings involved included that line number information, the <code class="docutils literal notranslate"><span class="pre">%+v</span></code> output would look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">write</span> <span class="n">users</span> <span class="n">database</span><span class="p">:</span>
+    <span class="n">more</span> <span class="n">detail</span> <span class="n">here</span>
+    <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">database</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">111</span>
+<span class="o">---</span> <span class="n">call</span> <span class="n">myserver</span><span class="o">.</span><span class="n">Method</span><span class="p">:</span>
+    <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">grpc</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">222</span>
+<span class="o">---</span> <span class="n">dial</span> <span class="n">myserver</span><span class="p">:</span><span class="mi">3333</span><span class="p">:</span>
+    <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">net</span><span class="o">/</span><span class="n">dial</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">333</span>
+<span class="o">---</span> <span class="nb">open</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">resolv</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+    <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">os</span><span class="o">/</span><span class="nb">open</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">444</span>
+<span class="o">---</span> <span class="n">permission</span> <span class="n">denied</span>
+</pre></div>
+</div>
+<p>For details, see the <a class="reference internal" href="go2draft-error-printing.html"><span class="doc">error printing draft design</span></a>.</p>
+</div>
+</div>
+<div class="section" id="discussion-and-open-questions">
+<h2>Discussion and Open Questions<a class="headerlink" href="#discussion-and-open-questions" title="Permalink to this headline">¶</a></h2>
+<p>These draft designs are meant only as a starting point for community discussion.
+We fully expect the details to be revised based on feedback and especially experience reports.
+This section outlines some of the questions that remain to be answered.</p>
+<p><strong>fmt.Errorf</strong>.
+If <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> is invoked with a format ending in <code class="docutils literal notranslate"><span class="pre">&quot;:</span> <span class="pre">%v&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;:</span> <span class="pre">%s&quot;</span></code>
+and with a final argument implementing the error interface,
+then <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> could return a special implementation
+that implements both <code class="docutils literal notranslate"><span class="pre">Wrapper</span></code> and <code class="docutils literal notranslate"><span class="pre">Formatter</span></code>.
+Should it? We think definitely yes to <code class="docutils literal notranslate"><span class="pre">Formatter</span></code>.
+Perhaps also yes to <code class="docutils literal notranslate"><span class="pre">Wrapper</span></code>, or perhaps we should
+introduce <code class="docutils literal notranslate"><span class="pre">fmt.WrapErrorf</span></code>.</p>
+<p>Adapting <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> would make nearly all existing code
+using <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> play nicely with <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code>, <code class="docutils literal notranslate"><span class="pre">errors.As</span></code>,
+and multiline error formatting.
+Not adapting <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> would instead require adding
+some other API that did play nicely,
+for use when only textual context needs to be added.</p>
+<p><strong>Source lines</strong>.
+Many error implementations will want to record source lines
+to be printed as part of error detail.
+We should probably provide some kind of embedding helper
+in <a class="reference external" href="https://golang.org/pkg/errors">package <code class="docutils literal notranslate"><span class="pre">errors</span></code></a>
+and then also use that helper in <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code>.
+Another question is whether <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code> should by default
+record the file and line number of its caller, for display in the
+detailed error format.</p>
+<p>Microbenchmarks suggest that recording the caller’s file and line
+number for printing in detailed displays would roughly double the
+cost of <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code>, from about 250ns to about 500ns.</p>
+<p><strong>Is versus Last</strong>.
+Instead of defining <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code>,
+we could define a function <code class="docutils literal notranslate"><span class="pre">errors.Last</span></code>
+that returns the final error in the chain.
+Then code would write <code class="docutils literal notranslate"><span class="pre">errors.Last(err)</span> <span class="pre">==</span> <span class="pre">io.ErrUnexpectedEOF</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">errors.Is(err,</span> <span class="pre">io.ErrUnexpectedEOF)</span></code></p>
+<p>The draft design avoids this approach for a few reasons.
+First, <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code> seems a clearer statement of intent.
+Second, the higher-level <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code> leaves room for future adaptation,
+instead of being locked into the single equality check.
+Even today, the draft design’s implementation tests for equality with each error in the chain,
+which would allow testing for a sentinel value
+that was itself a wrapper (presumably of another sentinel)
+as opposed to only testing the end of the error chain.
+A possible future expansion might be to allow individual error implementations
+to define their own optional <code class="docutils literal notranslate"><span class="pre">Is(error)</span> <span class="pre">bool</span></code> methods
+and have <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code> prefer that method over the default equality check.
+In contrast, using the lower-level idiom
+<code class="docutils literal notranslate"><span class="pre">errors.Last(err)</span> <span class="pre">==</span> <span class="pre">io.ErrUnexpectedEOF</span></code>
+eliminates all these possibilities.</p>
+<p>Providing <code class="docutils literal notranslate"><span class="pre">errors.Last(err)</span></code> might also encourage type checks
+against the result, instead of using <code class="docutils literal notranslate"><span class="pre">errors.As</span></code>.
+Those type checks would of course not test against
+any of the wrapper types, producing a different result and
+introducing confusion.</p>
+<p><strong>Unwrap</strong>. It is unclear if <code class="docutils literal notranslate"><span class="pre">Unwrap</span></code> is the right name for the method
+returning the next error in the error chain.
+Dave Cheney’s <a class="reference external" href="https://golang.org/pkg/errors"><code class="docutils literal notranslate"><span class="pre">github.com/pkg/errors</span></code></a> has popularized <code class="docutils literal notranslate"><span class="pre">Cause</span></code> for the method name,
+but it also uses <code class="docutils literal notranslate"><span class="pre">Cause</span></code> for the function that returns the last error in the chain.
+At least a few people we talked to
+did not at first understand the subtle semantic difference between method and function.
+An early draft of our design used <code class="docutils literal notranslate"><span class="pre">Next</span></code>, but all our explanations
+referred to wrapping and unwrapping,
+so we changed the method name to match.</p>
+<p><strong>Feedback</strong>. The most useful general feedback would be
+examples of interesting uses that are enabled or disallowed
+by the draft design.
+We’d also welcome feedback about the points above,
+especially based on experience
+with complex or buggy error inspection or printing in real programs.</p>
+<p>We are collecting links to feedback at
+<a class="reference external" href="https://golang.org/wiki/Go2ErrorValuesFeedback">golang.org/wiki/Go2ErrorValuesFeedback</a>.</p>
+</div>
+<div class="section" id="other-go-designs">
+<h2>Other Go Designs<a class="headerlink" href="#other-go-designs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prehistoric-go">
+<h3>Prehistoric Go<a class="headerlink" href="#prehistoric-go" title="Permalink to this headline">¶</a></h3>
+<p>The original representation of an error in Go was <code class="docutils literal notranslate"><span class="pre">*os.Error</span></code>, a pointer to this struct:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Error is a structure wrapping a string describing an error.
+// Errors are singleton structures, created by NewError, so their addresses can
+// be compared to test for equality. A nil Error pointer means ``no error&#39;&#39;.
+// Use the String() method to get the contents; it handles the nil case.
+// The Error type is intended for use by any package that wishes to define
+// error strings.
+type Error struct {
+	s string
+}
+
+func NewError(s string) *Error
+</pre></div>
+</div>
+<p>In April 2009, we changed <code class="docutils literal notranslate"><span class="pre">os.Error</span></code> to be an interface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">An</span> <span class="n">Error</span> <span class="n">can</span> <span class="n">represent</span> <span class="nb">any</span> <span class="n">printable</span> <span class="n">error</span> <span class="n">condition</span><span class="o">.</span>
+<span class="nb">type</span> <span class="n">Error</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">String</span><span class="p">()</span> <span class="n">string</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This was the definition of errors in the initial public release,
+and programmers learned to use equality tests and type checks to inspect them.</p>
+<p>In November 2011, as part of the lead-up to Go 1,
+and in response to feedback from Roger Peppe and others in the Go community,
+we lifted the interface out of the standard library and into <a class="reference external" href="https://golang.org/ref/spec#Errors">the language itself</a>,
+producing the now-ubiquitous error interface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">error</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">Error</span><span class="p">()</span> <span class="n">string</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The names changed but the basic operations remained the name: equality tests and type checks.</p>
+</div>
+<div class="section" id="github-com-spacemonkeygo-errors">
+<h3>github.com/spacemonkeygo/errors<a class="headerlink" href="#github-com-spacemonkeygo-errors" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://godoc.org/github.com/spacemonkeygo/errors">github.com/spacemonkeygo/errors</a> (July 2013)
+was written to support
+<a class="reference external" href="https://medium.com/space-monkey-engineering/go-space-monkey-5f43744bffaa">porting a large Python codebase to Go</a>.
+It provides error class hierarchies, automatic logging and stack traces, and arbitrary associated key-value pairs.</p>
+<p>For error inspection,
+it can test whether an error belongs to a particular class, optionally considering wrapped errors,
+and considering entire hierarchies.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Error</span></code> type’s <code class="docutils literal notranslate"><span class="pre">Error</span></code> method returns a string giving the error class name,
+message, stack trace if present, and other data.
+There is also a <code class="docutils literal notranslate"><span class="pre">Message</span></code> method that returns just the message,
+but there is no support for custom formatting.</p>
+</div>
+<div class="section" id="github-com-juju-errgo">
+<h3>github.com/juju/errgo<a class="headerlink" href="#github-com-juju-errgo" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/juju/errgo">github.com/juju/errgo</a> (February 2014)
+was written to support Juju, a large Go program developed at Canonical.
+When you wrap an error, you can choose whether to
+adopt the cause of an underlying error or hide it.
+Either way the underlying error is available to printing routines.</p>
+<p>The package’s <code class="docutils literal notranslate"><span class="pre">Cause</span></code> helper function returns an error intended for the program to act upon,
+but it only unwraps one layer,
+in contrast to
+<a class="reference external" href="https://godoc.org/github.com/pkg/errors"><code class="docutils literal notranslate"><span class="pre">github.com/pkg/errors</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">Cause</span></code>
+function, which returns the final error in the chain.</p>
+<p>The custom error implementation’s <code class="docutils literal notranslate"><span class="pre">Error</span></code> method concatenates the messages of the errors
+along the wrapping chain.
+There is also a <code class="docutils literal notranslate"><span class="pre">Details</span></code> function that returns a JSON-like string
+with both messages and location information.</p>
+</div>
+<div class="section" id="gopkg-in-errgo-v1-and-gopkg-in-errgo-v2">
+<h3>gopkg.in/errgo.v1 and gopkg.in/errgo.v2<a class="headerlink" href="#gopkg-in-errgo-v1-and-gopkg-in-errgo-v2" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://godoc.org/gopkg.in/errgo.v1"><code class="docutils literal notranslate"><span class="pre">gopkg.in/errgo.v1</span></code></a> (July 2014)
+is a slight variation of <code class="docutils literal notranslate"><span class="pre">github.com/juju/errgo</span></code>.
+<a class="reference external" href="https://godoc.org/gopkg.in/errgo.v2"><code class="docutils literal notranslate"><span class="pre">gopkg.in/errgo.v2</span></code></a>
+has the same concepts but a simpler API.</p>
+</div>
+<div class="section" id="github-com-hashicorp-errwrap">
+<h3>github.com/hashicorp/errwrap<a class="headerlink" href="#github-com-hashicorp-errwrap" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://godoc.org/github.com/hashicorp/errwrap"><code class="docutils literal notranslate"><span class="pre">github.com/hashicorp/errwrap</span></code></a> (October 2014)
+allows wrapping more than one error, resulting in a general tree of errors.
+It has a general <code class="docutils literal notranslate"><span class="pre">Walk</span></code> method that invokes a function on every error in the tree,
+as well as convenience functions for matching by type and message string.
+It provides no special support for displaying error details.</p>
+</div>
+<div class="section" id="github-com-pkg-errors">
+<h3>github.com/pkg/errors<a class="headerlink" href="#github-com-pkg-errors" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://godoc.org/github.com/pkg/errors"><code class="docutils literal notranslate"><span class="pre">github.com/pkg/errors</span></code></a> (December 2015)
+provides error wrapping and stack trace capture.
+It introduced <code class="docutils literal notranslate"><span class="pre">%+v</span></code> to format errors with additional detail.
+The package assumes that only the last error of the chain is of interest,
+so it provides a helper <code class="docutils literal notranslate"><span class="pre">errors.Cause</span></code> to retrieve that last error.
+It does not provide any functions that consider the entire chain when looking for a match.</p>
+</div>
+<div class="section" id="upspin-io-error">
+<h3>upspin.io/error<a class="headerlink" href="#upspin-io-error" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://godoc.org/upspin.io/errors"><code class="docutils literal notranslate"><span class="pre">upspin.io/errors</span></code></a>
+is an error package customized for <a class="reference external" href="https://upspin.io">Upspin</a>,
+documented in Rob Pike and Andrew Gerrand’s December 2017 blog post
+“<a class="reference external" href="https://commandcenter.blogspot.com/2017/12/error-handling-in-upspin.html">Error handling in Upspin</a>.”</p>
+<p>This package is a good reminder of the impact that a custom errors package
+can have on a project, and that it must remain easy to implement bespoke
+error implementations.
+It introduced the idea of <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code>, although the one in the draft design
+differs in detail from Upspin’s.
+We considered for a while whether it was possible to adopt
+something like Upspin’s <code class="docutils literal notranslate"><span class="pre">errors.Match</span></code>, perhaps even to generalize
+both the draft design’s <code class="docutils literal notranslate"><span class="pre">errors.Is</span></code> and <code class="docutils literal notranslate"><span class="pre">errors.As</span></code> into a single
+primitive <code class="docutils literal notranslate"><span class="pre">errors.Match</span></code>.
+In the end we could not.</p>
+</div>
+</div>
+<div class="section" id="designs-in-other-languages">
+<h2>Designs in Other Languages<a class="headerlink" href="#designs-in-other-languages" title="Permalink to this headline">¶</a></h2>
+<p>Most languages do not allow entirely user-defined error implementations.
+Instead they define an exception base class that users extend;
+the base class provides a common place to hang functionality
+and would enable answering these questions in quite a different way.
+But of course Go has no inheritance or base classes.</p>
+<p>Rust is similar to Go in that it defines an error as anything
+implementing a particular interface.
+In Rust, that interface is three methods:
+<code class="docutils literal notranslate"><span class="pre">Display</span></code> <code class="docutils literal notranslate"><span class="pre">fmt</span></code>, to print the display form of the error;
+<code class="docutils literal notranslate"><span class="pre">Debug</span></code> <code class="docutils literal notranslate"><span class="pre">fmt</span></code>, to print the debug form of the error,
+typically a dump of the data structure itself,
+and <code class="docutils literal notranslate"><span class="pre">cause</span></code>, which returns the “lower-level cause of this error,”
+analogous to <code class="docutils literal notranslate"><span class="pre">Unwrap</span></code>.</p>
+<p>Rust does not appear to provide analogues to the draft design’s
+<code class="docutils literal notranslate"><span class="pre">errors.Is</span></code> or <code class="docutils literal notranslate"><span class="pre">errors.As</span></code>, or any other helpers that walk the
+error cause chain.
+Of course, in Rust, the <code class="docutils literal notranslate"><span class="pre">cause</span></code> method is required, not optional.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="go2draft-generics-overview.html" class="btn btn-neutral float-right" title="Generics — Problem Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="go2draft-error-printing.html" class="btn btn-neutral float-left" title="Error Printing — Draft Design" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

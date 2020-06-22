@@ -1,0 +1,1263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Built in support for high performance unbounded queue &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Go 2 transition" href="28221-go2-transitions.html" />
+    <link rel="prev" title="Proposal: Binary-Only Packages" href="2775-binary-only-packages.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Built in support for high performance unbounded queue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reasoning">Reasoning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#research">Research</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmark-results">Benchmark Results</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#impl7-design-and-implementation">Impl7 Design and Implementation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#design-considerations">Design Considerations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#impl7-benchmark-results">Impl7 Benchmark Results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#internal-slice-size">Internal Slice Size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api">API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#range-support">Range Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-type">Data Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#safe-for-concurrent-use">Safe for Concurrent Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#drawbacks">Drawbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#open-questions-issues">Open Questions/Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Built in support for high performance unbounded queue</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/27935-unbounded-queue-package.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-built-in-support-for-high-performance-unbounded-queue">
+<h1>Proposal: Built in support for high performance unbounded queue<a class="headerlink" href="#proposal-built-in-support-for-high-performance-unbounded-queue" title="Permalink to this headline">¶</a></h1>
+<p>Author: Christian Petrin.</p>
+<p>Last updated: October 2, 2018</p>
+<p>Discussion at: https://github.com/golang/go/issues/27935</p>
+<p>Design document at https://github.com/golang/proposal/blob/master/design/27935-unbounded-queue-package.md</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>I propose to add a new package, “container/queue”, to the standard library to
+support an in-memory, unbounded, general purpose queue implementation.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Queue_(abstract_data_type)">Queues</a> in computer
+science is a very old, well established and well known concept, yet Go doesn’t
+provide a specialized, safe to use, performant and issue free unbounded queue
+implementation.</p>
+<p>Buffered channels provide an excellent option to be used as a queue, but
+buffered channels are bounded and so doesn’t scale to support very large data
+sets. The same applies for the standard <a class="reference external" href="https://github.com/golang/go/tree/master/src/container/ring">ring
+package</a>.</p>
+<p>The standard <a class="reference external" href="https://github.com/golang/go/tree/master/src/container/list">list
+package</a> can be
+used as the underlying data structure for building unbounded queues, but the
+performance yielded by this linked list based implementation <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/bench_queue">is not
+optimal</a>.</p>
+<p>Implementing a queue using slices as suggested
+<a class="reference external" href="https://stackoverflow.com/a/26863706">here</a> is a feasible approach, but the
+performance yielded by this implementation can be abysmal in some <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/bench_queue">high load
+scenarios</a>.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Queues that grows dynamically has many uses. As an example, I’m working on a
+logging system called <a class="reference external" href="https://github.com/cloud-logger/docs">CloudLogger</a> that
+sends all logged data to external logging management systems, such as
+<a class="reference external" href="https://cloud.google.com/stackdriver/">Stackdriver</a> and
+<a class="reference external" href="https://aws.amazon.com/cloudwatch/">Cloudwatch</a>. External logging systems
+typically <a class="reference external" href="https://en.wikipedia.org/wiki/Rate_limiting">rate limit</a> how much
+data their service will accept for a given account and time frame. So in a
+scenario where the hosting application is logging more data than the logging
+management system will accept at a given moment, CloudLogger has to queue the
+extra logs and send them to the logging management system at a pace the system
+will accept. As there’s no telling how much data will have to be queued as it
+depends on the current traffic, an unbounded, dynamically growing queue is the
+ideal data structure to be used. Buffered channels in this scenario is not ideal
+as they have a limit on how much data they will accept, and once that limit has
+been reached, the producers (routines adding to the channel) start to block,
+making the adding to the channel operation an “eventual” synchronous process. A
+fully asynchronous operation in this scenario is highly desirable as logging
+data should not slow down significantly the hosting application.</p>
+<p>Above problem is a problem that, potentially, every system that calls another
+system faces. And in the <a class="reference external" href="https://en.wikipedia.org/wiki/Cloud_computing">cloud</a>
+and <a class="reference external" href="https://en.wikipedia.org/wiki/Microservices">microservices</a> era, this is an
+extremely common scenario.</p>
+<p>Due to the lack of support for built in unbounded queues in Go, Go engineers are
+left to either:</p>
+<ol class="simple">
+<li><p>Research and use external packages, or</p></li>
+<li><p>Build their own queue implementation</p></li>
+</ol>
+<p>Both approaches are riddled with pitfalls.</p>
+<p>Using external packages, specially in enterprise level software, requires a lot
+of care as using external, potentially untested and hard to understand code can
+have unwanted consequences. This problem is made much worse by the fact that,
+currently, there’s no well established and disseminated open source Go queue
+implementation according to <a class="reference external" href="https://stackoverflow.com/questions/2818852/is-there-a-queue-implementation">this stackoverflow
+discussion</a>,
+<a class="reference external" href="https://github.com/search?l=Go&amp;q=go+queue&amp;type=Repositories">this github search for Go
+queues</a> and
+<a class="reference external" href="https://awesome-go.com/">Awesome Go</a>.</p>
+<p>Building a queue, on the other hand, might sound like a compelling argument, but
+building efficient, high performant, bug free unbounded queue is a hard job that
+requires a pretty solid computer science foundation as well a good deal of time
+to research different design approaches, test different implementations, make
+sure the code is bug and memory leak free, etc.</p>
+<p>In the end what Go engineers have been doing up to this point is building their
+own queues, which are for the most part inefficient and can have disastrous, yet
+hidden performance and memory issues. As examples of poorly designed and/or
+implemented queues, the approaches suggested
+<a class="reference external" href="https://stackoverflow.com/a/26863706">here</a> and
+<a class="reference external" href="https://stackoverflow.com/a/11757161">here</a> (among many others), requires
+linear copy of the internal slice for resizing purposes. Some implementations
+also has memory issues such as an ever expanding internal slice and memory
+leaks.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I propose to add a new package, “container/queue”, to the standard library to
+support in-memory unbounded queues. The <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/queueimpl7/queueimpl7.go">proposed queue
+implementation</a>
+offers <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/bench_queue">excellent performance and very low memory
+consumption</a>
+when comparing it to three promising open source implementations
+(<a class="reference external" href="https://github.com/gammazero/deque">gammazero</a>,
+<a class="reference external" href="https://github.com/phf/go-queue">phf</a> and
+<a class="reference external" href="https://github.com/juju/utils/tree/master/deque">juju</a>); to use Go channels as
+queue; the standard list package as a queue as well as six other experimental
+queue implementations.</p>
+<p>The <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/queueimpl7/queueimpl7.go">proposed queue
+implementation</a>
+offers the most balanced approach to performance given different loads, being
+significantly faster and still uses less memory than every other queue
+implementation in the
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/benchmark_test.go">tests</a>.</p>
+<p>The closest data structure Go has to offer for building dynamically growing
+queues for large data sets is the <a class="reference external" href="https://github.com/golang/go/tree/master/src/container/list">standard list
+package</a>. When
+comparing the proposed solution to <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/benchmark_test.go">using the list package as an unbounded
+queue</a>
+(refer to “BenchmarkList”), the proposed solution is consistently faster than
+using the list package as a queue as well as displaying a much lower memory
+footprint.</p>
+<div class="section" id="reasoning">
+<h3>Reasoning<a class="headerlink" href="#reasoning" title="Permalink to this headline">¶</a></h3>
+<p>There’s <a class="reference external" href="https://en.wikipedia.org/wiki/Queue_(abstract_data_type)#Queue_implementation">two well accepted
+approaches</a>
+to implementing queues when in comes to the queue underlying data structure:</p>
+<ol class="simple">
+<li><p>Using linked list</p></li>
+<li><p>Using array</p></li>
+</ol>
+<p>Linked list as the underlying data structure for an unbounded queue has the
+advantage of scaling efficiently when the underlying data structure needs to
+grow to accommodate more values. This is due to the fact that the existing
+elements doesn’t need to be repositioned or copied around when the queue needs
+to grow.</p>
+<p>However, there’s a few concerns with this approach:</p>
+<ol class="simple">
+<li><p>The use of prev/next pointers for each value requires a good deal of extra
+memory</p></li>
+<li><p>Due to the fact that each “node” in the linked list can be allocated far away
+from the previous one, navigating through the list can be slow due to its bad
+<a class="reference external" href="https://www.cs.cornell.edu/courses/cs3110/2012sp/lectures/lec25-locality/lec25.html">memory
+locality</a>
+properties</p></li>
+<li><p>Adding new values always require new memory allocations and pointers being
+set, hindering performance</p></li>
+</ol>
+<p>On the other hand, using a slice as the underlying data structure for unbounded
+queues has the advantage of very good <a class="reference external" href="https://www.cs.cornell.edu/courses/cs3110/2012sp/lectures/lec25-locality/lec25.html">memory
+locality</a>,
+making retrieval of values faster when comparing to linked lists. Also an “alloc
+more than needed right now” approach can easily be implemented with slices.</p>
+<p>However, when the slice needs to expand to accommodate new values, a <a class="reference external" href="https://en.wikipedia.org/wiki/Dynamic_array#Geometric_expansion_and_amortized_cost">well
+adopted
+strategy</a>
+is to allocate a new, larger slice, copy over all elements from the previous
+slice into the new one and use the new one to add the new elements.</p>
+<p>The problem with this approach is the obvious need to copy all the values from
+the older, small slice, into the new one, yielding a poor performance when the
+amount of values that need copying are fairly large.</p>
+<p>Another potential problem is a theoretical lower limit on how much data they can
+hold as slices, like arrays, have to allocate its specified positions in
+sequential memory addresses, so the maximum number of items the queue would ever
+be able to hold is the maximum size a slice can be allocated on that particular
+system at any given moment. Due to modern memory management techniques such as
+<a class="reference external" href="https://en.wikipedia.org/wiki/Virtual_memory">virtual memory</a> and
+<a class="reference external" href="https://en.wikipedia.org/wiki/Paging">paging</a>, this is a very hard scenario to
+corroborate thru practical testing.</p>
+<p>Nonetheless, this approach doesn’t scale well with large data sets.</p>
+<p>Having said that, there’s a third, newer approach to implementing unbounded
+queues: use fixed size linked slices as the underlying data structure.</p>
+<p>The fixed size linked slices approach is a hybrid between the first two,
+providing good memory locality arrays have alongside the efficient growing
+mechanism linked lists offer. It is also not limited on the maximum size a slice
+can be allocated, being able to hold and deal efficiently with a theoretical
+much larger amount of data than pure slice based implementations.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="research">
+<h3>Research<a class="headerlink" href="#research" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/cloud-spin/queue">A first implementation</a> of the new design
+was built.</p>
+<p>The benchmark tests showed the new design was very promising, so I decided to
+research about other possible queue designs and implementations with the goal to
+improve the first design and implementation.</p>
+<p>As part of the research to identify the best possible queue designs and
+implementations, I implemented and probed below queue implementations.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl1/queueimpl1.go">queueimpl1</a>:
+custom queue implementation that stores the values in a simple slice. Pop
+removes the first slice element. This is a slice based implementation that
+tests <a class="reference external" href="https://stackoverflow.com/a/26863706">this</a> suggestion.</p></li>
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl2/queueimpl2.go">queueimpl2</a>:
+custom queue implementation that stores the values in a simple slice. Pop
+moves the current position to next one instead of removing the first element.
+This is a slice based implementation similarly to queueimpl1, but differs in
+the fact that it uses pointers to point to the current first element in the
+queue instead of removing the first element.</p></li>
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl3/queueimpl3.go">queueimpl3</a>:
+custom queue implementation that stores the values in linked slices. This
+implementation tests the queue performance when controlling the length and
+current positions in the slices using the builtin len and append functions.</p></li>
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl4/queueimpl4.go">queueimpl4</a>:
+custom queue implementation that stores the values in linked arrays. This
+implementation tests the queue performance when controlling the length and
+current positions in the arrays using simple local variables instead of the
+built in len and append functions (i.e. it uses arrays instead of slices).</p></li>
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl5/queueimpl5.go">queueimpl5</a>:
+custom queue implementation that stores the values in linked slices. This
+implementation tests the queue performance when storing the “next” pointer as
+part of the values slice instead of having it as a separate “next” field. The
+next element is stored in the last position of the internal slices, which is a
+reserved position.</p></li>
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl6/queueimpl6.go">queueimpl6</a>:
+custom queue implementation that stores the values in linked slices. This
+implementation tests the queue performance when performing lazy creation of
+the first slice as well as starting with an slice of size 1 and doubling its
+size up to 128, everytime a new linked slice needs to be created.</p></li>
+<li><p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">queueimpl7</a>:
+custom queue implementation that stores the values in linked slices. This
+implementation tests the queue performance when performing lazy creation of
+the internal slice as well as starting with a 1-sized slice, allowing it to
+grow up to 16 by using the built in append function. Subsequent slices are
+created with 128 fixed size.</p></li>
+</ul>
+<p>Also as part of the research, I investigated and probed below open source queue
+implementations as well.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/phf/go-queue">phf</a>: this is a slice, ring based queue
+implementation. Interesting to note the author did a pretty good job
+researching and probing other queue implementations as well.</p></li>
+<li><p><a class="reference external" href="https://github.com/gammazero/deque">gammazero</a>: the deque implemented in this
+package is also a slice, ring based queue implementation.</p></li>
+<li><p><a class="reference external" href="https://github.com/juju/utils/tree/master/deque">juju</a>: the deque implemented
+in this package uses a linked list based approach, similarly to other
+experimental implementations in this package such as
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl3/queueimpl3.go">queueimpl3</a>.
+The biggest difference between this implementation and the other experimental
+ones is the fact that this queue uses the standard list package as the linked
+list. The standard list package implements a doubly linked list, while the
+experimental implementations implements their own singly linked list.</p></li>
+</ul>
+<p>The <a class="reference external" href="https://github.com/golang/go/blob/master/src/container/list/list.go">standard list
+package</a> as
+well as buffered channels were probed as well.</p>
+</div>
+<div class="section" id="benchmark-results">
+<h3>Benchmark Results<a class="headerlink" href="#benchmark-results" title="Permalink to this headline">¶</a></h3>
+<p>Initialization time only<br/> Performance<br/>
+<img alt="ns/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-0-items-perf.jpg?raw=true" /> <br/></p>
+<p>Memory<br/>
+<img alt="B/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-0-items-mem.jpg?raw=true" /></p>
+<p>Add and remove 1k items<br/> Performance<br/>
+<img alt="ns/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-1k-items-perf.jpg?raw=true" /></p>
+<p>Memory<br/>
+<img alt="B/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-1k-items-mem.jpg?raw=true" /> <br/></p>
+<p>Add and remove 100k items<br/> Performance<br/>
+<img alt="ns/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-100k-items-perf.jpg?raw=true" /></p>
+<p>Memory<br/>
+<img alt="B/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-100k-items-mem.jpg?raw=true" /> <br/></p>
+<p>Aggregated Results<br/> Performance<br/>
+<img alt="ns/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-line-perf.jpg?raw=true" /></p>
+<p>Memory<br/>
+<img alt="B/op" src="https://github.com/christianrpetrin/queue-tests/blob/master/images/queue-line-mem.jpg?raw=true" /> <br/></p>
+<p>Detailed, curated results can be found
+<a class="reference external" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRnCm7v51Eo5nq66NsGi8aQI6gL14XYJWqaeRJ78ZIWq1pRCtEZfsLD2FcI-gIpUhhTPnkzqDte_SDB/pubhtml?gid=668319604&amp;single=true">here</a></p>
+<p>Aggregated, curated results can be found
+<a class="reference external" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRnCm7v51Eo5nq66NsGi8aQI6gL14XYJWqaeRJ78ZIWq1pRCtEZfsLD2FcI-gIpUhhTPnkzqDte_SDB/pubhtml?gid=582031751&amp;single=true">here</a>
+<br/></p>
+<p>Given above results,
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">queueimpl7</a>,
+henceforth just “impl7”, proved to be the most balanced implementation, being
+either faster or very competitive in all test scenarios from a performance and
+memory perspective.</p>
+<p>Refer <a class="reference external" href="https://github.com/christianrpetrin/queue-tests">here</a> for more details
+about the tests.</p>
+<p>The benchmark tests can be found
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/benchmark_test.go">here</a>.</p>
+<div class="section" id="impl7-design-and-implementation">
+<h4>Impl7 Design and Implementation<a class="headerlink" href="#impl7-design-and-implementation" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">Impl7</a>
+was the result of the observation that some slice based implementations such as
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl1/queueimpl1.go">queueimpl1</a>
+and
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl2/queueimpl2.go">queueimpl2</a>
+offers phenomenal performance when the queue is used with small data sets.</p>
+<p>For instance, comparing
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl3/queueimpl3.go">queueimpl3</a>
+(very simple linked slice implementation) with
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl1/queueimpl1.go">queueimpl1</a>
+(very simple slice based implementation), the results at adding 0 (init time
+only), 1 and 10 items are very favorable for impl1, from a performance and
+memory perspective.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>benchstat rawresults/bench-impl1.txt rawresults/bench-impl3.txt
+name       old time/op    new time/op    delta
+/0-4         6.83ns ± 3%  472.53ns ± 7%   +6821.99%  (p=0.000 n=20+17)
+/1-4         48.1ns ± 6%   492.4ns ± 5%    +924.66%  (p=0.000 n=20+20)
+/10-4         532ns ± 5%     695ns ± 8%     +30.57%  (p=0.000 n=20+20)
+/100-4       3.19µs ± 2%    2.50µs ± 4%     -21.69%  (p=0.000 n=18+19)
+/1000-4      24.5µs ± 3%    23.6µs ± 2%      -3.33%  (p=0.000 n=19+19)
+/10000-4      322µs ± 4%     238µs ± 1%     -26.02%  (p=0.000 n=19+18)
+/100000-4    15.8ms ±10%     3.3ms ±13%     -79.32%  (p=0.000 n=20+20)
+
+name       old alloc/op   new alloc/op   delta
+/0-4          0.00B       2080.00B ± 0%       +Inf%  (p=0.000 n=20+20)
+/1-4          16.0B ± 0%   2080.0B ± 0%  +12900.00%  (p=0.000 n=20+20)
+/10-4          568B ± 0%     2152B ± 0%    +278.87%  (p=0.000 n=20+20)
+/100-4       4.36kB ± 0%    2.87kB ± 0%     -34.13%  (p=0.000 n=20+20)
+/1000-4      40.7kB ± 0%    24.6kB ± 0%     -39.54%  (p=0.000 n=20+20)
+/10000-4      746kB ± 0%     244kB ± 0%     -67.27%  (p=0.000 n=20+20)
+/100000-4    10.0MB ± 0%     2.4MB ± 0%     -75.85%  (p=0.000 n=15+20)
+
+name       old allocs/op  new allocs/op  delta
+/0-4           0.00           2.00 ± 0%       +Inf%  (p=0.000 n=20+20)
+/1-4           1.00 ± 0%      2.00 ± 0%    +100.00%  (p=0.000 n=20+20)
+/10-4          14.0 ± 0%      11.0 ± 0%     -21.43%  (p=0.000 n=20+20)
+/100-4          108 ± 0%       101 ± 0%      -6.48%  (p=0.000 n=20+20)
+/1000-4       1.01k ± 0%     1.01k ± 0%      +0.50%  (p=0.000 n=20+20)
+/10000-4      10.0k ± 0%     10.2k ± 0%      +1.35%  (p=0.000 n=20+20)
+/100000-4      100k ± 0%      102k ± 0%      +1.53%  (p=0.000 n=20+20)
+</pre></div>
+</div>
+<p>Impl7 is a hybrid experiment between using a simple slice based queue
+implementation for small data sets and the fixed size linked slice approach for
+large data sets, which is an approach that scales really well, offering really
+good performance for small and large data sets.</p>
+<p>The implementation starts by lazily creating the first slice to hold the first
+values added to the queue.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="p">(</span>
+    <span class="c1">// firstSliceSize holds the size of the first slice.</span>
+    <span class="nx">firstSliceSize</span> <span class="p">=</span> <span class="mi">1</span>
+
+    <span class="c1">// maxFirstSliceSize holds the maximum size of the first slice.</span>
+    <span class="nx">maxFirstSliceSize</span> <span class="p">=</span> <span class="mi">16</span>
+
+    <span class="c1">// maxInternalSliceSize holds the maximum size of each internal slice.</span>
+    <span class="nx">maxInternalSliceSize</span> <span class="p">=</span> <span class="mi">128</span>
+<span class="p">)</span>
+
+<span class="o">...</span>
+
+<span class="c1">// Push adds a value to the queue.</span>
+<span class="c1">// The complexity is amortized O(1).</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">q</span> <span class="o">*</span><span class="nx">Queueimpl7</span><span class="p">)</span> <span class="nx">Push</span><span class="p">(</span><span class="nx">v</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">q</span><span class="p">.</span><span class="nx">head</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">h</span> <span class="o">:=</span> <span class="nx">newNode</span><span class="p">(</span><span class="nx">firstSliceSize</span><span class="p">)</span> <span class="c1">// Returns a 1-sized slice.</span>
+        <span class="nx">q</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="nx">h</span>
+        <span class="nx">q</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="nx">h</span>
+        <span class="nx">q</span><span class="p">.</span><span class="nx">lastSliceSize</span> <span class="p">=</span> <span class="nx">maxFirstSliceSize</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">tail</span><span class="p">.</span><span class="nx">v</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">lastSliceSize</span> <span class="p">{</span>
+        <span class="nx">n</span> <span class="o">:=</span> <span class="nx">newNode</span><span class="p">(</span><span class="nx">maxInternalSliceSize</span><span class="p">)</span> <span class="c1">// Returns a 128-sized slice.</span>
+        <span class="nx">q</span><span class="p">.</span><span class="nx">tail</span><span class="p">.</span><span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span>
+        <span class="nx">q</span><span class="p">.</span><span class="nx">tail</span> <span class="p">=</span> <span class="nx">n</span>
+        <span class="nx">q</span><span class="p">.</span><span class="nx">lastSliceSize</span> <span class="p">=</span> <span class="nx">maxInternalSliceSize</span>
+    <span class="p">}</span>
+
+    <span class="nx">q</span><span class="p">.</span><span class="nx">tail</span><span class="p">.</span><span class="nx">v</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">tail</span><span class="p">.</span><span class="nx">v</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span>
+    <span class="nx">q</span><span class="p">.</span><span class="nx">len</span><span class="o">++</span>
+<span class="p">}</span>
+
+<span class="o">...</span>
+
+<span class="c1">// newNode returns an initialized node.</span>
+<span class="kd">func</span> <span class="nx">newNode</span><span class="p">(</span><span class="nx">capacity</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">Node</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="nx">Node</span><span class="p">{</span>
+        <span class="nx">v</span><span class="p">:</span> <span class="nb">make</span><span class="p">([]</span><span class="kd">interface</span><span class="p">{},</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">capacity</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The very first created slice is created with capacity 1. The implementation
+allows the builtin append function to dynamically resize the slice up to 16
+(maxFirstSliceSize) positions. After that it reverts to creating fixed size 128
+position slices, which offers the best performance for data sets above 16 items.</p>
+<p>16 items was chosen as this seems to provide the best balanced performance for
+small and large data sets according to the <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/bench_slice_size">array size benchmark
+tests</a>.
+Above 16 items, growing the slice means allocating a new, larger one and copying
+all 16 elements from the previous slice into the new one. The append function
+phenomenal performance can only compensate for the added copying of elements if
+the data set is very small, no more than 8 items in the benchmark tests. For
+above 8 items, the fixed size slice approach is consistently faster and uses
+less memory, where 128 sized slices are allocated and linked together when the
+data structure needs to scale to accommodate new values.</p>
+<p>Why 16? Why not 15 or 14?</p>
+<p>The builtin append function, as of “go1.11 darwin/amd64”, seems to double the
+slice size every time it  needs to allocate a new one.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">ts</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">ts</span><span class="p">))</span> <span class="c1">// Slice has 1 item; output: 1</span>
+
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">ts</span><span class="p">))</span> <span class="c1">// Slice has 2 items; output: 2</span>
+
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">ts</span><span class="p">))</span> <span class="c1">// Slice has 3 items; output: 4</span>
+
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">ts</span><span class="p">))</span> <span class="c1">// Slice has 5 items; output: 8</span>
+
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">ts</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">ts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nb">cap</span><span class="p">(</span><span class="nx">ts</span><span class="p">))</span> <span class="c1">// Slice has 9 items; output: 16</span>
+</pre></div>
+</div>
+<p>Since the append function will resize the slice from 8 to 16 positions, it makes
+sense to use all 16 already allocated positions before switching to the fixed
+size slices approach.</p>
+</div>
+<div class="section" id="design-considerations">
+<h4>Design Considerations<a class="headerlink" href="#design-considerations" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">Impl7</a>
+uses linked slices as its underlying data structure.</p>
+<p>The reasonale for the choice comes from two main obervations of slice based
+queues:</p>
+<ol class="simple">
+<li><p>When the queue needs to expand to accomodate new values, a new, larger slice
+needs to be allocated and used</p></li>
+<li><p>Allocating and managing large slices is expensive, especially in an
+overloaded system with little avaialable physical memory</p></li>
+</ol>
+<p>To help clarify the scenario, below is what happens when a slice based queue
+that already holds, say 1bi items, needs to expand to accommodate a new item.</p>
+<p>Slice based implementation</p>
+<ul class="simple">
+<li><p>Allocate a new, <a class="reference external" href="https://en.wikipedia.org/wiki/Dynamic_array#Geometric_expansion_and_amortized_cost">twice the
+size</a>
+of the previous allocated one, say 2 billion positions slice</p></li>
+<li><p>Copy over all 1 billion items from the previous slice into the new one</p></li>
+<li><p>Add the new value into the first unused position in the new array, position
+1000000001.</p></li>
+</ul>
+<p>The same scenario for impl7 plays out like below.</p>
+<p>Impl7</p>
+<ul class="simple">
+<li><p>Allocate a new 128 size slice</p></li>
+<li><p>Set the next pointer</p></li>
+<li><p>Add the value into the first position of the new array, position 0</p></li>
+</ul>
+<p>Impl7 never copies data around, but slice based ones do, and if the data set is
+large, it doesn’t matter how fast the copying algorithm is. The copying has to
+be done and will take some time.</p>
+<p>The decision to use linked slices was also the result of the observation that
+slices goes to great length to provide predictive, indexed positions. A hash
+table, for instance, absolutely need this property, but not a queue. So impl7
+completely gives up this property and focus on what really matters: add to end,
+retrieve from head. No copying around and repositioning of elements is needed
+for that. So when a slice goes to great length to provide that functionality,
+the whole work of allocating new arrays, copying data around is all wasted work.
+None of that is necessary. And this work costs dearly for large data sets as
+observed in the
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/bench_queue">tests</a>.</p>
+</div>
+<div class="section" id="impl7-benchmark-results">
+<h4>Impl7 Benchmark Results<a class="headerlink" href="#impl7-benchmark-results" title="Permalink to this headline">¶</a></h4>
+<p>Below compares impl7 with a few selected implementations.</p>
+<p>The tests name are formatted given below.</p>
+<ul class="simple">
+<li><p>Benchmark/N-4: benchmark a queue implementation where N denotes the number of
+items added and removed to/from the queue; 4 means the number of CPU cores in
+the host machine.</p></li>
+</ul>
+<p>Examples:</p>
+<ul class="simple">
+<li><p>Benchmark/0-4: benchmark the queue by creating a new instance of it. This only
+test initialization time.</p></li>
+<li><p>Benchmark/100-4: benchmark the queue by creating a new instance of it and
+adding and removing 100 items to/from the queue.</p></li>
+</ul>
+<hr class="docutils" />
+<p>Standard list used as a FIFO queue vs impl7.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>benchstat rawresults/bench-list.txt rawresults/bench-impl7.txt
+name       old time/op    new time/op    delta
+/0-4         34.9ns ± 1%     1.2ns ± 3%   -96.64%  (p=0.000 n=19+20)
+/1-4         77.0ns ± 1%    68.3ns ± 1%   -11.21%  (p=0.000 n=20+20)
+/10-4         574ns ± 0%     578ns ± 0%    +0.59%  (p=0.000 n=18+20)
+/100-4       5.94µs ± 1%    3.07µs ± 0%   -48.28%  (p=0.000 n=19+18)
+/1000-4      56.0µs ± 1%    25.8µs ± 1%   -53.92%  (p=0.000 n=20+20)
+/10000-4      618µs ± 1%     260µs ± 1%   -57.99%  (p=0.000 n=20+18)
+/100000-4    13.1ms ± 6%     3.1ms ± 3%   -76.50%  (p=0.000 n=20+20)
+
+name       old alloc/op   new alloc/op   delta
+/0-4          48.0B ± 0%      0.0B       -100.00%  (p=0.000 n=20+20)
+/1-4          96.0B ± 0%     48.0B ± 0%   -50.00%  (p=0.000 n=20+20)
+/10-4          600B ± 0%      600B ± 0%      ~     (all equal)
+/100-4       5.64kB ± 0%    3.40kB ± 0%   -39.72%  (p=0.000 n=20+20)
+/1000-4      56.0kB ± 0%    25.2kB ± 0%   -55.10%  (p=0.000 n=20+20)
+/10000-4      560kB ± 0%     243kB ± 0%   -56.65%  (p=0.000 n=20+20)
+/100000-4    5.60MB ± 0%    2.43MB ± 0%   -56.66%  (p=0.000 n=18+20)
+
+name       old allocs/op  new allocs/op  delta
+/0-4           1.00 ± 0%      0.00       -100.00%  (p=0.000 n=20+20)
+/1-4           2.00 ± 0%      2.00 ± 0%      ~     (all equal)
+/10-4          20.0 ± 0%      15.0 ± 0%   -25.00%  (p=0.000 n=20+20)
+/100-4          200 ± 0%       107 ± 0%   -46.50%  (p=0.000 n=20+20)
+/1000-4       2.00k ± 0%     1.02k ± 0%   -48.95%  (p=0.000 n=20+20)
+/10000-4      20.0k ± 0%     10.2k ± 0%   -49.20%  (p=0.000 n=20+20)
+/100000-4      200k ± 0%      102k ± 0%   -49.22%  (p=0.000 n=20+20)
+</pre></div>
+</div>
+<p>Impl7 is:</p>
+<ul class="simple">
+<li><p>Up to ~29x faster (1.2ns vs 34.9ns) than list package for init time (0 items)</p></li>
+<li><p>Up to ~4x faster (3.1ms vs 13.1ms) than list package for 100k items</p></li>
+<li><p>Uses ~1/2 memory (2.43MB vs 5.60MB) than list package for 100k items</p></li>
+</ul>
+<hr class="docutils" />
+<p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl1/queueimpl1.go">impl1</a>
+(simple slice based queue implementaion) vs impl7.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>benchstat rawresults/bench-impl1.txt rawresults/bench-impl7.txt
+name       old time/op    new time/op    delta
+/0-4         6.83ns ± 3%    1.18ns ± 3%   -82.79%  (p=0.000 n=20+20)
+/1-4         48.1ns ± 6%    68.3ns ± 1%   +42.23%  (p=0.000 n=20+20)
+/10-4         532ns ± 5%     578ns ± 0%    +8.55%  (p=0.000 n=20+20)
+/100-4       3.19µs ± 2%    3.07µs ± 0%    -3.74%  (p=0.000 n=18+18)
+/1000-4      24.5µs ± 3%    25.8µs ± 1%    +5.51%  (p=0.000 n=19+20)
+/10000-4      322µs ± 4%     260µs ± 1%   -19.23%  (p=0.000 n=19+18)
+/100000-4    15.8ms ±10%     3.1ms ± 3%   -80.60%  (p=0.000 n=20+20)
+
+name       old alloc/op   new alloc/op   delta
+/0-4          0.00B          0.00B           ~     (all equal)
+/1-4          16.0B ± 0%     48.0B ± 0%  +200.00%  (p=0.000 n=20+20)
+/10-4          568B ± 0%      600B ± 0%    +5.63%  (p=0.000 n=20+20)
+/100-4       4.36kB ± 0%    3.40kB ± 0%   -22.02%  (p=0.000 n=20+20)
+/1000-4      40.7kB ± 0%    25.2kB ± 0%   -38.25%  (p=0.000 n=20+20)
+/10000-4      746kB ± 0%     243kB ± 0%   -67.47%  (p=0.000 n=20+20)
+/100000-4    10.0MB ± 0%     2.4MB ± 0%   -75.84%  (p=0.000 n=15+20)
+
+name       old allocs/op  new allocs/op  delta
+/0-4           0.00           0.00           ~     (all equal)
+/1-4           1.00 ± 0%      2.00 ± 0%  +100.00%  (p=0.000 n=20+20)
+/10-4          14.0 ± 0%      15.0 ± 0%    +7.14%  (p=0.000 n=20+20)
+/100-4          108 ± 0%       107 ± 0%    -0.93%  (p=0.000 n=20+20)
+/1000-4       1.01k ± 0%     1.02k ± 0%    +1.09%  (p=0.000 n=20+20)
+/10000-4      10.0k ± 0%     10.2k ± 0%    +1.39%  (p=0.000 n=20+20)
+/100000-4      100k ± 0%      102k ± 0%    +1.54%  (p=0.000 n=20+20)
+</pre></div>
+</div>
+<p>Impl7 is:</p>
+<ul class="simple">
+<li><p>Up to ~5x faster (1.18ns vs 6.83ns) than impl1 for init time (0 items)</p></li>
+<li><p>Up to ~5x faster (3.1ms vs 15.8ms) than impl1 for 100k items</p></li>
+<li><p>Uses ~1/4 memory (2.4MB vs 10MB) than impl1 for 100k items</p></li>
+</ul>
+<p>It’s important to note that the performance and memory gains for impl7 is
+exponential like the larger the data set is due to the fact slice based
+implementations doesn’t scale well, <a class="reference external" href="https://en.wikipedia.org/wiki/Dynamic_array#Geometric_expansion_and_amortized_cost">paying a higher and higher
+price</a>,
+performance and memory wise, every time it needs to scale to accommodate an ever
+expanding data set.</p>
+<hr class="docutils" />
+<p><a class="reference external" href="https://github.com/phf/go-queue">phf</a> (slice, ring based FIFO queue
+implementation) vs impl7.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>benchstat rawresults/bench-phf.txt rawresults/bench-impl7.txt
+name       old time/op    new time/op    delta
+/0-4         28.1ns ± 1%     1.2ns ± 3%   -95.83%  (p=0.000 n=20+20)
+/1-4         42.5ns ± 1%    68.3ns ± 1%   +60.80%  (p=0.000 n=20+20)
+/10-4         681ns ± 1%     578ns ± 0%   -15.11%  (p=0.000 n=18+20)
+/100-4       4.55µs ± 1%    3.07µs ± 0%   -32.45%  (p=0.000 n=19+18)
+/1000-4      35.5µs ± 1%    25.8µs ± 1%   -27.32%  (p=0.000 n=18+20)
+/10000-4      349µs ± 2%     260µs ± 1%   -25.67%  (p=0.000 n=20+18)
+/100000-4    11.7ms ±11%     3.1ms ± 3%   -73.77%  (p=0.000 n=20+20)
+
+name       old alloc/op   new alloc/op   delta
+/0-4          16.0B ± 0%      0.0B       -100.00%  (p=0.000 n=20+20)
+/1-4          16.0B ± 0%     48.0B ± 0%  +200.00%  (p=0.000 n=20+20)
+/10-4          696B ± 0%      600B ± 0%   -13.79%  (p=0.000 n=20+20)
+/100-4       6.79kB ± 0%    3.40kB ± 0%   -49.94%  (p=0.000 n=20+20)
+/1000-4      57.0kB ± 0%    25.2kB ± 0%   -55.86%  (p=0.000 n=20+20)
+/10000-4      473kB ± 0%     243kB ± 0%   -48.68%  (p=0.000 n=20+20)
+/100000-4    7.09MB ± 0%    2.43MB ± 0%   -65.77%  (p=0.000 n=18+20)
+
+name       old allocs/op  new allocs/op  delta
+/0-4           1.00 ± 0%      0.00       -100.00%  (p=0.000 n=20+20)
+/1-4           1.00 ± 0%      2.00 ± 0%  +100.00%  (p=0.000 n=20+20)
+/10-4          15.0 ± 0%      15.0 ± 0%      ~     (all equal)
+/100-4          111 ± 0%       107 ± 0%    -3.60%  (p=0.000 n=20+20)
+/1000-4       1.02k ± 0%     1.02k ± 0%    +0.39%  (p=0.000 n=20+20)
+/10000-4      10.0k ± 0%     10.2k ± 0%    +1.38%  (p=0.000 n=20+20)
+/100000-4      100k ± 0%      102k ± 0%    +1.54%  (p=0.000 n=20+20)
+</pre></div>
+</div>
+<p>Impl7 is:</p>
+<ul class="simple">
+<li><p>Up to ~23x faster (1.2ns vs 28.1ns) than phf for init time (0 items)</p></li>
+<li><p>Up to ~3x faster (3.1ms vs 11.7ms) than phf for 100k items</p></li>
+<li><p>Uses ~1/2 memory (2.43MB vs 7.09MB) than phf for 100k items</p></li>
+</ul>
+<hr class="docutils" />
+<p>Buffered channel vs impl7.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>benchstat rawresults/bench-channel.txt rawresults/bench-impl7.txt
+name       old time/op    new time/op    delta
+/0-4         30.2ns ± 1%     1.2ns ± 3%   -96.12%  (p=0.000 n=19+20)
+/1-4         87.6ns ± 1%    68.3ns ± 1%   -22.00%  (p=0.000 n=19+20)
+/10-4         704ns ± 1%     578ns ± 0%   -17.90%  (p=0.000 n=20+20)
+/100-4       6.78µs ± 1%    3.07µs ± 0%   -54.70%  (p=0.000 n=20+18)
+/1000-4      67.3µs ± 1%    25.8µs ± 1%   -61.65%  (p=0.000 n=20+20)
+/10000-4      672µs ± 1%     260µs ± 1%   -61.36%  (p=0.000 n=19+18)
+/100000-4    6.76ms ± 1%    3.07ms ± 3%   -54.61%  (p=0.000 n=19+20)
+
+name       old alloc/op   new alloc/op   delta
+/0-4          96.0B ± 0%      0.0B       -100.00%  (p=0.000 n=20+20)
+/1-4           112B ± 0%       48B ± 0%   -57.14%  (p=0.000 n=20+20)
+/10-4          248B ± 0%      600B ± 0%  +141.94%  (p=0.000 n=20+20)
+/100-4       1.69kB ± 0%    3.40kB ± 0%  +101.42%  (p=0.000 n=20+20)
+/1000-4      16.2kB ± 0%    25.2kB ± 0%   +55.46%  (p=0.000 n=20+20)
+/10000-4      162kB ± 0%     243kB ± 0%   +49.93%  (p=0.000 n=20+20)
+/100000-4    1.60MB ± 0%    2.43MB ± 0%   +51.43%  (p=0.000 n=16+20)
+
+name       old allocs/op  new allocs/op  delta
+/0-4           1.00 ± 0%      0.00       -100.00%  (p=0.000 n=20+20)
+/1-4           1.00 ± 0%      2.00 ± 0%  +100.00%  (p=0.000 n=20+20)
+/10-4          10.0 ± 0%      15.0 ± 0%   +50.00%  (p=0.000 n=20+20)
+/100-4          100 ± 0%       107 ± 0%    +7.00%  (p=0.000 n=20+20)
+/1000-4       1.00k ± 0%     1.02k ± 0%    +2.10%  (p=0.000 n=20+20)
+/10000-4      10.0k ± 0%     10.2k ± 0%    +1.61%  (p=0.000 n=20+20)
+/100000-4      100k ± 0%      102k ± 0%    +1.57%  (p=0.000 n=20+20)
+</pre></div>
+</div>
+<p>Impl7 is:</p>
+<ul class="simple">
+<li><p>Up to ~25x faster (1.2ns vs 30.2ns) than channels for init time (0 items)</p></li>
+<li><p>Up to ~2x faster (3.07ms vs 6.76ms) than channels for 100k items</p></li>
+<li><p>Uses ~50% MORE memory (2.43MB vs 1.60MB) than channels for 100k items</p></li>
+</ul>
+<p>Above is not really a fair comparison as standard buffered channels doesn’t
+scale (at all) and they are meant for routine synchronization. Nonetheless, they
+can and make for an excellent bounded FIFO queue option. Still, impl7 is
+consistently faster than channels across the board, but uses considerably more
+memory than channels.</p>
+<hr class="docutils" />
+<p>Given its excellent performance under all scenarios, the hybrid approach impl7
+seems to be the ideal candidate for a high performance, low memory footprint
+general purpose FIFO queue.</p>
+<p>For above reasons, I propose to port impl7 to the standard library.</p>
+<p>All raw benchmark results can be found
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/rawresults">here</a>.</p>
+</div>
+</div>
+<div class="section" id="internal-slice-size">
+<h3>Internal Slice Size<a class="headerlink" href="#internal-slice-size" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">Impl7</a>
+uses linked slices as its underlying data structure.</p>
+<p>The size of the internal slice does influence performance and memory consumption
+significantly.</p>
+<p>According to the <a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/queueimpl7/benchmark_test.go">internal slice size bench
+tests</a>,
+larger internal slice sizes yields better performance and lower memory
+footprint. However, the gains diminishes dramatically as the slice size
+increases.</p>
+<p>Below are a few interesting results from the benchmark tests.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">1</span><span class="o">-</span><span class="mi">4</span>                <span class="mi">20000</span>         <span class="mi">76836</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">53967</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">2752</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span>                <span class="mi">30000</span>         <span class="mi">59811</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">40015</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1880</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">4</span><span class="o">-</span><span class="mi">4</span>                <span class="mi">30000</span>         <span class="mi">42925</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">33039</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1444</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">8</span><span class="o">-</span><span class="mi">4</span>                <span class="mi">50000</span>         <span class="mi">36946</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">29551</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1226</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">16</span><span class="o">-</span><span class="mi">4</span>               <span class="mi">50000</span>         <span class="mi">30597</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">27951</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1118</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">32</span><span class="o">-</span><span class="mi">4</span>               <span class="mi">50000</span>         <span class="mi">28273</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">27343</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1064</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">64</span><span class="o">-</span><span class="mi">4</span>               <span class="mi">50000</span>         <span class="mi">26969</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">26895</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1036</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">128</span><span class="o">-</span><span class="mi">4</span>              <span class="mi">50000</span>         <span class="mi">27316</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">26671</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1022</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">256</span><span class="o">-</span><span class="mi">4</span>              <span class="mi">50000</span>         <span class="mi">26221</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">28623</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1016</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">512</span><span class="o">-</span><span class="mi">4</span>              <span class="mi">50000</span>         <span class="mi">25882</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">28559</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1012</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkMaxSubsequentSliceSize</span><span class="o">/</span><span class="mi">1024</span><span class="o">-</span><span class="mi">4</span>             <span class="mi">50000</span>         <span class="mi">25674</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>       <span class="mi">28527</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>       <span class="mi">1010</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+</pre></div>
+</div>
+<p>Given the fact that larger internal slices also means potentially more unused
+memory in some scenarios, 128 seems to be the perfect balance between
+performance and worst case scenario for memory footprint.</p>
+<p>Full results can be found
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/bench_slice_size">here</a>.</p>
+</div>
+<div class="section" id="api">
+<h3>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">Impl7</a>
+implements below API methods.</p>
+<p>| Operation | Method |
+| — | — |
+| Add | func (q *Queueimpl7) Push(v interface{}) |
+| Remove | func (q *Queueimpl7) Pop() (interface{}, bool) |
+| Size | func (q *Queueimpl7) Len() int |
+| Return First | func (q *Queueimpl7) Front() (interface{}, bool) |</p>
+<p>As nil values are considered valid queue values, similarly to the map data
+structure, “Front” and “Pop” returns a second bool parameter to indicate whether
+the returned value is valid and whether the queue is empty or not.</p>
+<p>The resonale for above method names and signatures are the need to keep
+compatibility with existing Go data structures such as the
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/list/list.go">list</a>,
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/ring/ring.go">ring</a> and
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/heap/heap.go">heap</a>
+packages.</p>
+<p>Below are the method names used by the existing list, ring and heap Go data
+structures, as well as the new proposed queue.</p>
+<p>| Operation | list | ring | heap | queue |
+| — | — | — | — | — |
+| Add | PushFront/PushBack | Link | Push | Push |
+| Remove | Remove | Unlink | Pop | Pop |
+| Size | Len | Len | - | Len |
+| Return First | Front | - | - | Front |</p>
+<p>For comparison purposes, below are the method names for
+<a class="reference external" href="http://www.cplusplus.com/reference/queue/queue/">C++</a>,
+<a class="reference external" href="https://docs.oracle.com/javase/7/docs/api/java/util/Queue.html">Java</a> and
+<a class="reference external" href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1?view=netframework-4.7.2">C#</a>
+for their queue implementation.</p>
+<p>| Operation | C++ | Java | C# |
+| — | — | — | — |
+| Add | push | add/offer | Enqueue |
+| Remove | pop | remove/poll | Dequeue |
+| Size | size | - | Count |
+| Return First | front | peek | Peek |</p>
+</div>
+<div class="section" id="range-support">
+<h3>Range Support<a class="headerlink" href="#range-support" title="Permalink to this headline">¶</a></h3>
+<p>Just like the current container data strucutures such as
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/list/list.go">list</a>,
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/ring/ring.go">ring</a> and
+<a class="reference external" href="https://github.com/golang/go/tree/master/src/container/heap">heap</a>, Impl7
+doesn’t support the range keyword for navigation.</p>
+<p>The API offers two ways to iterate over the queue items.</p>
+<p>Either use “Pop” to retrieve the first current element and the second bool
+parameter to check for an empty queue.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">();</span> <span class="nx">ok</span><span class="p">;</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Do something with v</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Or use “Len” and “Pop” to check for an empty queue and retrieve the first
+current element.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="nx">q</span><span class="p">.</span><span class="nx">Len</span><span class="p">()</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nx">v</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">()</span>
+    <span class="c1">// Do something with v</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-type">
+<h3>Data Type<a class="headerlink" href="#data-type" title="Permalink to this headline">¶</a></h3>
+<p>Just like the current container data strucutures such as the
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/list/list.go">list</a>,
+<a class="reference external" href="https://github.com/golang/go/blob/master/src/container/ring/ring.go">ring</a> and
+<a class="reference external" href="https://github.com/golang/go/tree/master/src/container/heap">heap</a>, Impl7 only
+supported data type is “interface{}”, making it usable by virtually any Go
+types.</p>
+<p>It is possible to implement support for specialized data types such as int,
+float, bool, etc, but that would require duplicating the Push/Pop methods to
+accept the different data types, much like
+strconv.ParseBool/ParseFloat/ParseInt/etc. However, with the impending release
+of generics, we should probrably wait as generics would solve this problem
+nicely.</p>
+</div>
+<div class="section" id="safe-for-concurrent-use">
+<h3>Safe for Concurrent Use<a class="headerlink" href="#safe-for-concurrent-use" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/christianrpetrin/queue-tests/tree/master/queueimpl7/queueimpl7.go">Impl7</a>
+is not safe for concurrent use by default. The rationale for this decision is
+below.</p>
+<ol class="simple">
+<li><p>Not all users will need a safe for concurrent use queue implementation</p></li>
+<li><p>Executing routine synchronization is expensive, causing performance to drop
+very significantly</p></li>
+<li><p>Getting impl7 to be safe for concurrent use is actually very simple</p></li>
+</ol>
+<p>Below is an example of a safe for concurrent use queue implementation that uses
+impl7 as its underlying queue.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">tests</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;sync&quot;</span>
+    <span class="s">&quot;testing&quot;</span>
+
+    <span class="s">&quot;github.com/christianrpetrin/queue-tests/queueimpl7&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">SafeQueue</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">q</span> <span class="nx">Queueimpl7</span>
+    <span class="nx">m</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SafeQueue</span><span class="p">)</span> <span class="nx">Len</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">q</span><span class="p">.</span><span class="nx">Len</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SafeQueue</span><span class="p">)</span> <span class="nx">Push</span><span class="p">(</span><span class="nx">v</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+
+    <span class="nx">s</span><span class="p">.</span><span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SafeQueue</span><span class="p">)</span> <span class="nx">Pop</span><span class="p">()</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SafeQueue</span><span class="p">)</span> <span class="nx">Front</span><span class="p">()</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Lock</span><span class="p">()</span>
+    <span class="k">defer</span> <span class="nx">s</span><span class="p">.</span><span class="nx">m</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">q</span><span class="p">.</span><span class="nx">Front</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">TestSafeQueue</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">q</span> <span class="nx">SafeQueue</span>
+
+    <span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">();</span> <span class="nx">ok</span><span class="p">;</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">ok</span> <span class="p">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span>
+   <span class="p">}</span>
+
+   <span class="c1">// Output:</span>
+   <span class="c1">// 1</span>
+   <span class="c1">// 2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="drawbacks">
+<h3>Drawbacks<a class="headerlink" href="#drawbacks" title="Permalink to this headline">¶</a></h3>
+<p>The biggest drawback of the proposed implementation is the potentially extra
+allocated but not used memory in its head and tail slices.</p>
+<p>This scenario realizes when exactly 17 items are added to the queue, causing the
+creation of a full sized internal slice of 128 positions. Initially only the
+first element in this new slice is used to store the added value. All the other
+127 elements are already allocated, but not used.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Assuming a 128 internal sized slice.</span>
+<span class="nx">q</span> <span class="o">:=</span> <span class="nx">queueimpl7</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+
+<span class="c1">// Push 16 items to fill the first dynamic slice (sized 16).</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+   <span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="c1">// Push 1 extra item that causes the creation of a new 128 sized slice to store this value.</span>
+<span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="c1">// Pops the first 16 items to release the first slice (sized 16).</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+   <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// As unsafe.Sizeof (https://golang.org/pkg/unsafe/#Sizeof) doesn&#39;t consider the length of slices,</span>
+<span class="c1">// we need to manually calculate the memory used by the internal slices.</span>
+<span class="kd">var</span> <span class="nx">internalSliceType</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%d bytes&quot;</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Sizeof</span><span class="p">(</span><span class="nx">q</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Sizeof</span><span class="p">(</span><span class="nx">internalSliceType</span><span class="p">)</span> <span class="cm">/* bytes per slice position */</span> <span class="o">*</span><span class="mi">127</span> <span class="cm">/* head slice unused positions */</span><span class="p">)))</span>
+
+<span class="c1">// Output for a 64bit system (Intel(R) Core(TM) i5-7267U CPU @ 3.10GHz): 2040 bytes</span>
+</pre></div>
+</div>
+<p>The worst case scenario realizes when exactly 145 items are added to the queue
+and 143 items are removed. This causes the queue struct to hold a 128-sized
+slice as its head slice, but only the last element is actually used. Similarly,
+the queue struct will hold a separate 128-sized slice as its tail slice, but
+only the first position in that slice is being used.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Assuming a 128 internal sized slice.</span>
+<span class="nx">q</span> <span class="o">:=</span> <span class="nx">queueimpl7</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
+
+<span class="c1">// Push 16 items to fill the first dynamic slice (sized 16).</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+   <span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Push an additional 128 items to fill the first full sized slice (sized 128).</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">128</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+   <span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Push 1 extra item that causes the creation of a new 128 sized slice to store this value,</span>
+<span class="c1">// adding a total of 145 items to the queue.</span>
+<span class="nx">q</span><span class="p">.</span><span class="nx">Push</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">// Pops the first 143 items to release the first dynamic slice (sized 16) and</span>
+<span class="c1">// 127 items from the first full sized slice (sized 128).</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">143</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+   <span class="nx">q</span><span class="p">.</span><span class="nx">Pop</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// As unsafe.Sizeof (https://golang.org/pkg/unsafe/#Sizeof) doesn&#39;t consider the length of slices,</span>
+<span class="c1">// we need to manually calculate the memory used by the internal slices.</span>
+<span class="kd">var</span> <span class="nx">internalSliceType</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%d bytes&quot;</span><span class="p">,</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Sizeof</span><span class="p">(</span><span class="nx">q</span><span class="p">)</span><span class="o">+</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Sizeof</span><span class="p">(</span><span class="nx">internalSliceType</span><span class="p">)</span> <span class="cm">/* bytes per slice position */</span> <span class="o">*</span><span class="p">(</span><span class="mi">127</span> <span class="cm">/* head slice unused positions */</span> <span class="o">+</span><span class="mi">127</span> <span class="cm">/* tail slice unused positions */</span><span class="p">))))</span>
+
+<span class="c1">// Output for a 64bit system (Intel(R) Core(TM) i5-7267U CPU @ 3.10GHz): 4072 bytes</span>
+</pre></div>
+</div>
+<p>Above code was run on Go version “go1.11 darwin/amd64”.</p>
+</div>
+</div>
+<div class="section" id="open-questions-issues">
+<h2>Open Questions/Issues<a class="headerlink" href="#open-questions-issues" title="Permalink to this headline">¶</a></h2>
+<p>Should this be a deque (double-ended queue) implementation instead? The deque
+could be used as a stack as well, but it would make more sense to have a queue
+and stack implementations (like most mainstream languages have) instead of a
+deque that can be used as a stack (confusing). Stack is a very important
+computer science data structure as well and so I believe Go should have a
+specialized implementation for it as well (given the specialized implementation
+offers real value to the users and not just a “nice” named interface and
+methods).</p>
+<p>Should “Pop” and “Front” return only the value instead of the value and a second
+bool parameter (which indicates whether the queue is empty or not)? The
+implication of the change is adding nil values wouldn’t be valid anymore so
+“Pop” and “Front” would return nil when the queue is empty. Panic should be
+avoided in libraries.</p>
+<p>The memory footprint for a 128 sized internal slice causes, in the worst case
+scenario, a 2040 bytes of memory allocated (on a 64bit system) but not used.
+Switching to 64 means roughly half the memory would be used with a slight ~2.89%
+performance drop (252813ns vs 260137ns). The extra memory footprint is not worth
+the extra performance gain is a very good point to make. Should we change this
+value to 64 or maybe make it configurable?</p>
+<p>Should we also provide a safe for concurrent use implementation? A specialized
+implementation that would rely on atomic operations to update its internal
+indices and length could offer a much better performance when comparing to a
+similar implementation that relies on a mutex.</p>
+<p>With the impending release of generics, should we wait to release the new queue
+package once the new generics framework is released?</p>
+<p>Should we implement support for the range keyword for the new queue? It could be
+done in a generic way so other data structures could also benefit from this
+feature. For now, IMO, this is a topic for another proposal/discussion.</p>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>I propose to add a new package, “container/queue”, to the standard library to
+support an in-memory, unbounded, general purpose queue implementation.</p>
+<p>I feel strongly this proposal should be accepted due to below reasons.</p>
+<ol class="simple">
+<li><p>The proposed solution was well researched and probed, being dramatically and
+consistently faster than 6 other experimental queue implementations as well 3
+promising open source queue implementations as well the standard list package
+and buffered channels; it still consumes considerably less memory than every
+other queue implementation tested, except for buffered channels</p></li>
+<li><p>The proposed solution uses a new, unique approach to building queues, yet its
+<a class="reference external" href="https://github.com/christianrpetrin/queue-tests/blob/master/queueimpl7/queueimpl7.go">implementation</a>
+is clean and extremely simple. Both main methods, “Push” and “Pop”, are
+composed of only 16 and 19 lines of code (total), respectively. The proposed
+implementation also have proper tests with 100% test coverage and should
+require minimal maintenance moving forward</p></li>
+<li><p>I’ll implement any changes the Go community feel are needed for the proposed
+solution to be worth of the standard library and the Go community</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="28221-go2-transitions.html" class="btn btn-neutral float-right" title="Proposal: Go 2 transition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="2775-binary-only-packages.html" class="btn btn-neutral float-left" title="Proposal: Binary-Only Packages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

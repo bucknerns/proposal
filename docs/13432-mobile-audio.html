@@ -1,0 +1,642 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Audio for Mobile &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Natural XML" href="13504-natural-xml.html" />
+    <link rel="prev" title="Proposal: A Code of Conduct for the Go community" href="13073-code-of-conduct.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Audio for Mobile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#features-considered">Features considered</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#playback">Playback</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#decoding">Decoding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#remote-streaming">Remote streaming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#synchronization-and-composition">Synchronization and composition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#playlist-features">Playlist features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#goals">Goals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#short-term-goals">Short-term goals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#longer-term-goals">Longer-term goals</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#non-goals">Non-goals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-abstractions">Core abstractions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clip">Clip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#decoders">Decoders</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clip-sources">Clip sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#players">Players</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix-audio-apps-classification">Appendix: Audio Apps Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-a">Class A</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-b">Class B</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#class-c">Class C</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Audio for Mobile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/13432-mobile-audio.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-audio-for-mobile">
+<h1>Proposal: Audio for Mobile<a class="headerlink" href="#proposal-audio-for-mobile" title="Permalink to this headline">¶</a></h1>
+<p>Author: Jaana Burcu Dogan</p>
+<p>With input from David Crawshaw, Hyang-Ah Kim and Andrew Gerrand.</p>
+<p>Last updated: November 30, 2015</p>
+<p>Discussion at https://golang.org/issue/13432.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This proposal suggests core abstractions to support audio decoding
+and playback on mobile devices.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>In the scope of the Go mobile project, an audio package that supports
+decoding and playback is a top priority. The current status of audio
+support under x/mobile is limited to OpenAL bindings and an experimental
+high-level audio player that is backed by OpenAL.</p>
+<p>The experimental audio package fails to</p>
+<ul class="simple">
+<li><p>provide high level abstractions to represents audio and audio processors,</p></li>
+<li><p>implement a memory-efficient playback model,</p></li>
+<li><p>implement decoders (e.g. an mp3 decoder),</p></li>
+<li><p>support live streaming or other networking audio sources.</p></li>
+</ul>
+<p>In order to address these concerns, I am proposing core abstractions and
+a minimal set of features based on the proposed abstractions to provide
+decoding and playback support.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I (Burcu Dogan) surveyed the top iOS and Android apps for audio features.
+Three major categories with majorly different requirements have revealed
+as a result of the survey. A good audio package shouldn’t address the
+different class of requirements with isolated audio APIs, but must introduce
+common concepts and types that could be the backbone of both high- and low-
+level audio packages. This is how we will enable users to expand their audio
+capabilities by partially delegating their work to lower-level layers of the
+audio package without having to rewrite their entire audio stack.</p>
+<div class="section" id="features-considered">
+<h3>Features considered<a class="headerlink" href="#features-considered" title="Permalink to this headline">¶</a></h3>
+<p>This section briefly explains the features required in order to support common
+audio requirements of the mobile applications. The abstractions we introduce
+today should be extendable to meet a majority of the features listed below in
+the long run.</p>
+<div class="section" id="playback">
+<h4>Playback<a class="headerlink" href="#playback" title="Permalink to this headline">¶</a></h4>
+<p>Single or multi-channel playback with player controls such as play, pause,
+stop, etc. Games use a looping sample as the background music – looping
+functionality is also essential. Multiple playback instances are needed. Most
+games require a background audio track and one-shot audio effects on the
+foreground.</p>
+</div>
+<div class="section" id="decoding">
+<h4>Decoding<a class="headerlink" href="#decoding" title="Permalink to this headline">¶</a></h4>
+<p>Codec library and decoding support. Most radio-like apps and music players
+need to play a variety of audio sources. Codec support in the parity of
+AudioUnit on iOS and OpenMAX on Android is good to have.</p>
+</div>
+<div class="section" id="remote-streaming">
+<h4>Remote streaming<a class="headerlink" href="#remote-streaming" title="Permalink to this headline">¶</a></h4>
+<p>Audio players, radios and tools that streams audio need to be able to work
+with remote audio sources. HTTP Live Streaming works on both platforms but
+used to be inefficient on Android devices.</p>
+</div>
+<div class="section" id="synchronization-and-composition">
+<h4>Synchronization and composition<a class="headerlink" href="#synchronization-and-composition" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Synchronization between channels/players</p></li>
+<li><p>APIs that allow developers to schedule the playback, frame-level timers</p></li>
+<li><p>Mixers, multiple channels need to be multiplexed into a single device buffer</p></li>
+<li><p>Music software apps that require audio composition and filtering features</p></li>
+</ul>
+</div>
+<div class="section" id="playlist-features">
+<h4>Playlist features<a class="headerlink" href="#playlist-features" title="Permalink to this headline">¶</a></h4>
+<p>Music players and radios require playlisting features, so the users can queue,
+unqueue tracks on the player. Player also need shuffling and repeating
+features.</p>
+<p>More information on the classification of the audio apps based on the features
+listed above is available at Appendix: Audio Apps Classification.</p>
+</div>
+</div>
+<div class="section" id="goals">
+<h3>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="short-term-goals">
+<h4>Short-term goals<a class="headerlink" href="#short-term-goals" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Playback of generated data (such as a PCM sine wave).</p></li>
+<li><p>Playback of an audio asset.</p></li>
+<li><p>Playback from streaming network sources.</p></li>
+<li><p>Core interfaces to represent decoders.</p></li>
+<li><p>Initial decoder implementations, ideally delegating the decoding to the</p></li>
+<li><p>system codecs (OpenMax for Android and AudioUnit for iOS).</p></li>
+<li><p>Basic play functions such as play (looping and one-shot), stop, pause,
+gain control.</p></li>
+<li><p>Prefetching before user invokes playback.</p></li>
+</ul>
+</div>
+<div class="section" id="longer-term-goals">
+<h4>Longer-term goals<a class="headerlink" href="#longer-term-goals" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Multi channel playback (Playing multiple streams at the same time.)</p></li>
+<li><p>Multi channel synchronization and an internal clock</p></li>
+<li><p>Composition and filtering (mixing of multiple signals, low-pass filter,
+reverb, etc)</p></li>
+<li><p>Tracklisting features to queue, unqueue multiple sources to a player;
+playback features such as prefetching the next song</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="non-goals">
+<h3>Non-goals<a class="headerlink" href="#non-goals" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Audio capture. Recording and encoding audio is not in the roadmap initially.
+Both could be added to the package without touching any API surface.</p></li>
+<li><p>Dependency on the visual frame rate. This feature requires the audio
+scheduler to work in cooperation with the graphics layer and currently not
+in our radar.</p></li>
+</ul>
+</div>
+<div class="section" id="core-abstractions">
+<h3>Core abstractions<a class="headerlink" href="#core-abstractions" title="Permalink to this headline">¶</a></h3>
+<p>The section proposes the core interfaces and abstractions to represent audio,
+audio sources and decoding primitives. The goal of introducing and agreeing on
+the core abstractions is to be able to extend the audio package features in
+the light of the considered features listed above without breaking the APIs.</p>
+<div class="section" id="clip">
+<h4>Clip<a class="headerlink" href="#clip" title="Permalink to this headline">¶</a></h4>
+<p>The audio package will represent audio data as linear PCM formatted in-memory
+audio chuncks. A fundamental interface, Clip, will define how to consume audio
+data and how audio attributes (such as bit and sample rate) are reported to
+the consumers of an audio media source.</p>
+<p>Clip is is a small window into the underlying audio data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// FrameInfo represents the frame-level information.
+type FrameInfo struct {
+    // Channels represent the number of audio channels
+    // (e.g. 1 for mono, 2 for stereo).
+    Channels int
+
+    // Bit depth is the number of bits used to represent
+    // a single sample.
+    BitDepth int
+
+    // Sample rate is the number of samples to be played
+    // at each second.
+    SampleRate int64
+}
+
+// Clip represents linear PCM formatted audio.
+// Clip can seek and read a small number of frames to allow users to
+// consume a small section of the underlying audio data.
+//
+// Frames return audio frames up to a number that can fit into the buf.
+// n is the total number of returned frames.
+// err is io.EOF if there are no frames left to read.
+//
+// FrameInfo returns the basic frame information about the clip audio.
+//
+// Seek seeks (offset*framesize*channels) byte in the source audio data.
+// Seeking to negative offsets are illegal.
+// An error is returned if the offset is out of the bounds of the
+// audio data source.
+//
+// Size returns the total number of bytes of the underlying audio data.
+// TODO(jbd): Support cases where size is unknown?
+type Clip interface {
+    Frames(buf []byte) (n int, err error)
+    Seek(offset int64) (error)
+    FrameInfo() FrameInfo
+    Size() int64
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="decoders">
+<h4>Decoders<a class="headerlink" href="#decoders" title="Permalink to this headline">¶</a></h4>
+<p>Decoders take any arbitrary input and is responsible to output a clip.
+TODO(jbd): Proposal should also mention how the decoders will be organized.
+e.g. image package’s support for png, jpeg, gif, etc decoders.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Decoder</span> <span class="n">that</span> <span class="n">reads</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">Reader</span> <span class="ow">and</span> <span class="n">converts</span> <span class="n">the</span> <span class="nb">input</span>
+<span class="o">//</span> <span class="n">to</span> <span class="n">a</span> <span class="n">PCM</span> <span class="n">clip</span> <span class="n">output</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Decode</span><span class="p">(</span><span class="n">r</span> <span class="n">io</span><span class="o">.</span><span class="n">ReadSeeker</span><span class="p">)</span> <span class="p">(</span><span class="n">Clip</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">panic</span><span class="p">(</span><span class="s2">&quot;not implemented&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">A</span> <span class="n">decoder</span> <span class="n">that</span> <span class="n">decodes</span> <span class="n">the</span> <span class="n">given</span> <span class="n">data</span> <span class="n">WAV</span> <span class="n">byte</span> <span class="nb">slice</span> <span class="ow">and</span> <span class="n">decodes</span> <span class="n">it</span>
+<span class="o">//</span> <span class="n">into</span> <span class="n">a</span> <span class="n">PCM</span> <span class="n">clip</span> <span class="n">output</span><span class="o">.</span> <span class="n">An</span> <span class="n">error</span> <span class="ow">is</span> <span class="n">returned</span> <span class="k">if</span> <span class="nb">any</span> <span class="n">of</span> <span class="n">the</span> <span class="n">decoding</span>
+<span class="o">//</span> <span class="n">steps</span> <span class="n">fail</span><span class="o">.</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="n">ClipInfo</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">determined</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">WAV</span> <span class="n">header</span><span class="o">.</span><span class="p">)</span>
+<span class="n">func</span> <span class="n">DecodeWAVBytes</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="n">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">Clip</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">panic</span><span class="p">(</span><span class="s2">&quot;not implemented&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="clip-sources">
+<h4>Clip sources<a class="headerlink" href="#clip-sources" title="Permalink to this headline">¶</a></h4>
+<p>Any arbitrary valid audio data source can be converted into a clip. Examples
+of clip sources are networking streams, file assets and in-memory buffers.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">NewBufferClip</span> <span class="n">converts</span> <span class="n">a</span> <span class="n">buffer</span> <span class="n">to</span> <span class="n">a</span> <span class="n">Clip</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">NewBufferClip</span><span class="p">(</span><span class="n">buf</span> <span class="p">[]</span><span class="n">byte</span><span class="p">,</span> <span class="n">info</span> <span class="n">FrameInfo</span><span class="p">)</span> <span class="n">Clip</span> <span class="p">{</span>
+    <span class="n">panic</span><span class="p">(</span><span class="s2">&quot;not implemented&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">NewRemoteClip</span> <span class="n">converts</span> <span class="n">the</span> <span class="n">HTTP</span> <span class="n">live</span> <span class="n">streaming</span> <span class="n">media</span>
+<span class="o">//</span> <span class="n">source</span> <span class="n">into</span> <span class="n">a</span> <span class="n">Clip</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">NewRemoteClip</span><span class="p">(</span><span class="n">url</span> <span class="n">string</span><span class="p">)</span> <span class="p">(</span><span class="n">Clip</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">panic</span><span class="p">(</span><span class="s2">&quot;not implemented&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="players">
+<h4>Players<a class="headerlink" href="#players" title="Permalink to this headline">¶</a></h4>
+<p>A player plays a series of clips back-to-back, provides basic control
+functions (play, stop, pause, seek, etc).</p>
+<p>Note: Currently, x/mobile/exp/audio package provides an experimental and
+highly immature player. With the introduction of the new core interfaces, we
+will break the API surface in order to bless the new abstractions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">NewPlayer</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">new</span> <span class="n">Player</span><span class="o">.</span> <span class="n">It</span> <span class="n">initializes</span> <span class="n">the</span> <span class="n">underlying</span>
+<span class="o">//</span> <span class="n">audio</span> <span class="n">devices</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">related</span> <span class="n">resources</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">A</span> <span class="n">player</span> <span class="n">can</span> <span class="n">play</span> <span class="n">multiple</span> <span class="n">clips</span> <span class="n">back</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">back</span><span class="o">.</span> <span class="n">Players</span> <span class="n">will</span> <span class="n">begin</span>
+<span class="o">//</span> <span class="n">prefetching</span> <span class="n">the</span> <span class="nb">next</span> <span class="n">clip</span> <span class="n">to</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">smooth</span> <span class="ow">and</span> <span class="n">uninterrupted</span>
+<span class="o">//</span> <span class="n">playback</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">NewPlayer</span><span class="p">(</span><span class="n">c</span> <span class="o">...</span><span class="n">Clip</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">Player</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>No compatibility issues.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The current scope of the implementation will be restricted to meet the
+requirements listed in the “Short-term goals” sections.</p>
+<p>The interfaces will be contributed by Burcu Dogan. The implementation of the
+decoders and playback is a team effort and requires additional planning.</p>
+<p>The audio package has no dependencies to the next Go releases and therefore
+doesn’t have to fit in the Go release cycle.</p>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>WAV and AIFF both support float PCM values even though the use of float
+values is unpopular. Should we consider supporting float values? Float values
+mean more expensive encoding and decoding. Even if float values are supported,
+they must be optional – not the primary type to represent values.</p></li>
+<li><p>Decoding on desktop. The package will use the system codec libraries
+provided by Android and iOS on mobile devices. It is not possible to provide
+feature parity for desktop envs in the scope of decoding.</p></li>
+<li><p>Playback on desktop. The playback may directly use AudioUnit on iOS, and
+libmedia (or stagefright) on Android. The media libraries on the desktop are
+highly fragmented and cross-platform libraries are third-party dependencies.
+It is unlikely that we can provide an audio package that works out of the box
+on desktop if we don’t write an audio backend for each platform.</p></li>
+<li><p>Hardware acceleration. Should we allow users to bypass the decoders and
+stream to the device buffer in the longer term? The scope of the audio package
+is primarily mobile devices (which case-by-case supports hardware
+acceleration). But if the package will cover beyond the mobile, we should
+consider this case.</p></li>
+<li><p>Seeking on variable bit rate encoded audio data is hard without a seek table.</p></li>
+</ul>
+</div>
+<div class="section" id="appendix-audio-apps-classification">
+<h2>Appendix: Audio Apps Classification<a class="headerlink" href="#appendix-audio-apps-classification" title="Permalink to this headline">¶</a></h2>
+<p>Classification of the audio apps are based on thet survey results mentioned
+above. This section summarizes which features are highly related to each other.</p>
+<div class="section" id="class-a">
+<h3>Class A<a class="headerlink" href="#class-a" title="Permalink to this headline">¶</a></h3>
+<p>Class A mostly represents games that require to play a background sound (in
+looping mode or not) and occasionally need to play one-shot audio effects fit
+in this category.</p>
+<ul class="simple">
+<li><p>Single channel player with looping audio</p></li>
+<li><p>Buffering audio files entirely in memory is efficient enough, audio files
+are small</p></li>
+<li><p>Timing of the playback doesn’t have to be precise, latency is neglectable</p></li>
+</ul>
+</div>
+<div class="section" id="class-b">
+<h3>Class B<a class="headerlink" href="#class-b" title="Permalink to this headline">¶</a></h3>
+<p>Class B represents games with advanced audio. Most apps that fit in this
+category are using advanced audio engines as their audio backend.</p>
+<ul class="simple">
+<li><p>Multi channel player</p></li>
+<li><p>Synchronization between channels/players</p></li>
+<li><p>APIs that allow developers to schedule the playback, such as frame-level
+timers</p></li>
+<li><p>Low latency, timing of the playback needs to be precise</p></li>
+<li><p>Mixers, multiple channels need to be multiplexed into a single device buffer</p></li>
+<li><p>Music software apps require audio composition, filtering, etc</p></li>
+</ul>
+</div>
+<div class="section" id="class-c">
+<h3>Class C<a class="headerlink" href="#class-c" title="Permalink to this headline">¶</a></h3>
+<p>Class C represents the media players.</p>
+<ul class="simple">
+<li><p>Remote streaming</p></li>
+<li><p>Playlisting features, multitrack playback features such as prefetching and cross fading</p></li>
+<li><p>High-level player controls such as looping and shuffling</p></li>
+<li><p>Good decoder support</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="13504-natural-xml.html" class="btn btn-neutral float-right" title="Proposal: Natural XML" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="13073-code-of-conduct.html" class="btn btn-neutral float-left" title="Proposal: A Code of Conduct for the Go community" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

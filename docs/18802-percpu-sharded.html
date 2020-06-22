@@ -1,0 +1,956 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: percpu.Sharded, an API for reducing cache contention &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Permit Signed Integers as Shift Counts for Go 2" href="19113-signed-shift-counts.html" />
+    <link rel="prev" title="Proposal: Type Aliases" href="18130-type-alias.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: percpu.Sharded, an API for reducing cache contention</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#counters">Counters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#read-write-locks">Read-write locks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rpc-clients">RPC clients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#order-independent-accumulators">Order-independent accumulators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-proposed-api">The Proposed API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evaluating-the-use-cases">Evaluating the use-cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Counters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Read-write locks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">RPC clients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Order-independent accumulators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sketch-of-implementation">Sketch of Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#percpu-sharder"><code class="docutils literal notranslate"><span class="pre">percpu.sharder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#percpu-sharded"><code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#discussion">Discussion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#garbage-collection-of-stale-values-in-percpu-sharded">Garbage collection of stale values in <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-is-shardinfo-a-struct-and-not-just-an-int">Why is <code class="docutils literal notranslate"><span class="pre">ShardInfo</span></code> a struct and not just an int?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#is-shardinfo-shardindex-returning-an-id-for-the-cpu-or-the-p-executing-the-goroutine">Is <code class="docutils literal notranslate"><span class="pre">ShardInfo.ShardIndex</span></code> returning an id for the CPU, or the <code class="docutils literal notranslate"><span class="pre">P</span></code> executing the goroutine?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#is-it-a-good-idea-for-percpu-sharded-to-behave-differently-during-tests">Is it a good idea for <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> to behave differently during tests?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#should-we-expose-shardinfo-shardindex-at-all">Should we expose <code class="docutils literal notranslate"><span class="pre">ShardInfo.ShardIndex</span></code> at all?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#should-we-expose-both-of-get-and-getorcreate">Should we expose both of Get and GetOrCreate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#should-we-expose-both-of-do-and-dolocked">Should we expose both of Do and DoLocked?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#naming">Naming</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: percpu.Sharded, an API for reducing cache contention</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/18802-percpu-sharded.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-percpu-sharded-an-api-for-reducing-cache-contention">
+<h1>Proposal: percpu.Sharded, an API for reducing cache contention<a class="headerlink" href="#proposal-percpu-sharded-an-api-for-reducing-cache-contention" title="Permalink to this headline">¶</a></h1>
+<p>Discussion at https://golang.org/issue/18802</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>As it stands, Go programs do not have a good way to avoid contention when
+combining highly concurrent code with shared memory locations that frequently
+require mutation. This proposal describes a new package and type to satisfy this
+need.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>There are several scenarios in which a Go program might want to have shared data
+that is mutated frequently. We will briefly discuss some of these scenarios,
+such that we can evaluate the proposed API against these concrete use-cases.</p>
+<div class="section" id="counters">
+<h3>Counters<a class="headerlink" href="#counters" title="Permalink to this headline">¶</a></h3>
+<p>In RPC servers or in scientific computing code, there is often a need for global
+counters. For instance, in an RPC server, a global counter might count the
+number of requests received by the server, or the number of bytes received by
+the server. Go makes it easy to write RPC servers which are inherently
+concurrent, often processing each connection and each request on a concurrent
+goroutine. This means that in the context of a multicore machine, several
+goroutines can be incrementing the same global counter in parallel. Using an API
+like <code class="docutils literal notranslate"><span class="pre">atomic.AddInt64</span></code> will ensure that such a counter is lock-free, but
+parallel goroutines will be contending for the same cache line, so this counter
+will not experience linear scalability as the number of cores is increased.
+(Indeed, one might even expect scalability to unexpectedly decrease due to
+increased core-to-core communication).</p>
+<p>It’s probably also worth noting that there are other similar use-cases in this
+space (e.g. types that record distributions rather than just sums, max-value
+trackers, etc).</p>
+</div>
+<div class="section" id="read-write-locks">
+<h3>Read-write locks<a class="headerlink" href="#read-write-locks" title="Permalink to this headline">¶</a></h3>
+<p>It is common in programs to have data that is read frequently, but written very
+rarely. In these cases, a common synchronization primitive is <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code>,
+which offers an <code class="docutils literal notranslate"><span class="pre">RLock</span></code>/<code class="docutils literal notranslate"><span class="pre">RUnlock</span></code> API for readers. When no writers are
+interacting with an <code class="docutils literal notranslate"><span class="pre">RWMutex</span></code>, an arbitrary number of goroutines can use the
+read-side of the <code class="docutils literal notranslate"><span class="pre">RWMutex</span></code> without blocking.</p>
+<p>However, in order to correctly pair calls to <code class="docutils literal notranslate"><span class="pre">RLock</span></code> with calls to <code class="docutils literal notranslate"><span class="pre">RUnlock</span></code>,
+<code class="docutils literal notranslate"><span class="pre">RWMutex</span></code> internally maintains a counter, which is incremented during <code class="docutils literal notranslate"><span class="pre">RLock</span></code>
+and decremented during <code class="docutils literal notranslate"><span class="pre">RUnlock</span></code>. There is also other shared mutable state that
+is atomically updated inside the <code class="docutils literal notranslate"><span class="pre">RWMutex</span></code> during these calls (and during
+calls to <code class="docutils literal notranslate"><span class="pre">Lock</span></code> and <code class="docutils literal notranslate"><span class="pre">Unlock</span></code>). For reasons similar to the previous example, if
+many goroutines are acquiring and releasing read-locks concurrently and the
+program is running on a multicore machine, then it is likely that the
+performance of <code class="docutils literal notranslate"><span class="pre">RWMutex.RLock</span></code>/<code class="docutils literal notranslate"><span class="pre">RWMutex.RUnlock</span></code> will not scale linearly with
+the number of cores given to the program.</p>
+</div>
+<div class="section" id="rpc-clients">
+<h3>RPC clients<a class="headerlink" href="#rpc-clients" title="Permalink to this headline">¶</a></h3>
+<p>In programs that make many RPC calls in parallel, there can be
+contention on shared mutable state stored inside the RPC or HTTP clients. For
+instance, an RPC client might support connecting to a pool of servers, and
+implements a configurable load balancing policy to select a connection to use
+for a given RPC; these load balancing policies often need to maintain state for
+each connection in the pool of managed connections. For instance, an
+implementation of the “Least-Loaded” policy needs to maintain a counter of
+active requests per connection, such that a new request can select the
+connection with the least number of active requests. In scenarios where a client
+is performing a large number of requests in parallel (perhaps enqueueing many
+RPCs before finally waiting on them at a later point in the program), then
+contention on this internal state can start to affect the rate at which the
+requests can be dispatched.</p>
+</div>
+<div class="section" id="order-independent-accumulators">
+<h3>Order-independent accumulators<a class="headerlink" href="#order-independent-accumulators" title="Permalink to this headline">¶</a></h3>
+<p>In data-processing pipelines, code running in a particular stage may want to
+‘batch’ its output, such that it only sends data downstream in N-element
+batches, rather than sending single elements through the pipeline at a time. In
+the single-goroutine case and where the element type is ‘byte’, then the
+familiar type <code class="docutils literal notranslate"><span class="pre">bufio.Writer</span></code> implements this pattern. Indeed, one
+option for the general data-processing pipeline, is to have a single goroutine
+run every stage in the pipeline from end-to-end, and then instantiate a small
+number of parallel pipeline instances. This strategy effectively handles
+pipelines composed solely of stages dominated by CPU-time. However, if a
+pipeline contains any IO (e.g. initially reading the input from a distributed
+file system, making RPCs, or writing the result back to a distributed file
+system), then this setup will not be efficient, as a single stall in IO will
+take out a significant chunk of your throughput.</p>
+<p>To mitigate this problem, IO bound stages need to run many goroutines. Indeed,
+a clever framework (like Apache Beam) can detect these sorts of situations
+dynamically, by measuring the rate of stage input compared to the rate of stage
+output; they can even reactively increase or decrease the “concurrency level” of
+a stage in response to these measurements. In Beam’s case, it might do this by
+dynamically changing the number of threads-per-binary, or number of
+workers-per-stage.</p>
+<p>When stages have varying concurrency levels, but are connected to each other in
+a pipeline structure, it is important to place a concurrency-safe abstraction
+between the stages to buffer elements waiting to be processed by the next stage.
+Ideally, this structure would minimize the contention experienced by the caller.</p>
+</div>
+</div>
+<div class="section" id="the-proposed-api">
+<h2>The Proposed API<a class="headerlink" href="#the-proposed-api" title="Permalink to this headline">¶</a></h2>
+<p>To solve these problems, we propose an API with a single new type
+<code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>. Here is an outline of the proposed API.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Package percpu provides low-level utilities for avoiding contention on</span>
+<span class="c1">// multicore machines.</span>
+<span class="kn">package</span> <span class="nx">percpu</span>
+
+<span class="c1">// A Sharded is a container of homogenously typed values.</span>
+<span class="c1">//</span>
+<span class="c1">// On a best effort basis, the runtime will strongly associate a given value</span>
+<span class="c1">// with a CPU core. That is to say, retrieving a value twice on the same CPU</span>
+<span class="c1">// core will return the same value with high probablity. Note that the runtime</span>
+<span class="c1">// cannot guarantee this fact, and clients must assume that retrieved values</span>
+<span class="c1">// can be shared between concurrently executing goroutines.</span>
+<span class="c1">//</span>
+<span class="c1">// Once a value is placed in a Sharded, the Sharded will retain a reference to</span>
+<span class="c1">// this value permanently. Clients can control the maximum number of distinct</span>
+<span class="c1">// values created using the SetMaxShards API.</span>
+<span class="c1">//</span>
+<span class="c1">// A Sharded must not be copied after first use.</span>
+<span class="c1">//</span>
+<span class="c1">// All methods are safe to call from multiple goroutines.</span>
+<span class="kd">type</span> <span class="nx">Sharded</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="c1">// contains unexported fields</span>
+<span class="p">}</span>
+
+<span class="c1">// SetMaxShards sets a limit on the maximum number of elements stored in the</span>
+<span class="c1">// Sharded.</span>
+<span class="c1">//</span>
+<span class="c1">// It will not apply retroactively, any elements already created will remain</span>
+<span class="c1">// inside the Sharded.</span>
+<span class="c1">//</span>
+<span class="c1">// If maxShards is less than 1, Sharded will panic.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">SetMaxShards</span><span class="p">(</span><span class="nx">maxShards</span> <span class="kt">int</span><span class="p">)</span>
+
+<span class="c1">// GetOrCreate retrieves a value roughly associated with the current CPU. If</span>
+<span class="c1">// there is no such value, then createFn is called to create a value, store it</span>
+<span class="c1">// in the Sharded, and return it.</span>
+<span class="c1">//</span>
+<span class="c1">// All calls to createFn are serialized; this means that one must complete</span>
+<span class="c1">// before the next one is started.</span>
+<span class="c1">//</span>
+<span class="c1">// createFn should not return nil, or Sharded will panic.</span>
+<span class="c1">//</span>
+<span class="c1">// If createFn is called with a ShardInfo.ShardIndex equal to X, no future call</span>
+<span class="c1">// to GetOrCreate will call createFn again with a ShardInfo.ShardIndex equal to</span>
+<span class="c1">// X.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">GetOrCreate</span><span class="p">(</span><span class="nx">createFn</span> <span class="kd">func</span><span class="p">(</span><span class="nx">ShardInfo</span><span class="p">)</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kd">interface</span><span class="p">{}</span>
+
+<span class="c1">// Get retrieves any preexisting value associated with the current CPU. If</span>
+<span class="c1">// there is no such value, nil is returned.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">Get</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span>
+
+<span class="c1">// Do iterates over a snapshot of all elements stored in the Sharded, and calls</span>
+<span class="c1">// fn once for each element.</span>
+<span class="c1">//</span>
+<span class="c1">// If more elements are created during the iteration itself, they may be</span>
+<span class="c1">// visible to the iteration, but this is not guaranteed. For stronger</span>
+<span class="c1">// guarantees, see DoLocked.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">Do</span><span class="p">(</span><span class="nx">fn</span> <span class="kd">func</span><span class="p">(</span><span class="kd">interface</span><span class="p">{}))</span>
+
+<span class="c1">// DoLocked iterates over all the elements stored in the Sharded, and calls fn</span>
+<span class="c1">// once for each element.</span>
+<span class="c1">//</span>
+<span class="c1">// DoLocked will observe a consistent snapshot of the elements in the Sharded;</span>
+<span class="c1">// any previous creations will complete before the iteration begins, and all</span>
+<span class="c1">// subsequent creations will wait until the iteration ends.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">DoLocked</span><span class="p">(</span><span class="nx">fn</span> <span class="kd">func</span><span class="p">(</span><span class="kd">interface</span><span class="p">{}))</span>
+
+<span class="c1">// ShardInfo contains information about a CPU core.</span>
+<span class="kd">type</span> <span class="nx">ShardInfo</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="c1">// ShardIndex is strictly less than any call to any prior call to SetMaxShards.</span>
+  <span class="nx">ShardIndex</span> <span class="kt">int</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="evaluating-the-use-cases">
+<h2>Evaluating the use-cases<a class="headerlink" href="#evaluating-the-use-cases" title="Permalink to this headline">¶</a></h2>
+<p>Here, we evaluate the proposed API in light of the use-cases described above.</p>
+<div class="section" id="id1">
+<h3>Counters<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>A counter API can be fairly easily built on top of <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>.
+Specifically, it would offer two methods <code class="docutils literal notranslate"><span class="pre">IncrementBy(int64)</span></code>, and <code class="docutils literal notranslate"><span class="pre">Sum()</span> <span class="pre">int64</span></code>.
+The former would only allow positive increments (if required, clients can build
+negative increments by composing two counters of additions and subtractions).</p>
+<p>The implementation of <code class="docutils literal notranslate"><span class="pre">IncrementBy</span></code>, would call <code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code>, passing a
+function that returned an <code class="docutils literal notranslate"><span class="pre">*int64</span></code>. To avoid false sharing between cache lines,
+it would probably return it as an interior pointer into a struct with
+appropriate padding. Once the pointer is retrieved from <code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code>, the
+function would then use <code class="docutils literal notranslate"><span class="pre">atomic.AddInt64</span></code> on that pointer with the value passed
+to <code class="docutils literal notranslate"><span class="pre">IncrementBy</span></code>.</p>
+<p>The implementation of <code class="docutils literal notranslate"><span class="pre">Sum</span></code> would call <code class="docutils literal notranslate"><span class="pre">Do</span></code> to retrieve a snapshot of all
+previously created values, then sum up their values using <code class="docutils literal notranslate"><span class="pre">atomic.LoadInt64</span></code>.</p>
+<p>If the application is managing many long-lived counters, then one possible
+optimization would be to implement the <code class="docutils literal notranslate"><span class="pre">Counter</span></code> type in terms of a
+<code class="docutils literal notranslate"><span class="pre">counterBatch</span></code> (which logically encapsulates <code class="docutils literal notranslate"><span class="pre">N</span></code> independent counters). This can
+drastically limit the padding required to fix false sharing between cache lines.</p>
+</div>
+<div class="section" id="id2">
+<h3>Read-write locks<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>It is a little tricky to implement a drop-in replacement for <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code> on
+top of <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>. Naively, one could imagine a sharded lock composed of
+many internal <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code> instances. Calling <code class="docutils literal notranslate"><span class="pre">RLock()</span></code> on the aggregate lock
+would grab a single <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code> instance using <code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code> and then call
+<code class="docutils literal notranslate"><span class="pre">RLock()</span></code> on that instance. Unfortunately, because there is no state passed
+between <code class="docutils literal notranslate"><span class="pre">RLock()</span></code> and <code class="docutils literal notranslate"><span class="pre">RUnlock()</span></code> (something we should probably consider fixing
+for Go 2), we cannot implement <code class="docutils literal notranslate"><span class="pre">RUnlock()</span></code> efficiently, as the <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>
+might have migrated to a different shard and therefore we’ve lost the
+association to the original <code class="docutils literal notranslate"><span class="pre">RLock()</span></code>.</p>
+<p>That said, since such a sharded lock would be considerably more memory-hungry
+than a normal <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code>, callers should only replace truly contended
+mutexes with a sharded lock, so requiring them to make minor API changes should
+not be too onerous (particularly for mutexes, which should always be private
+implementation details, and therefore not cross API boundaries). In particular,
+one could have <code class="docutils literal notranslate"><span class="pre">RLock()</span></code> on the sharded lock return a <code class="docutils literal notranslate"><span class="pre">RLockHandle</span></code> type, which
+has a <code class="docutils literal notranslate"><span class="pre">RUnlock()</span></code> method. This <code class="docutils literal notranslate"><span class="pre">RLockHandle</span></code> could keep an internal pointer to
+the <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code> that was initially chosen, and it can then <code class="docutils literal notranslate"><span class="pre">RUnlock()</span></code> that
+specific instance.</p>
+<p>It’s worth noting that it’s also possible to drastically change the standard
+library’s <code class="docutils literal notranslate"><span class="pre">sync.RWMutex</span></code> implementation itself to be scalable by default using
+<code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>; this is why the implementation sketch below is careful not not
+use the <code class="docutils literal notranslate"><span class="pre">sync</span></code> package to avoid circular dependencies. See Facebook’s
+<a class="reference external" href="https://github.com/facebook/folly/blob/a440441d2c6ba08b91ce3a320a61cf0f120fe7f3/folly/SharedMutex.h#L148">SharedMutex</a>
+class to get a sense of how this could be done. However, that requires
+significant research and deserves a proposal of its own.</p>
+</div>
+<div class="section" id="id3">
+<h3>RPC clients<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>It’s straightforward to use <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> to implement a sharded RPC client.</p>
+<p>This is a case where its likely that the default implementation will continue to
+be unsharded, and a program will need to explicitly say something like
+<code class="docutils literal notranslate"><span class="pre">grpc.Dial(&quot;some-server&quot;,</span> <span class="pre">grpc.ShardedClient(4))</span></code> (where the “4” might come from
+an application flag). This kind of client-contrallable sharding is one place
+where the <code class="docutils literal notranslate"><span class="pre">SetMaxShards</span></code> API can be useful.</p>
+</div>
+<div class="section" id="id4">
+<h3>Order-independent accumulators<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>This can be implemented using <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>. For instance, a writer would
+call <code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code> to retrieve a shard-local buffer, they would acquire a lock,
+and insert the element into the buffer. If the buffer became full, they would
+flush it downstream.</p>
+<p>A watchdog goroutine could walk the buffers periodically using <code class="docutils literal notranslate"><span class="pre">AppendAll</span></code>, and
+flush partially-full buffers to ensure that elements are flushed fairly
+promptly. If it finds no elements to flush, it could start incrementing a
+counter of “useless” scans, and stop scanning after it reaches a threshold. If a
+writer is enqueuing the first element in a buffer, and it sees the counter over
+the threshold, it could reset the counter, and wake the watchdog.</p>
+</div>
+</div>
+<div class="section" id="sketch-of-implementation">
+<h2>Sketch of Implementation<a class="headerlink" href="#sketch-of-implementation" title="Permalink to this headline">¶</a></h2>
+<p>What follows is a rough sketch of an implementation of <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>. This is
+to show that this is implementable, and to give some context to the discussion
+of performance below.</p>
+<p>First, a sketch of an implementation for <code class="docutils literal notranslate"><span class="pre">percpu.sharder</span></code>, an internal helper
+type for <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="p">(</span>
+  <span class="nx">defaultUserDefinedMaxShards</span> <span class="p">=</span> <span class="mi">32</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">sharder</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">maxShards</span> <span class="kt">int32</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">sharder</span><span class="p">)</span> <span class="nx">SetMaxShards</span><span class="p">(</span><span class="nx">maxShards</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">maxShards</span> <span class="p">&lt;</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;maxShards &lt; 1&quot;</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="nx">atomic</span><span class="p">.</span><span class="nx">StoreInt32</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">maxShards</span><span class="p">,</span> <span class="nx">roundDownToPowerOf2</span><span class="p">(</span><span class="nb">int32</span><span class="p">(</span><span class="nx">maxShards</span><span class="p">)))</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">sharder</span><span class="p">)</span> <span class="nx">userDefinedMaxShards</span><span class="p">()</span> <span class="kt">int32</span> <span class="p">{</span>
+  <span class="nx">s</span> <span class="o">:=</span> <span class="nx">atomic</span><span class="p">.</span><span class="nx">LoadInt32</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">maxShards</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">s</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">defaultUserDefinedMaxShards</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">s</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">sharder</span><span class="p">)</span> <span class="nx">shardInfo</span><span class="p">()</span> <span class="nx">ShardInfo</span> <span class="p">{</span>
+  <span class="nx">shardId</span> <span class="o">:=</span> <span class="nx">runtime_getShardIndex</span><span class="p">()</span>
+
+  <span class="c1">// If we&#39;re in race mode, then all bets are off. Half the time, randomize the</span>
+  <span class="c1">// shardId completely, the rest of the time, use shardId 0.</span>
+  <span class="c1">//</span>
+  <span class="c1">// If we&#39;re in a test but not in race mode, then we want an implementation</span>
+  <span class="c1">// that keeps cache contention to a minimum so benchmarks work properly, but</span>
+  <span class="c1">// we still want to flush out any assumption of a stable mapping to shardId.</span>
+  <span class="c1">// So half the time, we double the id. This catches fewer problems than what</span>
+  <span class="c1">// we get in race mode, but it should still catch one class of issue (clients</span>
+  <span class="c1">// assuming that two sequential calls to Get() will return the same value).</span>
+  <span class="k">if</span> <span class="nx">raceEnabled</span> <span class="p">{</span>
+    <span class="nx">rnd</span> <span class="o">:=</span> <span class="nx">runtime_fastRand</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">rnd</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+      <span class="nx">shardId</span> <span class="p">=</span> <span class="mi">0</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">shardId</span> <span class="o">+=</span> <span class="nx">rnd</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">testing</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">runtime_fastRand</span><span class="p">()</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+      <span class="nx">shardId</span> <span class="o">*=</span> <span class="mi">2</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="nx">shardId</span> <span class="o">&amp;=</span> <span class="nx">runtimeDefinedMaxShards</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span>
+  <span class="nx">shardId</span> <span class="o">&amp;=</span> <span class="nx">userDefinedMaxShards</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span>
+
+  <span class="k">return</span> <span class="nx">ShardInfo</span><span class="p">{</span><span class="nx">ShardIndex</span><span class="p">:</span> <span class="nx">shardId</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">runtimeDefinedMaxShards</span><span class="p">()</span> <span class="kt">int32</span> <span class="p">{</span>
+  <span class="nx">max</span> <span class="o">:=</span> <span class="nx">runtime_getMaxShards</span><span class="p">()</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">testing</span> <span class="o">||</span> <span class="nx">raceEnabled</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">max</span> <span class="p">&lt;</span> <span class="mi">4</span> <span class="p">{</span>
+    <span class="nx">max</span> <span class="p">=</span> <span class="mi">4</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">max</span>
+<span class="p">}</span>
+
+<span class="c1">// Implemented in the runtime, should effectively be</span>
+<span class="c1">// roundUpToPowerOf2(min(GOMAXPROCS, NumCPU)).</span>
+<span class="c1">// (maybe caching that periodically in the P).</span>
+<span class="kd">func</span> <span class="nx">runtime_getMaxShards</span><span class="p">()</span> <span class="kt">int32</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">4</span>
+<span class="p">}</span>
+
+<span class="c1">// Implemented in the runtime, should effectively be the result of the getcpu</span>
+<span class="c1">// syscall, or similar. The returned index should densified if possible (i.e.</span>
+<span class="c1">// if binary is locked to cores 2 and 4), they should return 0 and 1</span>
+<span class="c1">// respectively, not 2 and 4.</span>
+<span class="c1">//</span>
+<span class="c1">// Densification can be best-effort, and done with a process-wide mapping table</span>
+<span class="c1">// maintained by sysmon periodically.</span>
+<span class="c1">//</span>
+<span class="c1">// Does not have to be bounded by runtime_getMaxShards(), or indeed by</span>
+<span class="c1">// anything.</span>
+<span class="kd">func</span> <span class="nx">runtime_getShardIndex</span><span class="p">()</span> <span class="kt">int32</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">0</span>
+<span class="p">}</span>
+
+<span class="c1">// Implemented in the runtime. Only technically needs an implementation for</span>
+<span class="c1">// raceEnabled and tests. Should be scalable (e.g. using a per-P seed and</span>
+<span class="c1">// state).</span>
+<span class="kd">func</span> <span class="nx">runtime_fastRand</span><span class="p">()</span> <span class="kt">int32</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Next, a sketch of <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> itself.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Sharded</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">sharder</span>
+
+  <span class="nx">lock</span> <span class="kt">uintptr</span>
+  <span class="nx">data</span> <span class="nx">atomic</span><span class="p">.</span><span class="nx">Value</span> <span class="c1">// *shardedData</span>
+  <span class="nx">typ</span>  <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">loadData</span><span class="p">()</span> <span class="o">*</span><span class="nx">shardedData</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">Load</span><span class="p">().(</span><span class="o">*</span><span class="nx">shardedData</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">getFastPath</span><span class="p">(</span><span class="nx">createFn</span> <span class="kd">func</span><span class="p">(</span><span class="nx">ShardInfo</span><span class="p">)</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="nx">out</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+  <span class="nx">shardInfo</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">shardInfo</span><span class="p">()</span>
+
+  <span class="nx">curData</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">loadData</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">curData</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">shardInfo</span><span class="p">.</span><span class="nx">ShardIndex</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">curData</span><span class="p">.</span><span class="nx">elems</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">createFn</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">getSlowPath</span><span class="p">(</span><span class="nx">shardInfo</span><span class="p">,</span> <span class="nx">createFn</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">existing</span> <span class="o">:=</span> <span class="nx">curData</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nx">shardInfo</span><span class="p">.</span><span class="nx">ShardIndex</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">existing</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">createFn</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">getSlowPath</span><span class="p">(</span><span class="nx">shardInfo</span><span class="p">,</span> <span class="nx">createFn</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">outp</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="nx">ifaceWords</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">out</span><span class="p">))</span>
+  <span class="nx">outp</span><span class="p">.</span><span class="nx">typ</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span>
+  <span class="nx">outp</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nx">existing</span>
+  <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">getSlowPath</span><span class="p">(</span><span class="nx">shardInfo</span> <span class="nx">ShardInfo</span><span class="p">,</span> <span class="nx">createFn</span> <span class="kd">func</span><span class="p">(</span><span class="nx">ShardInfo</span><span class="p">)</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="nx">out</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">{</span>
+  <span class="nx">runtime_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+  <span class="k">defer</span> <span class="nx">runtime_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+
+  <span class="nx">curData</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">loadData</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">curData</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">shardInfo</span><span class="p">.</span><span class="nx">ShardIndex</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">curData</span><span class="p">.</span><span class="nx">elems</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">curData</span> <span class="p">=</span> <span class="nx">allocShardedData</span><span class="p">(</span><span class="nx">curData</span><span class="p">,</span> <span class="nx">shardInfo</span><span class="p">)</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">Store</span><span class="p">(</span><span class="nx">curData</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">existing</span> <span class="o">:=</span> <span class="nx">curData</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nx">shardInfo</span><span class="p">.</span><span class="nx">ShardIndex</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">existing</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">outp</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="nx">ifaceWords</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">out</span><span class="p">))</span>
+    <span class="nx">outp</span><span class="p">.</span><span class="nx">typ</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span>
+    <span class="nx">outp</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nx">existing</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+
+  <span class="nx">newElem</span> <span class="o">:=</span> <span class="nx">createFn</span><span class="p">(</span><span class="nx">shardInfo</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nx">newElem</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;createFn returned nil value&quot;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">newElemP</span> <span class="o">:=</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="nx">ifaceWords</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">newElem</span><span class="p">))</span>
+
+  <span class="c1">// If this is the first call to createFn, then stash the type-pointer for</span>
+  <span class="c1">// later verification.</span>
+  <span class="c1">//</span>
+  <span class="c1">// Otherwise, verify its the same as the previous.</span>
+  <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span> <span class="p">=</span> <span class="nx">newElemP</span><span class="p">.</span><span class="nx">typ</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span> <span class="o">!=</span> <span class="nx">newElemP</span><span class="p">.</span><span class="nx">typ</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;percpu: GetOrCreate was called with function that returned inconsistently typed value&quot;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Store back the new value.</span>
+  <span class="nx">curData</span><span class="p">.</span><span class="nx">store</span><span class="p">(</span><span class="nx">shardInfo</span><span class="p">.</span><span class="nx">ShardIndex</span><span class="p">,</span> <span class="nx">newElemP</span><span class="p">.</span><span class="nx">val</span><span class="p">)</span>
+
+  <span class="c1">// Return it.</span>
+  <span class="nx">outp</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="nx">ifaceWords</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">out</span><span class="p">))</span>
+  <span class="nx">outp</span><span class="p">.</span><span class="nx">typ</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span>
+  <span class="nx">outp</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nx">newElemP</span><span class="p">.</span><span class="nx">val</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">loadData</span><span class="p">()</span> <span class="o">*</span><span class="nx">shardedData</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">Load</span><span class="p">().(</span><span class="o">*</span><span class="nx">shardedData</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">GetOrCreate</span><span class="p">(</span><span class="nx">createFn</span> <span class="kd">func</span><span class="p">(</span><span class="nx">ShardInfo</span><span class="p">)</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">createFn</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&quot;createFn nil&quot;</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">getFastPath</span><span class="p">(</span><span class="nx">createFn</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">Get</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">getFastPath</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">Do</span><span class="p">(</span><span class="nx">fn</span> <span class="kd">func</span><span class="p">(</span><span class="kd">interface</span><span class="p">{}))</span> <span class="p">{</span>
+  <span class="nx">curData</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">loadData</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">curData</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">curData</span><span class="p">.</span><span class="nx">elems</span> <span class="p">{</span>
+    <span class="nx">elem</span> <span class="o">:=</span> <span class="nx">curData</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">elem</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+      <span class="k">continue</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">next</span> <span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">nextP</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="nx">ifaceWords</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">next</span><span class="p">))</span>
+    <span class="nx">nextP</span><span class="p">.</span><span class="nx">typ</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">typ</span>
+    <span class="nx">nextP</span><span class="p">.</span><span class="nx">val</span> <span class="p">=</span> <span class="nx">elem</span>
+
+    <span class="nx">fn</span><span class="p">(</span><span class="nx">next</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">elems</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Sharded</span><span class="p">)</span> <span class="nx">DoLocked</span><span class="p">(</span><span class="nx">fn</span> <span class="kd">func</span><span class="p">(</span><span class="kd">interface</span><span class="p">{}))</span> <span class="p">{</span>
+  <span class="nx">runtime_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+  <span class="k">defer</span> <span class="nx">runtime_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">.</span><span class="nx">lock</span><span class="p">)</span>
+  <span class="nx">s</span><span class="p">.</span><span class="nx">Do</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">shardedData</span> <span class="kd">struct</span> <span class="p">{</span>
+  <span class="nx">elems</span> <span class="p">[]</span><span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="percpu-sharder">
+<h3><code class="docutils literal notranslate"><span class="pre">percpu.sharder</span></code><a class="headerlink" href="#percpu-sharder" title="Permalink to this headline">¶</a></h3>
+<p>As presented, calling <code class="docutils literal notranslate"><span class="pre">shardInfo</span></code> on a <code class="docutils literal notranslate"><span class="pre">percpu.sharder</span></code> makes two calls to the
+runtime, and does a single atomic load.</p>
+<p>However, both of the calls to the runtime would be satisfied with stale values.
+So, an obvious avenue of optimization is to squeeze these two pieces of
+information (effectively “current shard”, and “max shards”) into a single word,
+and cache it on the <code class="docutils literal notranslate"><span class="pre">P</span></code> when first calling the <code class="docutils literal notranslate"><span class="pre">shardInfo</span></code> API. To accommodate
+changes in the underlying values, a <code class="docutils literal notranslate"><span class="pre">P</span></code> can store a timestamp when it last
+computed these values, and clear the cache when the value is older than <code class="docutils literal notranslate"><span class="pre">X</span></code> and
+the <code class="docutils literal notranslate"><span class="pre">P</span></code> is in the process of switching goroutines.</p>
+<p>This means that effectively, <code class="docutils literal notranslate"><span class="pre">shardInfo</span></code> will consist of 2 atomic loads, and a
+little bit of math on the resulting values.</p>
+</div>
+<div class="section" id="percpu-sharded">
+<h3><code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code><a class="headerlink" href="#percpu-sharded" title="Permalink to this headline">¶</a></h3>
+<p>In the get-for-current-shard path, <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> will call <code class="docutils literal notranslate"><span class="pre">shardInfo</span></code>, and
+then perform 2 atomic loads (to retrieve the list of elements and to retrieve
+the specific element for the current shard, respectively). If either of these
+loads fails, it might fall back to a much-slower slow path. In the fast path,
+there’s no allocation.</p>
+<p>In the get-all path, <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> will perform a single atomic followed by a
+<code class="docutils literal notranslate"><span class="pre">O(n)</span></code> atomic loads, proportional to the number of elements stored in the
+<code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>. It will not allocate.</p>
+</div>
+</div>
+</div>
+<div class="section" id="discussion">
+<h1>Discussion<a class="headerlink" href="#discussion" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="garbage-collection-of-stale-values-in-percpu-sharded">
+<h2>Garbage collection of stale values in <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code><a class="headerlink" href="#garbage-collection-of-stale-values-in-percpu-sharded" title="Permalink to this headline">¶</a></h2>
+<p>With the given API, if <code class="docutils literal notranslate"><span class="pre">GOMAXPROCS</span></code> is temporarily increased (or the CPUs
+assigned to the given program), and then decreased to its original value, a
+<code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> might have allocated additional elements to satisfy the
+additional CPUs. These additional elements would not be eligible for garbage
+collection, as the <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> would retain an internal reference.</p>
+<p>First, its worth noting that we cannot unilaterally shrink the number of
+elements stored in a <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>, because this might affect program
+correctness. For instance, this could result in counters losing values, or in
+breaking the invariants of sharded locks.</p>
+<p>The presented solution just sidesteps this problem by defaulting to a fairly low
+value of <code class="docutils literal notranslate"><span class="pre">MaxShards</span></code>. This can be overridden by the user with explicit action
+(though the runtime has the freedom to bound the number more strictly than the
+user’s value, e.g. to limit the size of internal data-structures to reasonable
+levels.).</p>
+<p>One thing to keep in mind, clients who require garbage collection of stale
+values can build this on top of <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>. For instance, one could
+imagine a design where clients would maintain a counter recording each use. A
+watchdog goroutine can then scan the elements and if a particular value has not
+been used for some period of time, swap in a <code class="docutils literal notranslate"><span class="pre">nil</span></code> pointer, and then gracefully
+tear down the value (potentially transferring the logical data encapsulated to
+other elements in the <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>).</p>
+<p>Requiring clients to implement their own GC in this way seems kinda gross, but
+on the other hand, its unclear to me how to generically solve this problem
+without knowledge of the client use-case. One could imagine some sort of
+reference-counting design, but again, without knowing the semantics of the
+use-case, its hard to know if its safe to clear the reference to the type.</p>
+<p>Also, for a performance-oriented type, like <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code>, it seems
+unfortunate to add unnecessary synchronization to the fast path of the type (and
+I don’t see how to implement something in this direction without adding
+synchronization).</p>
+</div>
+<div class="section" id="why-is-shardinfo-a-struct-and-not-just-an-int">
+<h2>Why is <code class="docutils literal notranslate"><span class="pre">ShardInfo</span></code> a struct and not just an int?<a class="headerlink" href="#why-is-shardinfo-a-struct-and-not-just-an-int" title="Permalink to this headline">¶</a></h2>
+<p>This is mostly to retain the ability to extend the API in a compatible manner.
+One concrete avenue is to add additional details to allow clients to optimize
+their code for the NUMA architecture of the machine. For instance, for a sharded
+buffering scheme (i.e. the “Order-independent accumulator” above), it might make
+sense to have multiple levels of buffering in play, with another level at the
+NUMA-node layer.</p>
+</div>
+<div class="section" id="is-shardinfo-shardindex-returning-an-id-for-the-cpu-or-the-p-executing-the-goroutine">
+<h2>Is <code class="docutils literal notranslate"><span class="pre">ShardInfo.ShardIndex</span></code> returning an id for the CPU, or the <code class="docutils literal notranslate"><span class="pre">P</span></code> executing the goroutine?<a class="headerlink" href="#is-shardinfo-shardindex-returning-an-id-for-the-cpu-or-the-p-executing-the-goroutine" title="Permalink to this headline">¶</a></h2>
+<p>This is left unspecified, but the name of the package seems to imply the former.
+In practice, I think we want a combination.</p>
+<p>That is to say, we would prefer that a program running on a 2-core machine with
+<code class="docutils literal notranslate"><span class="pre">GOMAXPROCS</span></code> set to 100 should use 2 shards, not 100. On the other hand, we
+would also prefer that a program running on a 100-core machine with <code class="docutils literal notranslate"><span class="pre">GOMAXPROCS</span></code>
+set to 2 should also use 2 shards, not 100.</p>
+<p>This ideal state should be achievable on systems that provide reasonable APIs to
+retrieve the id of the current CPU.</p>
+<p>That said, any implementation effort would likely start with a simple portable
+implementation which uses the id of the local <code class="docutils literal notranslate"><span class="pre">P</span></code>. This will allow us to get a
+sense of the performance of the type, and to serve as a fallback implementation
+for platforms where the necessary APIs are either not available, or require
+privileged execution.</p>
+</div>
+<div class="section" id="is-it-a-good-idea-for-percpu-sharded-to-behave-differently-during-tests">
+<h2>Is it a good idea for <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> to behave differently during tests?<a class="headerlink" href="#is-it-a-good-idea-for-percpu-sharded-to-behave-differently-during-tests" title="Permalink to this headline">¶</a></h2>
+<p>This is a good question; I am not certain of the answer here. I am confident
+that during race mode, we should definitely randomize the behaviour of
+<code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> significantly (and the implementation sketch above does that).
+However, for tests, the answer seems less clear to me.</p>
+<p>As presented, the implementation sketch above randomizes the value by flipping
+randomly between two values for every CPU. That seems like it will catch bugs
+where the client assumes that sequential calls to <code class="docutils literal notranslate"><span class="pre">Get</span></code>/<code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code> will return
+the same values. That amount of randomness seems warranted to me, though I’d
+understand if folks would prefer to avoid it in favor of keeping non-test code
+and test code behaving identically.</p>
+<p>On a more mundane note: I’m not entirely sure if this is implementable with
+zero-cost. One fairly efficient strategy would be an internal package that
+exposes an “IsTesting bool”, which is set by the <code class="docutils literal notranslate"><span class="pre">testing</span></code> package and read by
+the <code class="docutils literal notranslate"><span class="pre">percpu</span></code> package. But ideally, this could be optimized away at compile time;
+I don’t believe we have any mechanism to do this now.</p>
+</div>
+<div class="section" id="should-we-expose-shardinfo-shardindex-at-all">
+<h2>Should we expose <code class="docutils literal notranslate"><span class="pre">ShardInfo.ShardIndex</span></code> at all?<a class="headerlink" href="#should-we-expose-shardinfo-shardindex-at-all" title="Permalink to this headline">¶</a></h2>
+<p>I think so. Even if we don’t, clients can retrieve an effectively equivalent
+value by just incrementing an atomic integer inside the <code class="docutils literal notranslate"><span class="pre">createFn</span></code> passed to
+<code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code>. For pre-allocated use-cases (e.g. see the Facebook <code class="docutils literal notranslate"><span class="pre">SharedMutex</span></code>
+linked above), it seems important to let clients index into pre-allocated
+memory.</p>
+</div>
+<div class="section" id="should-we-expose-both-of-get-and-getorcreate">
+<h2>Should we expose both of Get and GetOrCreate?<a class="headerlink" href="#should-we-expose-both-of-get-and-getorcreate" title="Permalink to this headline">¶</a></h2>
+<p>We could define <code class="docutils literal notranslate"><span class="pre">GetOrCreate</span></code> to behave like <code class="docutils literal notranslate"><span class="pre">Get</span></code> if the passed <code class="docutils literal notranslate"><span class="pre">createFn</span></code> is
+nil. This is less API (and might be more efficient, until mid-stack inlining
+works), but seems less semantically clean to me. It seems better to just have
+clients say what they want explicitly.</p>
+</div>
+<div class="section" id="should-we-expose-both-of-do-and-dolocked">
+<h2>Should we expose both of Do and DoLocked?<a class="headerlink" href="#should-we-expose-both-of-do-and-dolocked" title="Permalink to this headline">¶</a></h2>
+<p>If we had to choose one of those, then I would say we should expose <code class="docutils literal notranslate"><span class="pre">Do</span></code>. This
+is because it is the higher performance, minimal-synchronization version, and
+<code class="docutils literal notranslate"><span class="pre">DoLocked</span></code> can be implemented on top. That said, I do think we should just
+provide both. The implementation is simple, and implementing it on top feels
+odd.</p>
+<p>Of the 4 use-cases presented above, 2 would probably use <code class="docutils literal notranslate"><span class="pre">Do</span></code> (counters and
+order-independent accumulators), and 2 would probably use <code class="docutils literal notranslate"><span class="pre">DoLocked</span></code> (read-write
+locks, and RPC clients (for the latter, probably just for implementing
+<code class="docutils literal notranslate"><span class="pre">Close()</span></code>)).</p>
+</div>
+<div class="section" id="naming">
+<h2>Naming<a class="headerlink" href="#naming" title="Permalink to this headline">¶</a></h2>
+<p>I’m not particularly wedded to any of the names in the API sketch above, so I’m
+happy to see it changed to whatever people prefer.</p>
+</div>
+</div>
+<div class="section" id="backwards-compatibility">
+<h1>Backwards compatibility<a class="headerlink" href="#backwards-compatibility" title="Permalink to this headline">¶</a></h1>
+<p>The API presented above is straightforward to implement without any runtime
+support; in particular, this could be implemented as a thin wrapper around a
+<code class="docutils literal notranslate"><span class="pre">sync.Once</span></code>. This will not effectively reduce contention, but it would still be
+a correct implementation. It’s probably a good idea to implement such a shim,
+and put it in the <code class="docutils literal notranslate"><span class="pre">x/sync</span></code> repo, with appropriate build tags and type-aliases to
+allow clients to immediately start using the new type.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="19113-signed-shift-counts.html" class="btn btn-neutral float-right" title="Proposal: Permit Signed Integers as Shift Counts for Go 2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="18130-type-alias.html" class="btn btn-neutral float-left" title="Proposal: Type Aliases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

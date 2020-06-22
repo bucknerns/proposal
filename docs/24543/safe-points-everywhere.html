@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Safe-points everywhere for non-cooperative goroutine preemption &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Safe-points everywhere for non-cooperative goroutine preemption</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/24543/safe-points-everywhere.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-safe-points-everywhere-for-non-cooperative-goroutine-preemption">
+<h1>Proposal: Safe-points everywhere for non-cooperative goroutine preemption<a class="headerlink" href="#proposal-safe-points-everywhere-for-non-cooperative-goroutine-preemption" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements</p>
+<p>Last updated: 2018-03-26 (extracted from general proposal 2019-01-17)</p>
+<p>Discussion at https://golang.org/issue/24543.</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Up to and including Go 1.10, Go has used cooperative preemption with
+safe-points only at function calls.
+We propose that the Go implementation switch to <em>non-cooperative</em>
+preemption.
+The background and rationale for this proposal are detailed in the
+<a class="reference internal" href="../24543-non-cooperative-preemption.html"><span class="doc">top-level proposal document</span></a>.</p>
+<p>This document details a specific approach to non-cooperative
+preemption based on constructing stack and register maps at
+(essentially) every instruction.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I propose that we implement fully non-cooperative preemption by
+recording enough metadata to allow safe-points (almost) everywhere.</p>
+<p>To do this, we would modify the compiler to produce register maps in
+addition to stack maps, and to emit these for as many program counters
+as possible.
+The runtime would use a signal (or <code class="docutils literal notranslate"><span class="pre">GetThreadContext</span></code> on Windows, or a
+note on Plan9) to retrieve each thread’s register state, from which it
+could get the stack and register map for the interrupted PC.
+The garbage collector would then treat live pointers in registers just
+as it treats live pointers on the stack.</p>
+<p>Certain instructions cannot be safe-points, so if a signal occurs at
+such a point, the runtime would simply resume the thread and try again
+later.
+The compiler just needs to make <em>most</em> instructions safe-points.</p>
+<p>To &#64;minux’s credit, he suggested this in <a class="reference external" href="https://github.com/golang/go/issues/10958#issuecomment-105678822">the very first
+reply</a>
+to <a class="reference external" href="https://golang.org/issue/10958">#10958</a>.
+At the time we thought adding safe-points everywhere would be too
+difficult and that the overhead of explicit loop preemption would be
+lower than it turned out to be.</p>
+<p>Many other garbage-collected languages use explicit safe-points on
+back-edges, or they use forward-simulation to reach a safe-point.
+Partly, it’s possible for Go to support safe-points everywhere because
+Go’s GC already must have excellent support for interior pointers; in
+many languages, interior pointers never appear at a safe-point.</p>
+</div>
+<div class="section" id="encoding-of-stack-and-register-maps">
+<h2>Encoding of stack and register maps<a class="headerlink" href="#encoding-of-stack-and-register-maps" title="Permalink to this headline">¶</a></h2>
+<p>In the implementation for Go 1.11, register maps are encoded using the
+exact same encoding as argument and locals maps.
+Unlike argument and locals maps, which are indexed together in a
+single PCDATA stream, the register maps are indexed by a separate
+PCDATA stream because changes to the register map tend not to
+correlate with changes to the arguments and locals maps.</p>
+<p>Curiously, the significant majority of the space overhead from this
+scheme is from the PCDATA stream that indexes into the register map.
+The actual register map FUNCDATA is relatively small, suggesting that
+functions have relatively few distinct register maps, but change
+between them frequently.</p>
+<div class="section" id="alternates-considered-attempted">
+<h3>Alternates considered/attempted<a class="headerlink" href="#alternates-considered-attempted" title="Permalink to this headline">¶</a></h3>
+<p>Biasing the register allocator to allocate pointers and scalars from
+different registers to reduce the number of unique maps and possibly
+reduce the number of map changes would seem like an easy improvement.
+However, it had very little effect.</p>
+<p>Similarly, adding “slop” to the register maps by allowing the liveness
+of a register to extend between its last use and next clobber slightly
+reduced the number of register map changes, but only slightly.</p>
+<p>The one successful alternate tried was to Huffman-code the delta
+stream, which roughly halved the size of the metadata.
+In this scheme, the register maps are encoded in a single bit stream
+per function that alternates between PC delta (as a positive offset
+from the previous PC), and register map delta (as an XOR from the
+previous register map).
+The two deltas are Huffman coded with separate Huffman tables, and the
+Huffman tables are shared across the entire binary.
+It may be even more effective to interleave the stack map changes into
+the same stream, since this would allow the PC deltas to be shared.
+This change was too invasive to implement for Go 1.11, but may be
+worth attempting for Go 1.12.</p>
+</div>
+</div>
+<div class="section" id="other-uses-of-stack-register-maps">
+<h2>Other uses of stack/register maps<a class="headerlink" href="#other-uses-of-stack-register-maps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="heap-dump-analysis">
+<h3>Heap dump analysis<a class="headerlink" href="#heap-dump-analysis" title="Permalink to this headline">¶</a></h3>
+<p>Having safe-points everywhere fixes problems with heap dump analysis
+from core files, which currently has to use conservative heuristics to
+identify live pointers in active call frames.</p>
+</div>
+<div class="section" id="call-injection">
+<h3>Call injection<a class="headerlink" href="#call-injection" title="Permalink to this headline">¶</a></h3>
+<p>Having safe-points everywhere also allows some function calls to be
+safely injected at runtime.
+This is useful in at least two situations:</p>
+<ol class="simple">
+<li><p>To handle synchronous signals, such as nil-pointer dereferences,
+the runtime injects a call to <code class="docutils literal notranslate"><span class="pre">runtime.sigpanic</span></code> at the location of
+the fault.
+However, since there isn’t usually a call at this location, the
+stack map may be inaccurate, which leads to complicated
+interactions between defers, escape analysis, and traceback
+handling.
+Having safe-points everywhere could simplify this.</p></li>
+<li><p>Debugger function calls (<a class="reference external" href="https://golang.org/issue/21678">#21678</a>).
+Currently it’s essentially impossible for a debugger to dynamically
+invoke a Go function call because of poor interactions with stack
+scanning and the garbage collector.
+Having stack and register maps everywhere would make this
+significantly more viable, since a function call could be injected
+nearly anywhere without making the stack un-scannable.</p></li>
+</ol>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>The primary danger of this approach is its potential for a long bug
+tail, since the coverage of safe-points in regular testing will
+decrease substantially.
+In addition to standard testing, I propose checking the generated
+liveness maps using static analysis of binaries.
+This tool would look for pointer dereferences or stores with a write
+barrier to indicate that a value is a pointer and would check the flow
+of that value through all possible paths.
+It would report anywhere a value transitioned from dead/scalar to live
+pointer and anywhere a value was used both like a pointer and like a
+scalar.</p>
+<p>In effect, this tool would simulate the program to answer the question
+“for every two points in time A &lt; B, are there allocations reachable
+from the liveness map at time B that were not reachable at time A and
+were not allocated between A and B?”</p>
+<p>Most likely this static analysis tool could be written atop the
+existing <a class="reference external" href="https://godoc.org/golang.org/x/arch">golang.org/x/arch</a>
+packages.
+These are the same packages used by, for example, <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">tool</span> <span class="pre">objdump</span></code>,
+and handle most heavy-lifting of decoding the binary itself.</p>
+</div>
+<div class="section" id="other-considerations">
+<h2>Other considerations<a class="headerlink" href="#other-considerations" title="Permalink to this headline">¶</a></h2>
+<p><strong>Space overhead.</strong> Traditionally, the main concern with having
+safe-points everywhere is the overhead of saving the stack/register
+maps.
+A very preliminary implementation of register maps and safe-points
+everywhere increased binary size by ~10%.
+However, this left several obvious optimizations on the table.
+Work by Stichmoth, et al. [1] further suggests that this overhead
+can be significantly curtailed with simple compression techniques.</p>
+<p><strong>Decoupling stack-move points from GC safe-points.</strong> Because of the
+details of the current implementation, these are (essentially) the
+same.
+By decoupling these and only allowing stack growth and shrinking at
+function entry, stack copying would not need to adjust registers.
+This keeps stack copying simpler.
+It also enables better compiler optimizations and more safe-points
+since the compiler need not mark a register as a live pointer if it
+knows there’s another live pointer to the object.
+Likewise, registers that are known to be derived from pointer
+arguments can be marked as scalar as long as those arguments are live.
+Such optimizations are possible because of Go’s non-moving collector.
+This also prevents stack moving from observing (and crashing on)
+transient small-valued pointers that the compiler constructs when it
+knows an offset from a potentially-nil pointer will be small.</p>
+<p><strong>Assembly.</strong> By default, the runtime cannot safely preempt assembly
+code since it won’t know what registers contain pointers. As a
+follow-on to the work on safe-points everywhere, we should audit
+assembly in the standard library for non-preemptible loops and
+annotate them with register maps. In most cases this should be trivial
+since most assembly never constructs a pointer that isn’t shadowed by
+an argument, so it can simply claim there are no pointers in
+registers. We should also document in the Go assembly guide how to do
+this for user code.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal introduces no new APIs, so it is Go 1 compatible.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Austin Clements (&#64;aclements) plans to implement register and stack
+maps everywhere for Go 1.11.
+This will enable some low-risk uses in the short term, such as
+debugger function calls.</p>
+<p>Debugging and testing of register and stack maps can continue into the
+Go 1.11 freeze, including building the static analysis tool.</p>
+<p>Then, for Go 1.12, Austin will implement safe-points everywhere atop
+the register and stacks maps.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>[1] James M. Stichnoth, Guei-Yuan Lueh, and Michał Cierniak. 1999. Support for garbage collection at every instruction in a Java compiler. In <em>Proceedings of the ACM SIGPLAN 1999 conference on Programming language design and implementation</em> (PLDI ‘99). ACM, New York, NY, USA, 118–127.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

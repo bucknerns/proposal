@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: A minimal release process for Go repositories &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Rules for passing pointers between Go and C" href="12416-cgo-pointers.html" />
+    <link rel="prev" title="Proposal: testing: programmatic sub-test and sub-benchmark support" href="12166-subtests.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: A minimal release process for Go repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#release-process">Release process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tag-format">Tag format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#who-benefits-from-adopting-this-proposal">Who benefits from adopting this proposal ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-recommend-semver">Why recommend SemVer ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-not-allow-the-v-prefix-to-be-optional">Why not allow the v prefix to be optional ?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#out-of-scope">Out of scope</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: A minimal release process for Go repositories</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/12302-release-proposal.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-a-minimal-release-process-for-go-repositories">
+<h1>Proposal: A minimal release process for Go repositories<a class="headerlink" href="#proposal-a-minimal-release-process-for-go-repositories" title="Permalink to this headline">¶</a></h1>
+<p>Author: Dave Cheney &lt;dave&#64;cheney.net&gt;</p>
+<p>Last updated: 03 December 2015</p>
+<p>Status: Withdrawn</p>
+<p>Discussion at https://golang.org/issue/12302.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>In the same way that gofmt defines a single recommended way to format Go source
+code, this proposal establishes a single recommended procedure for releasing the
+source code for Go programs and libraries.</p>
+<p>This is intended to be a light weight process to facilitate tools that automate
+the creation and consumption of this release information.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Releasing software is useful. It separates the every day cut and thrust of
+software development, patch review, and bug triage, from the consumers of the
+software, a majority of whom are not developers of your software and only wish
+to be concerned with the versions that you tell them are appropriate to use.</p>
+<p>For example, the Go project itself offers a higher level of support to users
+who report bugs against our released versions.
+In fact we specifically recommend against people using unreleased versions in
+production.</p>
+<p>A key differentiator between released and unreleased software is the version
+number.
+Version numbers create a distinct identifier that increments at its own pace
+and under different drivers to the internal identifier of the version control
+system (VCS) or development team.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>This proposal describes a minimal release procedure of tagging a repository
+which holds the source of one or more Go packages.</p>
+<div class="section" id="release-process">
+<h3>Release process<a class="headerlink" href="#release-process" title="Permalink to this headline">¶</a></h3>
+<p>This proposal recommends that repository owners adopt the
+<a class="reference external" href="https://SemVer.org/spec/v2.0.0.html">Semantic Versioning 2.0 standard</a> (SemVer)
+for their numbering scheme.</p>
+<p>Source code is released by tagging (eg. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span></code>) the VCS repository with a
+string representing a SemVer compatible version number for that release.</p>
+<p>This proposal is not restricted to git, any VCS that has the facility to assign
+a tag-like entity to a revision is supported.</p>
+</div>
+<div class="section" id="tag-format">
+<h3>Tag format<a class="headerlink" href="#tag-format" title="Permalink to this headline">¶</a></h3>
+<p>The format of the VCS tag is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span><span class="o">&lt;</span><span class="n">SemVer</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>That is, the character <code class="docutils literal notranslate"><span class="pre">v</span></code>, U+0075, followed directly by a string which is
+compliant with the <a class="reference external" href="https://SemVer.org/spec/v2.0.0.html">Semantic Versioning 2.0 standard</a>.</p>
+<p>When inspecting a repository, tags which do not fit the format described above
+must be ignored for the purpose of determining the available release versions.</p>
+<p>SemVer requires that a once a version number has been assigned, it must not
+change, thus a tag, once assigned must not be reused.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>Go libraries and programs do not have version numbers in the way it is commonly
+understood by our counterparts in other languages communities.
+This is because there is no formalised notion of releasing Go source code.
+There is no recognised process of taking an arbitrary VCS commit hash and
+assigning it a version number that is meaningful for both humans and machines.</p>
+<p>Additionally, operating system distributors such as Debian and Ubuntu strongly
+prefer to package released versions of a library or application, and are
+currently reduced to
+<a class="reference external" href="https://packages.debian.org/stretch/golang-github-odeke-em-command-dev">doing things like this</a>.</p>
+<p>In the spirit of doing less and enabling more, this proposal establishes the
+minimum required for humans and tools to identify released versions by inspecting
+source code repositories.
+It is informed by the broad support for semantic versioning across our
+contemporaries like node.js (npm), rust (cargo), javascript (bower), and ruby
+(rubygems), thereby allowing Go programmers to benefit from the experiences of
+these other communities’ dependency management ecosystems.</p>
+<div class="section" id="who-benefits-from-adopting-this-proposal">
+<h3>Who benefits from adopting this proposal ?<a class="headerlink" href="#who-benefits-from-adopting-this-proposal" title="Permalink to this headline">¶</a></h3>
+<p>This proposal will immediately benefit the downstream consumers of Go libraries
+and programs. For example:</p>
+<ul class="simple">
+<li><p>The large ecosystem of tools like godeps, glide, govendor, gb, the
+vendor-spec proposal and dozens more, that can use this information to
+provide, for example, a command that will let users upgrade between minor
+versions, or update to the latest patch released of their dependencies rather
+than just the latest HEAD of the repository.</p></li>
+<li><p>Operating system distributions such as Debian, Fedora, Ubuntu, Homebrew, rely
+on released versions of software for their packaging policies.
+They don’t want to pull random git hashes into their archives, they want to
+pull released versions of the code and have release numbers that give them a
+sense of how compatible new versions are with previous version.
+For example, Ubuntu have a policy that we only accept patch releases into our
+LTS distribution; no major version changes, no minor version changes that
+include new features, only bug fixes.</p></li>
+<li><p>godoc.org could show users the documentation for the version of the package
+they were using, not just whatever is at HEAD.</p></li>
+</ul>
+<p>That <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">get</span></code> cannot consume this version information today should not be an
+argument against enabling other tools to do so.</p>
+</div>
+<div class="section" id="why-recommend-semver">
+<h3>Why recommend SemVer ?<a class="headerlink" href="#why-recommend-semver" title="Permalink to this headline">¶</a></h3>
+<p>Applying an opaque release tag is not sufficient, the tag has to contain enough
+semantic meaning for humans and tools to compare two version numbers and infer
+the degree of compatibility, or incompatibility between them.
+This is the goal of semantic versioning.</p>
+<p>To cut to the chase, SemVer is not a magic bullet, it cannot force developers
+to not do the wrong thing, only incentivise them to do the right thing.
+This property would hold true no matter what version numbering methodology
+was proposed, SemVer or something of our own concoction.</p>
+<p>There is a lot to gain from working from a position of assuming Go programmers
+want to do the right thing, not engineer a straight jacket process which
+prevents them from doing the wrong thing.
+The ubiquity of gofmt’d code, in spite of the fact the compiler allows a much
+looser syntax, is evidence of this.</p>
+<p>Adherence to a commonly accepted ideal of what constitutes a major, minor and
+patch release is informed by the same social pressures that drive Go
+programmers to gofmt their code.</p>
+</div>
+<div class="section" id="why-not-allow-the-v-prefix-to-be-optional">
+<h3>Why not allow the v prefix to be optional ?<a class="headerlink" href="#why-not-allow-the-v-prefix-to-be-optional" title="Permalink to this headline">¶</a></h3>
+<p>The recommendation to include the <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix is for compatibility with the
+three largest Go projects, Docker, Kubernetes, and CoreOS, who have already
+adopted this form.</p>
+<p>Permitting the <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix to be optional would mean some authors adopt it, and
+others do not, which is a poor position for a standard.
+In the spirit of gofmt, mandating the <code class="docutils literal notranslate"><span class="pre">v</span></code> prefix across the board means there
+is exactly one tag form for implementations to parse, and outweighs the
+personal choice of an optional prefix.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>There is no impact on the <a class="reference external" href="https://golang.org/doc/go1compat">compatibility guidelines</a>
+from this proposal.</p>
+<p>However, in the past, members of the Go team have advocated that when a libraries’
+API changes in an incompatible way, the import path of the library should be
+changed, usually including a version number as a component of the import path.
+This proposal deprecates this recommendation.</p>
+<p>Authors of Go libraries should follow these two maxims:</p>
+<ol class="simple">
+<li><p>Packages which are the same, must share the same import path. This proposal
+provides the mechanism for consumers to identify a specific release version
+without the requirement to encode that information in the import path.</p></li>
+<li><p>Packages which are not the same, must not have the same import path. A clone or
+fork of a library or project is not the same as its parent, so it should have
+a new name – a new import path.</p></li>
+</ol>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>A summary of this proposal, along with examples and a link to this proposal,
+will be added to the [How to write Go Code)(http://golang.org/doc/code.html#remote)
+section of the <a class="reference external" href="https://golang.org">golang.org</a> website.</p>
+<p>Authors who wish to release their software must use a tag in the form described
+above. An example would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="n">git</span> <span class="n">tag</span> <span class="o">-</span><span class="n">a</span> <span class="n">v1</span><span class="o">.</span><span class="mf">0.0</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;release version 1.0.0&quot;</span>
+<span class="o">%</span> <span class="n">git</span> <span class="n">push</span> <span class="o">--</span><span class="n">tags</span>
+</pre></div>
+</div>
+<p>Authors are not prohibited from using other methods of releasing their software,
+but should be aware that if those methods do not conform to the format described
+above, those releases may be invisible to tools confirming to this proposal.</p>
+<p>There is no impact on the Go release cycle, this proposal is not bound by a
+deliverable in the current release cycle.</p>
+</div>
+<div class="section" id="out-of-scope">
+<h2>Out of scope<a class="headerlink" href="#out-of-scope" title="Permalink to this headline">¶</a></h2>
+<p>The following items are out of scope of this proposal:</p>
+<ul class="simple">
+<li><p>How libraries and applications can declare the version numbers or ranges for
+their dependencies.</p></li>
+<li><p>How go get may be changed to consume this version information.</p></li>
+</ul>
+<p>Additionally, this proposal not seek to change the release process, or version
+numbering scheme for the Go (https://golang.org) distribution itself.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="12416-cgo-pointers.html" class="btn btn-neutral float-right" title="Proposal: Rules for passing pointers between Go and C" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="12166-subtests.html" class="btn btn-neutral float-left" title="Proposal: testing: programmatic sub-test and sub-benchmark support" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

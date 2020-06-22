@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Error Handling — Problem Overview &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Error Inspection — Draft Design" href="go2draft-error-inspection.html" />
+    <link rel="prev" title="Error Handling — Draft Design" href="go2draft-error-handling.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Error Handling — Problem Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#draft-design">Draft Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discussion-and-open-questions">Discussion and Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#designs-in-other-languages">Designs in Other Languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rust">Rust</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#swift">Swift</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Error Handling — Problem Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/go2draft-error-handling-overview.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="error-handling-problem-overview">
+<h1>Error Handling — Problem Overview<a class="headerlink" href="#error-handling-problem-overview" title="Permalink to this headline">¶</a></h1>
+<p>Russ Cox<br />August 27, 2018</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This overview and the accompanying
+<a class="reference internal" href="go2draft-error-handling.html"><span class="doc">detailed draft design</span></a>
+are part of a collection of <a class="reference internal" href="go2draft.html"><span class="doc">Go 2 draft design documents</span></a>.
+The overall goal of the Go 2 effort is to address
+the most significant ways that Go fails to scale
+to large code bases and large developer efforts.</p>
+<p>One way that Go programs fail to scale well is in the
+writing of error-checking and error-handling code.
+In general Go programs have too much code checking errors
+and not enough code handling them.
+(This will be illustrated below.)
+The draft design aims to address this problem by introducing
+lighter-weight syntax for error checks
+than the current idiomatic assignment-and-if-statement combination.</p>
+<p>As part of Go 2, we are also considering, as a separate concern,
+changes to the <a class="reference internal" href="go2draft-error-values-overview.html"><span class="doc">semantics of error values</span></a>,
+but this document is only about error checking and handling.</p>
+</div>
+<div class="section" id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
+<p>To scale to large code bases, Go programs must be lightweight,
+<a class="reference external" href="https://www.youtube.com/watch?v=5kj5ApnhPAE">without undue repetition</a>,
+and also robust,
+<a class="reference external" href="https://www.youtube.com/watch?v=lsBF58Q-DnY">dealing gracefully with errors</a>
+when they do arise.</p>
+<p>In the design of Go, we made a conscious choice
+to use explicit error results and explicit error checks.
+In contrast, C most typically uses explicit checking
+of an implicit error result, <a class="reference external" href="http://man7.org/linux/man-pages/man3/errno.3.html">errno</a>,
+while exception handling—found in many languages,
+including C++, C#, Java, and Python—represents implicit checking of implicit results.</p>
+<p>The subtleties of implicit checking are covered well in
+Raymond Chen’s pair of blog posts,
+“<a class="reference external" href="https://blogs.msdn.microsoft.com/oldnewthing/20040422-00/?p=39683">Cleaner, more elegant, and wrong</a>” (2004),
+and “<a class="reference external" href="https://blogs.msdn.microsoft.com/oldnewthing/20050114-00/?p=36693">Cleaner, more elegant, and harder to recognize</a>” (2005).
+In essence, because you can’t see implicit checks at all,
+it is very hard to verify by inspection that the error handling code
+correctly recovers from the state of the program at the time the check fails.</p>
+<p>For example, consider this code, written in a hypothetical dialect of Go with exceptions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">CopyFile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="n">string</span><span class="p">)</span> <span class="n">throws</span> <span class="n">error</span> <span class="p">{</span>
+	<span class="n">r</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+	<span class="n">defer</span> <span class="n">r</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="n">w</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+	<span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+	<span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It is nice, clean, elegant code.
+It is also invisibly wrong: if <code class="docutils literal notranslate"><span class="pre">io.Copy</span></code> or <code class="docutils literal notranslate"><span class="pre">w.Close</span></code> fails,
+the code does not remove the partially-written <code class="docutils literal notranslate"><span class="pre">dst</span></code> file.</p>
+<p>On the other hand, the equivalent actual Go code today would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">CopyFile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="n">string</span><span class="p">)</span> <span class="n">error</span> <span class="p">{</span>
+	<span class="n">r</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+	<span class="n">defer</span> <span class="n">r</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="n">w</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+	<span class="n">defer</span> <span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">err</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This code is not nice, not clean, not elegant, and still wrong:
+like the previous version, it does not remove <code class="docutils literal notranslate"><span class="pre">dst</span></code> when <code class="docutils literal notranslate"><span class="pre">io.Copy</span></code> or <code class="docutils literal notranslate"><span class="pre">w.Close</span></code> fails.
+There is a plausible argument that at least a visible check
+could prompt an attentive reader to wonder about
+the appropriate error-handling response at that point in the code.
+In practice, however, error checks take up so much space
+that readers quickly learn to skip them to see the structure of the code.</p>
+<p>This code also has a second omission in its error handling.
+Functions should typically <a class="reference external" href="https://golang.org/doc/effective_go.html#errors">include relevant information</a>
+about their arguments in their errors,
+like <code class="docutils literal notranslate"><span class="pre">os.Open</span></code> returning the name of the file being opened.
+Returning the error unmodified produces a failure
+without any information about the sequence of operations that led to the error.</p>
+<p>In short, this Go code has too much error checking
+and not enough error handling.
+A more robust version with more helpful errors would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">CopyFile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="n">string</span><span class="p">)</span> <span class="n">error</span> <span class="p">{</span>
+	<span class="n">r</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;copy </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: %v&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">defer</span> <span class="n">r</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="n">w</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;copy </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: %v&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">);</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;copy </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: %v&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">();</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;copy </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: %v&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Correcting these faults has only made the code more correct, not cleaner or more elegant.</p>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<p>For Go 2, we would like to make error checks more lightweight,
+reducing the amount of Go program text dedicated to error checking.
+We also want to make it more convenient to write error handling,
+raising the likelihood that programmers will take the time to do it.</p>
+<p>Both error checks and error handling must remain explicit,
+meaning visible in the program text.
+We do not want to repeat the pitfalls of exception handling.</p>
+<p>Existing code must keep working and remain as valid as it is today.
+Any changes must interoperate with existing code.</p>
+<p>As mentioned above, it is not a goal of this draft design
+to change or augment the semantics of errors.
+For that discussion see the <a class="reference internal" href="go2draft-error-values-overview.html"><span class="doc">error values problem overview</span></a>.</p>
+</div>
+<div class="section" id="draft-design">
+<h2>Draft Design<a class="headerlink" href="#draft-design" title="Permalink to this headline">¶</a></h2>
+<p>This section quickly summarizes the draft design,
+as a basis for high-level discussion and comparison with other approaches.</p>
+<p>The draft design introduces two new syntactic forms.
+First, it introduces a checked expression <code class="docutils literal notranslate"><span class="pre">check</span> <span class="pre">f(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> or <code class="docutils literal notranslate"><span class="pre">check</span> <span class="pre">err</span></code>,
+marking an explicit error check.
+Second, it introduces a <code class="docutils literal notranslate"><span class="pre">handle</span></code> statement defining an error handler.
+When an error check fails, it transfers control to the innermost handler,
+which transfers control to the next handler above it,
+and so on, until a handler executes a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement.</p>
+<p>For example, the corrected code above shortens to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">CopyFile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="n">string</span><span class="p">)</span> <span class="n">error</span> <span class="p">{</span>
+	<span class="n">handle</span> <span class="n">err</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;copy </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">: %v&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="n">r</span> <span class="o">:=</span> <span class="n">check</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+	<span class="n">defer</span> <span class="n">r</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="n">w</span> <span class="o">:=</span> <span class="n">check</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+	<span class="n">handle</span> <span class="n">err</span> <span class="p">{</span>
+		<span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">only</span> <span class="k">if</span> <span class="n">a</span> <span class="n">check</span> <span class="n">fails</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="n">check</span> <span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+	<span class="n">check</span> <span class="n">w</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="k">return</span> <span class="n">nil</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">check</span></code>/<code class="docutils literal notranslate"><span class="pre">handle</span></code> combination is permitted in functions
+that do not themselves return errors.
+For example, here is a main function from a
+<a class="reference external" href="https://github.com/rsc/tmp/blob/master/unhex/main.go">useful but trivial program</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nb">hex</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">ioutil</span><span class="o">.</span><span class="n">ReadAll</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdin</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="n">data</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">parseHexdump</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="nb">hex</span><span class="p">))</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It would be shorter and clearer to write instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">handle</span> <span class="n">err</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Fatal</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="nb">hex</span> <span class="o">:=</span> <span class="n">check</span> <span class="n">ioutil</span><span class="o">.</span><span class="n">ReadAll</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdin</span><span class="p">)</span>
+	<span class="n">data</span> <span class="o">:=</span> <span class="n">check</span> <span class="n">parseHexdump</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="nb">hex</span><span class="p">))</span>
+	<span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For details, see the <a class="reference internal" href="go2draft-error-handling.html"><span class="doc">draft design</span></a>.</p>
+</div>
+<div class="section" id="discussion-and-open-questions">
+<h2>Discussion and Open Questions<a class="headerlink" href="#discussion-and-open-questions" title="Permalink to this headline">¶</a></h2>
+<p>These draft designs are meant only as a starting point for community discussion.
+We fully expect the details to be revised based on feedback and especially experience reports.
+This section outlines some of the questions that remain to be answered.</p>
+<p><strong>Check versus try</strong>.
+The keyword <code class="docutils literal notranslate"><span class="pre">check</span></code> is a clear statement of what is being done.
+Originally we used the well-known exception keyword <code class="docutils literal notranslate"><span class="pre">try</span></code>.
+This did read well for function calls:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">:=</span> <span class="k">try</span> <span class="n">parseHexdump</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="nb">hex</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>But it did not read well for checks applied to error values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">parseHexdump</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="nb">hex</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="n">ErrBadHex</span> <span class="p">{</span>
+	<span class="o">...</span> <span class="n">special</span> <span class="n">handling</span> <span class="o">...</span>
+<span class="p">}</span>
+<span class="k">try</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">check</span> <span class="pre">err</span></code> is a clearer description than <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">err</span></code>.
+Rust originally used <code class="docutils literal notranslate"><span class="pre">try!</span></code> to mark an explicit error check
+but moved to a special <code class="docutils literal notranslate"><span class="pre">?</span></code> operator instead.
+Swift also uses <code class="docutils literal notranslate"><span class="pre">try</span></code> to mark an explicit error check,
+but also <code class="docutils literal notranslate"><span class="pre">try!</span></code> and <code class="docutils literal notranslate"><span class="pre">try?</span></code>, and as part of a broader
+analogy to exception-handling that also includes <code class="docutils literal notranslate"><span class="pre">throw</span></code> and <code class="docutils literal notranslate"><span class="pre">catch</span></code>.</p>
+<p>Overall it seems that the draft design’s <code class="docutils literal notranslate"><span class="pre">check</span></code>/<code class="docutils literal notranslate"><span class="pre">handle</span></code>
+are sufficiently different from exception handling
+and from Rust and Swift to justify the clearer keyword,
+<code class="docutils literal notranslate"><span class="pre">check</span></code>, over the more familiar one, <code class="docutils literal notranslate"><span class="pre">try</span></code>.</p>
+<p>Both Rust and Swift are discussed in more detail below.</p>
+<p><strong>Defer</strong>.
+The error handling is in some ways similar to <a class="reference external" href="https://golang.org/ref/spec#Defer_statements"><code class="docutils literal notranslate"><span class="pre">defer</span></code></a> and
+<a class="reference external" href="https://golang.org/ref/spec#Handling_panics"><code class="docutils literal notranslate"><span class="pre">recover</span></code></a>,
+but for errors instead of panics.
+The current draft design makes error handlers chain lexically,
+while <code class="docutils literal notranslate"><span class="pre">defer</span></code> builds up a chain at runtime
+depending on what code executes.
+This difference matters for handlers (or deferred functions)
+declared in conditional bodies and loops.
+Although lexical stacking of error handlers seems like a marginally better design,
+it may be less surprising to match <code class="docutils literal notranslate"><span class="pre">defer</span></code> exactly.
+As an example where <code class="docutils literal notranslate"><span class="pre">defer</span></code>-like handling would be more convenient,
+if <code class="docutils literal notranslate"><span class="pre">CopyFile</span></code> established its destination <code class="docutils literal notranslate"><span class="pre">w</span></code> as either <code class="docutils literal notranslate"><span class="pre">os.Stdout</span></code> or the result of <code class="docutils literal notranslate"><span class="pre">os.Create</span></code>,
+then it would be helpful to be able to introduce the <code class="docutils literal notranslate"><span class="pre">os.Remove(dst)</span></code> handler conditionally.</p>
+<p><strong>Panics</strong>.
+We’ve spent a while trying to harmonize error handling and panics,
+so that cleanup due to error handling need not be repeated for cleanup due to panics.
+All our attempts at unifying the two only led to more complexity.</p>
+<p><strong>Feedback</strong>.
+The most useful general feedback would be examples of interesting uses
+that are enabled or disallowed by the draft design.
+We’d also welcome feedback about the points above,
+especially based on experience with complex
+or buggy error handling in real programs.</p>
+<p>We are collecting links to feedback at
+<a class="reference external" href="https://golang.org/wiki/Go2ErrorHandlingFeedback">golang.org/wiki/Go2ErrorHandlingFeedback</a>.</p>
+</div>
+<div class="section" id="designs-in-other-languages">
+<h2>Designs in Other Languages<a class="headerlink" href="#designs-in-other-languages" title="Permalink to this headline">¶</a></h2>
+<p>The problem section above briefly discussed C and exception-based languages.</p>
+<p>Other recent language designs have also recognized
+the problems caused by exception handling’s invisible error checks,
+and those designs are worth examining in more detail.
+The Go draft design was inspired, at least in part, by each of them.</p>
+</div>
+<div class="section" id="rust">
+<h2>Rust<a class="headerlink" href="#rust" title="Permalink to this headline">¶</a></h2>
+<p>Like Go, <a class="reference external" href="https://doc.rust-lang.org/book/second-edition/ch09-00-error-handling.html">Rust distinguishes</a>
+between expected errors, like “file not found”, and unexpected errors,
+like accessing past the end of an array.
+Expected errors are returned explicitly
+while unexpected errors become program-ending panics.
+But Rust has little special-purpose
+language support for expected errors.
+Instead, concise handling of expected errors
+is done almost entirely by generics.</p>
+<p>In Rust, functions return single values (possibly a single tuple value),
+and a function returning a potential error returns a
+<a class="reference external" href="https://doc.rust-lang.org/book/second-edition/ch09-02-recoverable-errors-with-result.html">discriminated union <code class="docutils literal notranslate"><span class="pre">Result&lt;T,</span> <span class="pre">E&gt;</span></code></a>
+that is either the successful result of type <code class="docutils literal notranslate"><span class="pre">T</span></code> or an error of type <code class="docutils literal notranslate"><span class="pre">E</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">enum</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">E</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="n">Ok</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+	<span class="n">Err</span><span class="p">(</span><span class="n">E</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">fs::File::Open</span></code> returns a <code class="docutils literal notranslate"><span class="pre">Result&lt;fs::File,</span> <span class="pre">io::Error&gt;</span></code>.
+The generic <code class="docutils literal notranslate"><span class="pre">Result&lt;T,</span> <span class="pre">E&gt;</span></code> type defines an
+<a class="reference external" href="https://doc.rust-lang.org/book/second-edition/ch09-02-recoverable-errors-with-result.html#shortcuts-for-panic-on-error-unwrap-and-expect">unwrap method</a>
+that turns a result into the underlying value (of type <code class="docutils literal notranslate"><span class="pre">T</span></code>)
+or else panics (if the result represents an error).</p>
+<p>If code does want to check an error instead of panicking,
+<a class="reference external" href="https://doc.rust-lang.org/book/second-edition/ch09-02-recoverable-errors-with-result.html#a-shortcut-for-propagating-errors-the--operator">the <code class="docutils literal notranslate"><span class="pre">?</span></code> operator</a>
+macro-expands <code class="docutils literal notranslate"><span class="pre">use(result?)</span></code> into the Rust equivalent of this Go code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">err</span>
+<span class="p">}</span>
+<span class="n">use</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">?</span></code> operator therefore helps shorten the error checking
+and is very similar to the draft design’s <code class="docutils literal notranslate"><span class="pre">check</span></code>.
+But Rust has no equivalent of <code class="docutils literal notranslate"><span class="pre">handle</span></code>:
+the convenience of the <code class="docutils literal notranslate"><span class="pre">?</span></code> operator comes with
+the likely omission of proper handling.
+Rust’s equivalent of Go’s explicit error check <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">err</span> <span class="pre">!=</span> <span class="pre">nil</span></code> is
+<a class="reference external" href="https://doc.rust-lang.org/book/second-edition/ch09-02-recoverable-errors-with-result.html">using a <code class="docutils literal notranslate"><span class="pre">match</span></code> statement</a>,
+which is equally verbose.</p>
+<p>Rust’s <code class="docutils literal notranslate"><span class="pre">?</span></code> operator began life as
+<a class="reference external" href="https://doc.rust-lang.org/beta/book/first-edition/error-handling.html#the-real-try-macro">the <code class="docutils literal notranslate"><span class="pre">try!</span></code> macro</a>.</p>
+</div>
+<div class="section" id="swift">
+<h2>Swift<a class="headerlink" href="#swift" title="Permalink to this headline">¶</a></h2>
+<p>Swift’s <code class="docutils literal notranslate"><span class="pre">try</span></code>, <code class="docutils literal notranslate"><span class="pre">catch</span></code>, and <code class="docutils literal notranslate"><span class="pre">throw</span></code> keywords appear at first glance to be
+implementing exception handling, but really they are syntax for explicit error handling.</p>
+<p>Each function’s signature specifies whether the function
+can result in (“throw”) an error.
+Here is an <a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID510">example from the Swift book</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">canThrowErrors</span><span class="p">()</span> <span class="n">throws</span> <span class="o">-&gt;</span> <span class="n">String</span>
+<span class="n">func</span> <span class="n">cannotThrowErrors</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">String</span>
+</pre></div>
+</div>
+<p>These are analogous to the Go result lists <code class="docutils literal notranslate"><span class="pre">(string,</span> <span class="pre">error)</span></code> and <code class="docutils literal notranslate"><span class="pre">string</span></code>.</p>
+<p>Inside a “throws” function, the
+<code class="docutils literal notranslate"><span class="pre">throw</span></code> statement returns an error,
+as in this <a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID509">example, again from the Swift book</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">throw</span> <span class="n">VendingMachineError</span><span class="o">.</span><span class="n">insufficientFunds</span><span class="p">(</span><span class="n">coinsNeeded</span><span class="p">:</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Every call to a “throws” function must specify at the call site
+what to do in case of error. In general that means nesting the call
+(perhaps along with other calls) inside a <a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID541">do-catch block</a>,
+with all potentially-throwing calls marked by the <code class="docutils literal notranslate"><span class="pre">try</span></code> keyword:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">do</span> <span class="p">{</span>
+	<span class="n">let</span> <span class="n">s</span> <span class="o">=</span> <span class="k">try</span> <span class="n">canThrowErrors</span><span class="p">()</span>
+	<span class="n">let</span> <span class="n">t</span> <span class="o">=</span> <span class="n">cannotThrowErrors</span><span class="p">()</span>
+	<span class="n">let</span> <span class="n">u</span> <span class="o">=</span> <span class="k">try</span> <span class="n">canThrowErrors</span><span class="p">()</span> <span class="o">//</span> <span class="n">a</span> <span class="n">second</span> <span class="n">call</span>
+<span class="p">}</span> <span class="n">catch</span> <span class="p">{</span>
+	<span class="n">handle</span> <span class="n">error</span> <span class="kn">from</span> <span class="nn">try</span> <span class="n">above</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The key differences from exception handling as in C++, Java, Python,
+and similar languages are:</p>
+<ul class="simple">
+<li><p>Every error check is marked.</p></li>
+<li><p>There must be a <code class="docutils literal notranslate"><span class="pre">catch</span></code> or other direction about what to do with an error.</p></li>
+<li><p>There is no implicit stack unwinding.</p></li>
+</ul>
+<p>Combined, those differences make all error checking,
+handling, and control flow transfers explicit, as in Go.</p>
+<p>Swift introduces three shorthands to avoid having
+to wrap every throwing function call in a <code class="docutils literal notranslate"><span class="pre">do</span></code>-<code class="docutils literal notranslate"><span class="pre">catch</span></code> block.</p>
+<p>First, outside a block, <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">canThrowErrors()</span></code>
+<a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID510">checks for the error and re-throws it</a>,
+like Rust’s old <code class="docutils literal notranslate"><span class="pre">try!</span></code> macro and current <code class="docutils literal notranslate"><span class="pre">?</span></code> operator.</p>
+<p>Second, <code class="docutils literal notranslate"><span class="pre">try!</span> <span class="pre">canThrowErrors()</span></code>
+<a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID513">checks for the error and turns it into a runtime assertion failure</a>,
+like Rust’s <code class="docutils literal notranslate"><span class="pre">.unwrap</span></code> method.</p>
+<p>Third, <code class="docutils literal notranslate"><span class="pre">try?</span> <span class="pre">canThrowErrors()</span></code>
+<a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID542">evaluates to nil on error, or else the function’s result</a>.
+The Swift book gives this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>func fetchData() -&gt; Data? {
+	if let data = try? fetchDataFromDisk() { return data }
+	if let data = try? fetchDataFromServer() { return data }
+	return nil
+}
+</pre></div>
+</div>
+<p>The example discards the exact reasons these functions failed.</p>
+<p>For cleanup, Swift adds lexical <a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID514"><code class="docutils literal notranslate"><span class="pre">defer</span></code> blocks</a>,
+which run when the enclosing scope is exited, whether by an explicit <code class="docutils literal notranslate"><span class="pre">return</span></code> or by throwing an error.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="go2draft-error-inspection.html" class="btn btn-neutral float-right" title="Error Inspection — Draft Design" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="go2draft-error-handling.html" class="btn btn-neutral float-left" title="Error Handling — Draft Design" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
