@@ -1,0 +1,818 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Non-cooperative goroutine preemption &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="25530-notary.html" />
+    <link rel="prev" title="Proposal: Versioned Go Modules" href="24301-versioned-go.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Non-cooperative goroutine preemption</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cooperative-loop-preemption">Cooperative loop preemption</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#non-cooperative-preemption">Non-cooperative preemption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-unsafe-points">Handling unsafe-points</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#range-loops">Range loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-safe-points">Runtime safe-points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unsafe-standard-library-code">Unsafe standard library code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ensuring-progress-with-unsafe-points">Ensuring progress with unsafe-points</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#other-considerations">Other considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#alternatives">Alternatives</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#single-stepping">Single-stepping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jump-rewriting">Jump rewriting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#out-of-line-execution">Out-of-line execution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Non-cooperative goroutine preemption</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/24543-non-cooperative-preemption.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-non-cooperative-goroutine-preemption">
+<h1>Proposal: Non-cooperative goroutine preemption<a class="headerlink" href="#proposal-non-cooperative-goroutine-preemption" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements</p>
+<p>Last updated: 2019-01-18</p>
+<p>Discussion at https://golang.org/issue/24543.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Go currently uses compiler-inserted cooperative preemption points in
+function prologues.
+The majority of the time, this is good enough to allow Go developers
+to ignore preemption and focus on writing clear parallel code, but it
+has sharp edges that we’ve seen degrade the developer experience time
+and time again.
+When it goes wrong, it goes spectacularly wrong, leading to mysterious
+system-wide latency issues and sometimes complete freezes.
+And because this is a language implementation issue that exists
+outside of Go’s language semantics, these failures are surprising and
+very difficult to debug.</p>
+<p>&#64;dr2chase has put significant effort into prototyping cooperative
+preemption points in loops, which is one way to solve this problem.
+However, even sophisticated approaches to this led to unacceptable
+slow-downs in tight loops (where slow-downs are generally least
+acceptable).</p>
+<p>I propose that the Go implementation switch to non-cooperative
+preemption, which would allow goroutines to be preempted at
+essentially any point without the need for explicit preemption checks.
+This approach will solve the problem of delayed preemption and do so
+with zero run-time overhead.</p>
+<p>Non-cooperative preemption is a general concept with a whole class of
+implementation techniques.
+This document describes and motivates the switch to non-cooperative
+preemption and discusses common concerns of any non-cooperative
+preemption approach in Go.
+Specific implementation approaches are detailed in sub-proposals
+linked from this document.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Up to and including Go 1.10, Go has used cooperative preemption with
+safe-points only at function calls (and even then, not if the function
+is small or gets inlined).
+This means that Go can only switch between concurrently-executing
+goroutines at specific points.
+The main advantage of this is that the compiler can ensure useful
+invariants at these safe-points.
+In particular, the compiler ensures that all local garbage collection
+roots are known at all safe-points, which is critical to precise
+garbage collection.
+It can also ensure that no registers are live at safe-points, which
+means the Go runtime can switch goroutines without having to save and
+restore a large register set.</p>
+<p>However, this can result in infrequent safe-points, which leads to
+many problems:</p>
+<ol class="simple">
+<li><p>The most common in production code is that this can delay STW
+operations, such as starting and ending a GC cycle.
+This increases STW latency, and on large core counts can
+significantly impact throughput (if, for example, most threads are
+stopped while the runtime waits on a straggler for a long time).
+(<a class="reference external" href="https://golang.org/issue/17831">#17831</a>,
+<a class="reference external" href="https://golang.org/issue/19241">#19241</a>)</p></li>
+<li><p>This can delay scheduling, preventing competing goroutines from
+executing in a timely manner.</p></li>
+<li><p>This can delay stack scanning, which consumes CPU while the runtime
+waits for a preemption point and can ultimately delay GC
+termination, resulting in an effective STW where the system runs
+out of heap and no goroutines can allocate.</p></li>
+<li><p>In really extreme cases, it can cause a program to halt, such as
+when a goroutine spinning on an atomic load starves out the
+goroutine responsible for setting that atomic.
+This often indicates bad or buggy code, but is surprising
+nonetheless and has clearly wasted a lot of developer time on
+debugging.
+(<a class="reference external" href="https://golang.org/issue/543">#543</a>,
+<a class="reference external" href="https://golang.org/issue/12553">#12553</a>,
+<a class="reference external" href="https://golang.org/issue/13546">#13546</a>,
+<a class="reference external" href="https://golang.org/issue/14561">#14561</a>,
+<a class="reference external" href="https://golang.org/issue/15442">#15442</a>,
+<a class="reference external" href="https://golang.org/issue/17174">#17174</a>,
+<a class="reference external" href="https://golang.org/issue/20793">#20793</a>,
+<a class="reference external" href="https://golang.org/issue/21053">#21053</a>)</p></li>
+</ol>
+<p>These problems impede developer productivity and production efficiency
+and expose Go’s users to implementation details they shouldn’t have to
+worry about.</p>
+<div class="section" id="cooperative-loop-preemption">
+<h3>Cooperative loop preemption<a class="headerlink" href="#cooperative-loop-preemption" title="Permalink to this headline">¶</a></h3>
+<p>&#64;dr2chase put significant effort into trying to solve these problems
+using cooperative <em>loop preemption</em>
+(<a class="reference external" href="https://golang.org/issue/10958">#10958</a>).
+This is a standard approach for runtimes employing cooperative
+preemption in which the compiler inserts preemption checks and
+safe-points at back-edges in the flow graph.
+This significantly improves the quality of preemption, since code
+almost never executes without a back-edge for any non-trivial amount
+of time.</p>
+<p>Our most recent approach to loop preemption, which we call
+<em>fault-based preemption</em>, adds a single instruction, no branches, and
+no register pressure to loops on x86 and UNIX platforms (<a class="reference external" href="https://golang.org/cl/43050">CL
+43050</a>).
+Despite this, the geomean slow-down on a <a class="reference external" href="https://perf.golang.org/search?q=upload%3A20171003.1+%7C+upload-part%3A20171003.1%2F3+vs+upload-part%3A20171003.1%2F1">large suite of
+benchmarks</a>
+is 7.8%, with a handful of significantly worse outliers.
+Even <a class="reference external" href="https://perf.golang.org/search?q=upload%3A20171003.1+%7C+upload-part%3A20171003.1%2F0+vs+upload-part%3A20171003.1%2F1">compared to Go
+1.9</a>,
+where the slow-down is only 1% thanks to other improvements, most
+benchmarks see some slow-down and there are still significant
+outliers.</p>
+<p>Fault-based preemption also has several implementation downsides.
+It can’t target specific threads or goroutines, so it’s a poor match
+for stack scanning, ragged barriers, or regular scheduler preemption.
+It’s also “sticky”, in that we can’t resume any loops until we resume
+<em>all</em> loops, so the safe-point can’t simply resume if it occurs in an
+unsafe state (such as when runtime locks are held).
+It requires more instructions (and more overhead) on non-x86 and
+non-UNIX platforms.
+Finally, it interferes with debuggers, which assume bad memory
+references are a good reason to stop a program.
+It’s not clear it can work at all under many debuggers on OS X due to
+a <a class="reference external" href="https://bugs.llvm.org/show_bug.cgi?id=22868">kernel bug</a>.</p>
+</div>
+</div>
+<div class="section" id="non-cooperative-preemption">
+<h2>Non-cooperative preemption<a class="headerlink" href="#non-cooperative-preemption" title="Permalink to this headline">¶</a></h2>
+<p><em>Non-cooperative preemption</em> switches between concurrent execution
+contexts without explicit preemption checks or assistance from those
+contexts.
+This is used by all modern desktop and server operating systems to
+switch between threads.
+Without this, a single poorly-behaved application could wedge the
+entire system, much like how a single poorly-behaved goroutine can
+currently wedge a Go application.
+It is also a convenient abstraction: it lets us program as if there
+are an infinite number of CPUs available, hiding the fact that the OS
+is time-multiplexing a finite number of CPUs.</p>
+<p>Operating system schedulers use hardware interrupt support to switch a
+running thread into the OS scheduler, which can save that thread’s
+state such as its CPU registers so that it can be resumed later.
+In Go, we would use operating system support to do the same thing.
+On UNIX-like operating systems, this can be done using signals.</p>
+<p>However, because of the garbage collector, Go has requirements that an
+operating system does not: Go must be able to find the live pointers
+on a goroutine’s stack wherever it stops it.
+Most of the complexity of non-cooperative preemption in Go derives
+from this requirement.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I propose that Go implement non-cooperative goroutine preemption by
+sending a POSIX signal (or using an equivalent OS mechanism) to stop a
+running goroutine and capture its CPU state.
+If a goroutine is interrupted at a point that must be GC atomic, as
+detailed in the <a class="reference external" href="#handling-unsafe-points">“Handling unsafe-points”</a>
+section, the runtime can simply resume the goroutine and try again
+later.</p>
+<p>The key difficulty of implementing non-cooperative preemption for Go
+is finding live pointers in the stack of a preempted goroutine.
+There are many possible ways to do this, which are detailed in these
+sub-proposals:</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="24543/safe-points-everywhere.html"><span class="doc">safe-points everywhere
+proposal</span></a> describes an
+implementation where the compiler records stack and register maps
+for nearly every instruction.
+This allows the runtime to halt a goroutine anywhere and find its GC
+roots.</p></li>
+<li><p>The <a class="reference internal" href="24543/conservative-inner-frame.html"><span class="doc">conservative inner-frame scanning
+proposal</span></a> describes an
+implementation that uses conservative GC techniques to find pointers
+in the inner-most stack frame of a preempted goroutine.
+This can be done without any extra safe-point metadata.</p></li>
+</ul>
+</div>
+<div class="section" id="handling-unsafe-points">
+<h2>Handling unsafe-points<a class="headerlink" href="#handling-unsafe-points" title="Permalink to this headline">¶</a></h2>
+<p>Any non-cooperative preemption approach in Go must deal with code
+sequences that have to be atomic with respect to the garbage
+collector.
+We call these “unsafe-points”, in contrast with GC safe-points.
+A few known situations are:</p>
+<ol class="simple">
+<li><p>Expressions involving <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> may temporarily represent
+the only pointer to an object as a <code class="docutils literal notranslate"><span class="pre">uintptr</span></code>.
+Hence, there must be no safe-points while a <code class="docutils literal notranslate"><span class="pre">uintptr</span></code> derived from
+an <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> is live.
+Likewise, we must recognize <code class="docutils literal notranslate"><span class="pre">reflect.Value.Pointer</span></code>,
+<code class="docutils literal notranslate"><span class="pre">reflect.Value.UnsafeAddr</span></code>, and <code class="docutils literal notranslate"><span class="pre">reflect.Value.InterfaceData</span></code> as
+<code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code>-to-<code class="docutils literal notranslate"><span class="pre">uintptr</span></code> conversions.
+Alternatively, if the compiler can reliably detect such <code class="docutils literal notranslate"><span class="pre">uintptr</span></code>s,
+it could mark this as pointers, but there’s a danger that an
+intermediate value may not represent a legal pointer value.</p></li>
+<li><p>In the write barrier there must not be a safe-point between the
+write-barrier-enabled check and a direct write.
+For example, suppose the goroutine is writing a pointer to B into
+object A.
+If the check happens, then GC starts and scans A, then the
+goroutine writes B into A and drops all references to B from its
+stack, the garbage collector could fail to mark B.</p></li>
+<li><p>There are places where the compiler generates temporary pointers
+that can be past the end of allocations, such as in range loops
+over slices and arrays.
+These would either have to be avoided or safe-points would have to
+be disallowed while these are live.</p></li>
+</ol>
+<p>All of these cases must already avoid significant reordering to avoid
+being split across a call.
+Internally, this is achieved via the “mem” pseudo-value, which must be
+sequentially threaded through all SSA values that manipulate memory.
+Mem is also threaded through values that must not be reordered, even
+if they don’t touch memory.
+For example, conversion between <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> and <code class="docutils literal notranslate"><span class="pre">uintptr</span></code> is done
+with a special “Convert” operation that takes a mem solely to
+constrain reordering.</p>
+<p>There are several possible solutions to these problem, some of which
+can be combined:</p>
+<ol class="simple">
+<li><p>We could mark basic blocks that shouldn’t contain preemption
+points.
+For <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> conversions, we would opt-out the basic block
+containing the conversion.
+For code adhering to the <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> rules, this should be
+sufficient, but it may break code that is incorrect but happens to
+work today in ways that are very difficult to debug.
+For write barriers this is also sufficient.
+For loops, this is overly broad and would require splitting some
+basic blocks.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> conversions, we could simply opt-out entire
+functions that convert from <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> to <code class="docutils literal notranslate"><span class="pre">uintptr</span></code>.
+This would be easy to implement, and would keep even broken unsafe
+code working as well as it does today, but may have broad impact,
+especially in the presence of inlining.</p></li>
+<li><p>A simple combination of 1 and 2 would be to opt-out any basic block
+that is <em>reachable</em> from an <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> to <code class="docutils literal notranslate"><span class="pre">uintptr</span></code>
+conversion, up to a function call (which is a safe-point today).</p></li>
+<li><p>For range loops, the compiler could compile them differently such
+that it never constructs an out-of-bounds pointer (see below).</p></li>
+<li><p>A far more precise and general approach (thanks to &#64;cherrymui)
+would be to create new SSA operations that “taint” and “untaint”
+memory.
+The taint operation would take a mem and return a new tainted mem.
+This taint would flow to any values that themselves took a tainted
+value.
+The untaint operation would take a value and a mem and return an
+untainted value and an untainted mem.
+During liveness analysis, safe-points would be disallowed wherever
+a tainted value was live.
+This is probably the most precise solution, and is likely to keep
+even incorrect uses of unsafe working, but requires a complex
+implementation.</p></li>
+</ol>
+<p>More broadly, it’s worth considering making the compiler check
+<code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code>-using code and actively reject code that doesn’t
+follow the allowed patterns.
+This could be implemented as a simple type system that distinguishes
+pointer-ish <code class="docutils literal notranslate"><span class="pre">uintptr</span></code> from numeric <code class="docutils literal notranslate"><span class="pre">uintptr</span></code>.
+But this is out of scope for this proposal.</p>
+<div class="section" id="range-loops">
+<h3>Range loops<a class="headerlink" href="#range-loops" title="Permalink to this headline">¶</a></h3>
+<p>As of Go 1.10, range loops are compiled roughly like:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>for i, x := range s { b }
+  ⇓
+for i, _n, _p := 0, len(s), &amp;s[0]; i &lt; _n; i, _p = i+1, _p + unsafe.Sizeof(s[0]) { b }
+  ⇓
+i, _n, _p := 0, len(s), &amp;s[0]
+goto cond
+body:
+{ b }
+i, _p = i+1, _p + unsafe.Sizeof(s[0])
+cond:
+if i &lt; _n { goto body } else { goto end }
+end:
+</pre></div>
+</div>
+<p>The problem with this lowering is that <code class="docutils literal notranslate"><span class="pre">_p</span></code> may temporarily point past
+the end of the allocation the moment before the loop terminates.
+Currently this is safe because there’s never a safe-point while this
+value of <code class="docutils literal notranslate"><span class="pre">_p</span></code> is live.</p>
+<p>This lowering requires that the compiler mark the increment and
+condition blocks as unsafe-points.
+However, if the body is short, this could result in infrequent
+safe-points.
+It also requires creating a separate block for the increment, which is
+currently usually appended to the end of the body.
+Separating these blocks would inhibit reordering opportunities.</p>
+<p>In preparation for non-cooperative preemption, Go 1.11 began compiling
+range loops as follows to avoid ever creating a past-the-end pointer:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">i</span><span class="p">,</span> <span class="nx">_n</span><span class="p">,</span> <span class="nx">_p</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nx">_n</span> <span class="p">{</span> <span class="k">goto</span> <span class="nx">end</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="k">goto</span> <span class="nx">body</span> <span class="p">}</span>
+<span class="nx">top</span><span class="p">:</span>
+<span class="nx">_p</span> <span class="o">+=</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Sizeof</span><span class="p">(</span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nx">body</span><span class="p">:</span>
+<span class="p">{</span> <span class="nx">b</span> <span class="p">}</span>
+<span class="nx">i</span><span class="o">++</span>
+<span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nx">_n</span> <span class="p">{</span> <span class="k">goto</span> <span class="nx">end</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="k">goto</span> <span class="nx">top</span> <span class="p">}</span>
+<span class="nx">end</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>This allows safe-points everywhere in the loop.
+Compared to the original loop compilation, it generates slightly more
+code, but executes the same number of conditional branch instructions
+(n+1) and results in the same number of SSA basic blocks (3).</p>
+<p>This lowering does complicate bounds-check elimination.
+In Go 1.10, bounds-check elimination knew that <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">_n</span></code> in the body
+because the body block is dominated by the cond block.
+However, in the new lowering, deriving this fact required detecting
+that <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">_n</span></code> on <em>both</em> paths into body and hence is true in body.</p>
+</div>
+<div class="section" id="runtime-safe-points">
+<h3>Runtime safe-points<a class="headerlink" href="#runtime-safe-points" title="Permalink to this headline">¶</a></h3>
+<p>Beyond generated code, the runtime in general is not written to be
+arbitrarily preemptible and there are many places that must not be
+preempted.
+Hence, we would likely disable safe-points by default in the runtime,
+except at calls (where they occur now).</p>
+<p>While this would have little downside for most of the runtime, there
+are some parts of the runtime that could benefit substantially from
+non-cooperative preemption, such as memory functions like <code class="docutils literal notranslate"><span class="pre">memmove</span></code>.
+Non-cooperative preemption is an excellent way to make these
+preemptible without slowing down the common case, since we would only
+need to mark their register maps (which would often be empty for
+functions like <code class="docutils literal notranslate"><span class="pre">memmove</span></code> since all pointers would already be protected
+by arguments).</p>
+<p>Over time we may opt-in more of the runtime.</p>
+</div>
+<div class="section" id="unsafe-standard-library-code">
+<h3>Unsafe standard library code<a class="headerlink" href="#unsafe-standard-library-code" title="Permalink to this headline">¶</a></h3>
+<p>The Windows syscall package contains many <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> conversions
+that don’t follow the <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> rules.
+It broadly makes shaky assumptions about safe-point behavior,
+liveness, and when stack movement can happen.
+It would likely need a thorough auditing, or would need to be opted
+out like the runtime.</p>
+<p>Perhaps more troubling is that some of the Windows syscall package
+types have uintptr fields that are actually pointers, hence forcing
+callers to perform unsafe pointer conversions.
+For example, see issue <a class="reference external" href="https://golang.org/issue/21376">#21376</a>.</p>
+</div>
+<div class="section" id="ensuring-progress-with-unsafe-points">
+<h3>Ensuring progress with unsafe-points<a class="headerlink" href="#ensuring-progress-with-unsafe-points" title="Permalink to this headline">¶</a></h3>
+<p>We propose simply giving up and retrying later when a goroutine is
+interrupted at an unsafe-point.
+One danger of this is that safe points may be rare in tight loops.
+However, in many cases, there are more sophisticated alternatives to
+this approach.</p>
+<p>For interruptions in the runtime or in functions without any safe
+points (such as assembly), the signal handler could unwind the stack
+and insert a return trampoline at the next return to a function with
+safe point metadata.
+The runtime could then let the goroutine continue running and the
+trampoline would pause it as soon as possible.</p>
+<p>For write barriers and <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> sequences, the compiler could
+insert a cheap, explicit preemption check at the end of the sequence.
+For example, the runtime could modify some register that would be
+checked at the end of the sequence and let the thread continue
+executing.
+In the write barrier sequence, this could even be the register that
+the write barrier flag was loaded into, and the compiler could insert
+a simple register test and conditional branch at the end of the
+sequence.
+To even further shrink the sequence, the runtime could put the address
+of the stop function in this register so the stop sequence would be
+just a register call and a jump.</p>
+<p>Alternatives to this check include forward and reverse simulation.
+Forward simulation is tricky because the compiler must be careful to
+only generate operations the runtime knows how to simulate.
+Reverse simulation is easy <em>if</em> the compiler can always generate a
+restartable sequence (simply move the PC back to the write barrier
+flag check), but quickly becomes complicated if there are multiple
+writes in the sequence or more complex writes such as DUFFCOPY.</p>
+</div>
+</div>
+<div class="section" id="other-considerations">
+<h2>Other considerations<a class="headerlink" href="#other-considerations" title="Permalink to this headline">¶</a></h2>
+<p>All of the proposed approaches to non-cooperative preemption involve
+stopping a running goroutine by sending its thread an OS signal.
+This section discusses general consequences of this.</p>
+<p><strong>Windows support.</strong> Unlike fault-based loop preemption, signaled
+preemption is quite easy to support in Windows because it provides
+<code class="docutils literal notranslate"><span class="pre">SuspendThread</span></code> and <code class="docutils literal notranslate"><span class="pre">GetThreadContext</span></code>, which make it trivial to get a
+thread’s register set.</p>
+<p><strong>Choosing a signal.</strong> We have to choose a signal that is unlikely to
+interfere with existing uses of signals or with debuggers.
+There are no perfect choices, but there are some heuristics.</p>
+<ol class="simple">
+<li><p>It should be a signal that’s passed-through by debuggers by
+default.
+On Linux, this is SIGALRM, SIGURG, SIGCHLD, SIGIO, SIGVTALRM, SIGPROF,
+and SIGWINCH, plus some glibc-internal signals.</p></li>
+<li><p>It shouldn’t be used internally by libc in mixed Go/C binaries
+because libc may assume it’s the only thing that can handle these
+signals.
+For example SIGCANCEL or SIGSETXID.</p></li>
+<li><p>It should be a signal that can happen spuriously without
+consequences.
+For example, SIGALRM is a bad choice because the signal handler can’t
+tell if it was caused by the real process alarm or not (arguably this
+means the signal is broken, but I digress).
+SIGUSR1 and SIGUSR2 are also bad because those are often used in
+meaningful ways by applications.</p></li>
+<li><p>We need to deal with platforms without real-time signals (like
+macOS), so those are out.</p></li>
+</ol>
+<p>We use SIGURG because it meets all of these criteria, is extremely
+unlikely to be used by an application for its “real” meaning (both
+because out-of-band data is basically unused and because SIGURG
+doesn’t report which socket has the condition, making it pretty
+useless), and even if it is, the application has to be ready for
+spurious SIGURG. SIGIO wouldn’t be a bad choice either, but is more
+likely to be used for real.</p>
+<p><strong>Scheduler preemption.</strong> This mechanism is well-suited to temporary
+preemptions where the same goroutine will resume after the preemption
+because we don’t need to save the full register state and can rely on
+the existing signal return path to restore the full register state.
+This applies to all GC-related preemptions, but it’s not as well
+suited to permanent preemption performed by the scheduler.
+However, we could still build on this mechanism.
+For example, since most of the time goroutines self-preempt, we only
+need to save the full signal state in the uncommon case, so the <code class="docutils literal notranslate"><span class="pre">g</span></code>
+could contain a pointer to its full saved state that’s only used after
+a forced preemption.
+Restoring the full signal state could be done by either writing the
+architecture-dependent code to restore the full register set (a
+beefed-up <code class="docutils literal notranslate"><span class="pre">runtime.gogo</span></code>), or by self-signaling, swapping in the
+desired context, and letting the OS restore the full register set.</p>
+<p><strong>Targeting and resuming.</strong> In contrast with fault-based loop
+preemption, signaled preemption can be targeted at a specific thread
+and can immediately resume.
+Thread-targeting is a little different from cooperative preemption,
+which is goroutine-targeted.
+However, in many cases this is actually better, since targeting
+goroutines for preemption is racy and hence requires retry loops that
+can add significantly to STW time.
+Taking advantage of this for stack scanning will require some
+restructuring of how we track GC roots, but the result should
+eliminate the blocking retry loop we currently use.</p>
+<p><strong>Non-pointer pointers.</strong> This has the potential to expose incorrect
+uses of <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> for transiently storing non-pointers.
+Such uses are a clear violation of the <code class="docutils literal notranslate"><span class="pre">unsafe.Pointer</span></code> rules, but
+they may happen (especially in, for example, cgo-using code).</p>
+</div>
+<div class="section" id="alternatives">
+<h2>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="single-stepping">
+<h3>Single-stepping<a class="headerlink" href="#single-stepping" title="Permalink to this headline">¶</a></h3>
+<p>Rather than making an effort to be able to stop at any instruction,
+the compiler could emit metadata for safe-points only at back-edges
+and the runtime could use hardware single-stepping support to advance
+the thread to a safe-point (or a point where the compiler has provided
+a branch to reach a safe-point, like in the current loop preemption
+approach).
+This works (somewhat surprisingly), but thoroughly bamboozles
+debuggers since both the debugger and the operating system assume the
+debugger owns single-stepping, not the process itself.
+This would also require the compiler to provide register flushing
+stubs for these safe-points, which increases code size (and hence
+instruction cache pressure) as well as stack size, much like
+cooperative loop preemption.
+However, unlike cooperative loop preemption, this approach would have
+no effect on mainline code size or performance.</p>
+</div>
+<div class="section" id="jump-rewriting">
+<h3>Jump rewriting<a class="headerlink" href="#jump-rewriting" title="Permalink to this headline">¶</a></h3>
+<p>We can solve the problems of single-stepping by instead rewriting the
+next safe-point jump instruction after the interruption point to jump
+to a preemption path and resuming execution like usual.
+To make this easy, the compiler could leave enough room (via padding
+NOPs) so only the jump target needs to be modified.</p>
+<p>This approach has the usual drawbacks of modifiable code.
+It’s a security risk, it breaks text page sharing, and simply isn’t
+allowed on iOS.
+It also can’t target an individual goroutine (since another goroutine
+could be executing the same code) and may have odd interactions with
+concurrent execution on other cores.</p>
+</div>
+<div class="section" id="out-of-line-execution">
+<h3>Out-of-line execution<a class="headerlink" href="#out-of-line-execution" title="Permalink to this headline">¶</a></h3>
+<p>A further alternative in the same vein, but that doesn’t require
+modifying existing text is out-of-line execution.
+In this approach, the signal handler relocates the instruction stream
+from the interruption point to the next safe-point jump into a
+temporary buffer, patches it to jump into the runtime at the end, and
+resumes execution in this relocated sequence.</p>
+<p>This solves most of the problems with single-stepping and jump
+rewriting, but is quite complex to implement and requires substantial
+implementation effort for each platform.
+It also isn’t allowed on iOS.</p>
+<p>There is precedent for this sort of approach.
+For example, when Linux uprobes injects an INT3, it relocates the
+overwritten instructions into an “execute out-of-line” area to avoid
+the usual problems with resuming from an INT3 instruction.
+<a class="reference external" href="https://github.com/torvalds/linux/blob/v4.18/arch/x86/kernel/uprobes.c">The
+implementation</a>
+is surprisingly simple given the complexity of the x86 instruction
+encoding, but is still quite complex.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="25530-notary.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="24301-versioned-go.html" class="btn btn-neutral float-left" title="Proposal: Versioned Go Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

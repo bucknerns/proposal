@@ -1,0 +1,502 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: make the internal lockedfile package public &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case" href="34481-opencoded-defers.html" />
+    <link rel="prev" title="Proposal: A built-in Go error check function, try" href="32437-try-builtin.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: make the internal lockedfile package public</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: make the internal lockedfile package public</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/33974-add-public-lockedfile-pkg.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-make-the-internal-lockedfile-package-public">
+<h1>Proposal: make the internal <a class="reference external" href="https://godoc.org/github.com/golang/go/src/cmd/go/internal/lockedfile/">lockedfile</a> package public<a class="headerlink" href="#proposal-make-the-internal-lockedfile-package-public" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): [Adrien Delorme]</p>
+<p>Last updated: 2019-10-15</p>
+<p>Discussion at https://golang.org/issue/33974.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Move already existing code residing in
+<code class="docutils literal notranslate"><span class="pre">golang/go/src/cmd/go/internal/lockedfile</span></code> to <code class="docutils literal notranslate"><span class="pre">x/sync</span></code>.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>A few open source Go projects are implementing file locking mechanisms but they
+do not seem to be maintained anymore:</p>
+<ul class="simple">
+<li><p>https://github.com/gofrs/flock : This repo has lastly accepted PRs in March
+2019, so this implementation may be maintained and we could argue that the
+<code class="docutils literal notranslate"><span class="pre">lockedfile</span></code> package API is more ergonomic. Incompatibilities with AIX,
+Solaris and Illumos are preventing file locking on both projects, but it
+looks like the go team is addressing for <code class="docutils literal notranslate"><span class="pre">lockedfile</span></code>.</p></li>
+<li><p>https://github.com/juju/fslock : Note that this implementation is both
+unmaintained and LGPL-licensed, so even folks who would like to use it might
+not be able to. Also not that this repo <a class="reference external" href="https://github.com/juju/fslock/issues/4">was selected for removal in
+2017</a></p></li>
+</ul>
+<p>As a result some major projects are doing
+their own version of it; ex:
+<a class="reference external" href="https://github.com/hashicorp/terraform/blob/1ff9a540202b8c36e33db950374bbb4495737d8f/states/statemgr/filesystem_lock_unix.go">terraform</a>,
+<a class="reference external" href="https://github.com/boltdb/bolt/search?q=flock&amp;unscoped_q=flock">boltdb</a>. After
+some researches it seemed to us that the already existing and maintained
+<a class="reference external" href="https://godoc.org/github.com/golang/go/src/cmd/go/internal/lockedfile/">lockedfile</a>
+package is the best ‘open source’ version.</p>
+<p>File-locking interacts pretty deeply with the <code class="docutils literal notranslate"><span class="pre">os</span></code> package and the system call
+library in <code class="docutils literal notranslate"><span class="pre">x/sys</span></code>, so it makes sense for (a subset of) the same owners to
+consider the evolution of those packages together.
+We think it would benefit the mass to make such a package public: since it’s
+already being part of the go code and therefore being maintained; it should be
+made public.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We propose to copy the golang/go/src/cmd/go/internal/lockedfile to <code class="docutils literal notranslate"><span class="pre">x/exp</span></code>. To
+make it public. Not changing any of the named types for now.</p>
+<p>Exported names and comments as can be currently found in
+<a class="reference external" href="https://github.com/golang/go/tree/07b4abd62e450f19c47266b3a526df49c01ba425/src/cmd/go/internal/lockedfile">07b4abd</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Package</span> <span class="n">lockedfile</span> <span class="n">creates</span> <span class="ow">and</span> <span class="n">manipulates</span> <span class="n">files</span> <span class="n">whose</span> <span class="n">contents</span> <span class="n">should</span> <span class="n">only</span>
+<span class="o">//</span> <span class="n">change</span> <span class="n">atomically</span><span class="o">.</span>
+<span class="n">package</span> <span class="n">lockedfile</span>
+
+<span class="o">//</span> <span class="n">A</span> <span class="n">File</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">locked</span> <span class="o">*</span><span class="n">os</span><span class="o">.</span><span class="n">File</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">Closing</span> <span class="n">the</span> <span class="n">file</span> <span class="n">releases</span> <span class="n">the</span> <span class="n">lock</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">the</span> <span class="n">program</span> <span class="n">exits</span> <span class="k">while</span> <span class="n">a</span> <span class="n">file</span> <span class="ow">is</span> <span class="n">locked</span><span class="p">,</span> <span class="n">the</span> <span class="n">operating</span> <span class="n">system</span> <span class="n">releases</span>
+<span class="o">//</span> <span class="n">the</span> <span class="n">lock</span> <span class="n">but</span> <span class="n">may</span> <span class="ow">not</span> <span class="n">do</span> <span class="n">so</span> <span class="n">promptly</span><span class="p">:</span> <span class="n">callers</span> <span class="n">must</span> <span class="n">ensure</span> <span class="n">that</span> <span class="nb">all</span> <span class="n">locked</span>
+<span class="o">//</span> <span class="n">files</span> <span class="n">are</span> <span class="n">closed</span> <span class="n">before</span> <span class="n">exiting</span><span class="o">.</span>
+<span class="nb">type</span> <span class="n">File</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="o">//</span> <span class="n">contains</span> <span class="n">unexported</span> <span class="n">fields</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Create</span> <span class="ow">is</span> <span class="n">like</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">,</span> <span class="n">but</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span> <span class="n">file</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">the</span> <span class="n">file</span> <span class="n">already</span> <span class="n">exists</span><span class="p">,</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">truncated</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Create</span><span class="p">(</span><span class="n">name</span> <span class="n">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">File</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">Edit</span> <span class="n">creates</span> <span class="n">the</span> <span class="n">named</span> <span class="n">file</span> <span class="k">with</span> <span class="n">mode</span> <span class="mi">0666</span> <span class="p">(</span><span class="n">before</span> <span class="n">umask</span><span class="p">),</span>
+<span class="o">//</span> <span class="n">but</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">truncate</span> <span class="n">existing</span> <span class="n">contents</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">Edit</span> <span class="n">succeeds</span><span class="p">,</span> <span class="n">methods</span> <span class="n">on</span> <span class="n">the</span> <span class="n">returned</span> <span class="n">File</span> <span class="n">can</span> <span class="n">be</span> <span class="n">used</span> <span class="k">for</span> <span class="n">I</span><span class="o">/</span><span class="n">O</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">The</span> <span class="n">associated</span> <span class="n">file</span> <span class="n">descriptor</span> <span class="n">has</span> <span class="n">mode</span> <span class="n">O_RDWR</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">file</span> <span class="ow">is</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Edit</span><span class="p">(</span><span class="n">name</span> <span class="n">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">File</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">Transform</span> <span class="n">invokes</span> <span class="n">t</span> <span class="k">with</span> <span class="n">the</span> <span class="n">result</span> <span class="n">of</span> <span class="n">reading</span> <span class="n">the</span> <span class="n">named</span> <span class="n">file</span><span class="p">,</span> <span class="k">with</span> <span class="n">its</span> <span class="n">lock</span>
+<span class="o">//</span> <span class="n">still</span> <span class="n">held</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">t</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">nil</span> <span class="n">error</span><span class="p">,</span> <span class="n">Transform</span> <span class="n">then</span> <span class="n">writes</span> <span class="n">the</span> <span class="n">returned</span> <span class="n">contents</span> <span class="n">back</span> <span class="n">to</span>
+<span class="o">//</span> <span class="n">the</span> <span class="n">file</span><span class="p">,</span> <span class="n">making</span> <span class="n">a</span> <span class="n">best</span> <span class="n">effort</span> <span class="n">to</span> <span class="n">preserve</span> <span class="n">existing</span> <span class="n">contents</span> <span class="n">on</span> <span class="n">error</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">t</span> <span class="n">must</span> <span class="ow">not</span> <span class="n">modify</span> <span class="n">the</span> <span class="nb">slice</span> <span class="n">passed</span> <span class="n">to</span> <span class="n">it</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Transform</span><span class="p">(</span><span class="n">name</span> <span class="n">string</span><span class="p">,</span> <span class="n">t</span> <span class="n">func</span><span class="p">([]</span><span class="n">byte</span><span class="p">)</span> <span class="p">([]</span><span class="n">byte</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span> <span class="p">(</span><span class="n">err</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">Open</span> <span class="ow">is</span> <span class="n">like</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">,</span> <span class="n">but</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">read</span><span class="o">-</span><span class="n">locked</span> <span class="n">file</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Open</span><span class="p">(</span><span class="n">name</span> <span class="n">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">File</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">OpenFile</span> <span class="ow">is</span> <span class="n">like</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">,</span> <span class="n">but</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">locked</span> <span class="n">file</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">flag</span> <span class="n">implies</span> <span class="n">write</span> <span class="n">access</span> <span class="p">(</span><span class="n">ie</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">O_TRUNC</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_WRONLY</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">),</span> <span class="n">the</span>
+<span class="o">//</span> <span class="n">file</span> <span class="ow">is</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span><span class="p">;</span> <span class="n">otherwise</span><span class="p">,</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">locked</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">OpenFile</span><span class="p">(</span><span class="n">name</span> <span class="n">string</span><span class="p">,</span> <span class="n">flag</span> <span class="nb">int</span><span class="p">,</span> <span class="n">perm</span> <span class="n">os</span><span class="o">.</span><span class="n">FileMode</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">File</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">Read</span> <span class="n">reads</span> <span class="n">up</span> <span class="n">to</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">File</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">It</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="nb">bytes</span> <span class="n">read</span> <span class="ow">and</span> <span class="nb">any</span> <span class="n">error</span> <span class="n">encountered</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">At</span> <span class="n">end</span> <span class="n">of</span> <span class="n">file</span><span class="p">,</span> <span class="n">Read</span> <span class="n">returns</span> <span class="mi">0</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">EOF</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">File</span> <span class="n">can</span> <span class="n">be</span> <span class="n">read</span><span class="o">-</span><span class="n">locked</span> <span class="ow">or</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span><span class="n">File</span><span class="p">)</span> <span class="n">Read</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="n">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="nb">int</span><span class="p">,</span> <span class="n">err</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">ReadAt</span> <span class="n">reads</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="nb">bytes</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">File</span> <span class="n">starting</span> <span class="n">at</span> <span class="n">byte</span> <span class="n">offset</span> <span class="n">off</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">It</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="nb">bytes</span> <span class="n">read</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">error</span><span class="p">,</span> <span class="k">if</span> <span class="nb">any</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">ReadAt</span> <span class="n">always</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">non</span><span class="o">-</span><span class="n">nil</span> <span class="n">error</span> <span class="n">when</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">At</span> <span class="n">end</span> <span class="n">of</span> <span class="n">file</span><span class="p">,</span> <span class="n">that</span> <span class="n">error</span> <span class="ow">is</span> <span class="n">io</span><span class="o">.</span><span class="n">EOF</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">File</span> <span class="n">can</span> <span class="n">be</span> <span class="n">read</span><span class="o">-</span><span class="n">locked</span> <span class="ow">or</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span><span class="n">File</span><span class="p">)</span> <span class="n">ReadAt</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="n">byte</span><span class="p">,</span> <span class="n">off</span> <span class="n">int64</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="nb">int</span><span class="p">,</span> <span class="n">err</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">Write</span> <span class="n">writes</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">to</span> <span class="n">the</span> <span class="n">File</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">It</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="nb">bytes</span> <span class="n">written</span> <span class="ow">and</span> <span class="n">an</span> <span class="n">error</span><span class="p">,</span> <span class="k">if</span> <span class="nb">any</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">Write</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">non</span><span class="o">-</span><span class="n">nil</span> <span class="n">error</span> <span class="n">when</span> <span class="n">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">File</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span> <span class="n">Write</span> <span class="n">returns</span> <span class="n">an</span> <span class="n">error</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span><span class="n">File</span><span class="p">)</span> <span class="n">Write</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="n">byte</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="nb">int</span><span class="p">,</span> <span class="n">err</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">WriteAt</span> <span class="n">writes</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="nb">bytes</span> <span class="n">to</span> <span class="n">the</span> <span class="n">File</span> <span class="n">starting</span> <span class="n">at</span> <span class="n">byte</span> <span class="n">offset</span> <span class="n">off</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">It</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="nb">bytes</span> <span class="n">written</span> <span class="ow">and</span> <span class="n">an</span> <span class="n">error</span><span class="p">,</span> <span class="k">if</span> <span class="nb">any</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">WriteAt</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">non</span><span class="o">-</span><span class="n">nil</span> <span class="n">error</span> <span class="n">when</span> <span class="n">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">file</span> <span class="n">was</span> <span class="n">opened</span> <span class="k">with</span> <span class="n">the</span> <span class="n">O_APPEND</span> <span class="n">flag</span><span class="p">,</span> <span class="n">WriteAt</span> <span class="n">returns</span> <span class="n">an</span> <span class="n">error</span><span class="o">.</span>
+<span class="o">//</span> 
+<span class="o">//</span> <span class="n">If</span> <span class="n">File</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">write</span><span class="o">-</span><span class="n">locked</span> <span class="n">WriteAt</span> <span class="n">returns</span> <span class="n">an</span> <span class="n">error</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span><span class="n">File</span><span class="p">)</span> <span class="n">WriteAt</span><span class="p">(</span><span class="n">b</span> <span class="p">[]</span><span class="n">byte</span><span class="p">,</span> <span class="n">off</span> <span class="n">int64</span><span class="p">)</span> <span class="p">(</span><span class="n">n</span> <span class="nb">int</span><span class="p">,</span> <span class="n">err</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">Close</span> <span class="n">unlocks</span> <span class="ow">and</span> <span class="n">closes</span> <span class="n">the</span> <span class="n">underlying</span> <span class="n">file</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">Close</span> <span class="n">may</span> <span class="n">be</span> <span class="n">called</span> <span class="n">multiple</span> <span class="n">times</span><span class="p">;</span> <span class="nb">all</span> <span class="n">calls</span> <span class="n">after</span> <span class="n">the</span> <span class="n">first</span> <span class="n">will</span> <span class="k">return</span> <span class="n">a</span>
+<span class="o">//</span> <span class="n">non</span><span class="o">-</span><span class="n">nil</span> <span class="n">error</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span><span class="n">File</span><span class="p">)</span> <span class="n">Close</span><span class="p">()</span> <span class="n">error</span>
+
+<span class="o">//</span> <span class="n">A</span> <span class="n">Mutex</span> <span class="n">provides</span> <span class="n">mutual</span> <span class="n">exclusion</span> <span class="n">within</span> <span class="ow">and</span> <span class="n">across</span> <span class="n">processes</span> <span class="n">by</span> <span class="n">locking</span> <span class="n">a</span>
+<span class="o">//</span> <span class="n">well</span><span class="o">-</span><span class="n">known</span> <span class="n">file</span><span class="o">.</span> <span class="n">Such</span> <span class="n">a</span> <span class="n">file</span> <span class="n">generally</span> <span class="n">guards</span> <span class="n">some</span> <span class="n">other</span> <span class="n">part</span> <span class="n">of</span> <span class="n">the</span>
+<span class="o">//</span> <span class="n">filesystem</span><span class="p">:</span> <span class="k">for</span> <span class="n">example</span><span class="p">,</span> <span class="n">a</span> <span class="n">Mutex</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">directory</span> <span class="n">might</span> <span class="n">guard</span> <span class="n">access</span> <span class="n">to</span>
+<span class="o">//</span> <span class="n">the</span> <span class="n">entire</span> <span class="n">tree</span> <span class="n">rooted</span> <span class="ow">in</span> <span class="n">that</span> <span class="n">directory</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">Mutex</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">implement</span> <span class="n">sync</span><span class="o">.</span><span class="n">Locker</span><span class="p">:</span> <span class="n">unlike</span> <span class="n">a</span> <span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span><span class="p">,</span> <span class="n">a</span> <span class="n">lockedfile</span><span class="o">.</span><span class="n">Mutex</span>
+<span class="o">//</span> <span class="n">can</span> <span class="n">fail</span> <span class="n">to</span> <span class="n">lock</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="k">if</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">permission</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">filesystem</span><span class="p">)</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">Like</span> <span class="n">a</span> <span class="n">sync</span><span class="o">.</span><span class="n">Mutex</span><span class="p">,</span> <span class="n">a</span> <span class="n">Mutex</span> <span class="n">may</span> <span class="n">be</span> <span class="n">included</span> <span class="k">as</span> <span class="n">a</span> <span class="n">field</span> <span class="n">of</span> <span class="n">a</span> <span class="n">larger</span> <span class="n">struct</span> <span class="n">but</span>
+<span class="o">//</span> <span class="n">must</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">copied</span> <span class="n">after</span> <span class="n">first</span> <span class="n">use</span><span class="o">.</span> <span class="n">The</span> <span class="n">Path</span> <span class="n">field</span> <span class="n">must</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">before</span> <span class="n">first</span>
+<span class="o">//</span> <span class="n">use</span> <span class="ow">and</span> <span class="n">must</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">change</span> <span class="n">thereafter</span><span class="o">.</span>
+<span class="nb">type</span> <span class="n">Mutex</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="o">//</span> <span class="n">Path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">well</span><span class="o">-</span><span class="n">known</span> <span class="n">lock</span> <span class="n">file</span><span class="o">.</span> <span class="n">Must</span> <span class="n">be</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span><span class="o">.</span>
+    <span class="o">//</span>
+    <span class="o">//</span> <span class="n">Path</span> <span class="n">must</span> <span class="ow">not</span> <span class="n">change</span> <span class="n">on</span> <span class="n">a</span> <span class="n">locked</span> <span class="n">mutex</span><span class="o">.</span>
+    <span class="n">Path</span> <span class="n">string</span> 
+    <span class="o">//</span> <span class="n">contains</span> <span class="n">filtered</span> <span class="ow">or</span> <span class="n">unexported</span> <span class="n">fields</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">MutexAt</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">new</span> <span class="n">Mutex</span> <span class="k">with</span> <span class="n">Path</span> <span class="nb">set</span> <span class="n">to</span> <span class="n">the</span> <span class="n">given</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span> <span class="n">path</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">MutexAt</span><span class="p">(</span><span class="n">path</span> <span class="n">string</span><span class="p">)</span> <span class="o">*</span><span class="n">Mutex</span>
+
+<span class="o">//</span> <span class="n">Lock</span> <span class="n">attempts</span> <span class="n">to</span> <span class="n">lock</span> <span class="n">the</span> <span class="n">Mutex</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">successful</span><span class="p">,</span> <span class="n">Lock</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">non</span><span class="o">-</span><span class="n">nil</span> <span class="n">unlock</span> <span class="n">function</span><span class="p">:</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">provided</span> <span class="k">as</span> <span class="n">a</span>
+<span class="o">//</span> <span class="k">return</span><span class="o">-</span><span class="n">value</span> <span class="n">instead</span> <span class="n">of</span> <span class="n">a</span> <span class="n">separate</span> <span class="n">method</span> <span class="n">to</span> <span class="n">remind</span> <span class="n">the</span> <span class="n">caller</span> <span class="n">to</span> <span class="n">check</span> <span class="n">the</span>
+<span class="o">//</span> <span class="n">accompanying</span> <span class="n">error</span><span class="o">.</span> <span class="p">(</span><span class="n">See</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">issue</span><span class="o">/</span><span class="mf">20803.</span><span class="p">)</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">mu</span> <span class="o">*</span><span class="n">Mutex</span><span class="p">)</span> <span class="n">Lock</span><span class="p">()</span> <span class="p">(</span><span class="n">unlock</span> <span class="n">func</span><span class="p">(),</span> <span class="n">err</span> <span class="n">error</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">String</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">string</span> <span class="n">containing</span> <span class="n">the</span> <span class="n">path</span> <span class="n">of</span> <span class="n">the</span> <span class="n">mutex</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">mu</span> <span class="o">*</span><span class="n">Mutex</span><span class="p">)</span> <span class="n">String</span><span class="p">()</span> <span class="n">string</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">lockedfile.File</span></code> implements a subset of the <code class="docutils literal notranslate"><span class="pre">os.File</span></code> but with file
+locking protection.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">lockedfile.Mutex</span></code> does not implement <code class="docutils literal notranslate"><span class="pre">sync.Locker</span></code>: unlike a
+<code class="docutils literal notranslate"><span class="pre">sync.Mutex</span></code>, a <code class="docutils literal notranslate"><span class="pre">lockedfile.Mutex</span></code> can fail to lock (e.g. if there is a
+permission error in the filesystem).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lockedfile</span></code> adds an <code class="docutils literal notranslate"><span class="pre">Edit</span></code> and a <code class="docutils literal notranslate"><span class="pre">Transform</span></code> function; <code class="docutils literal notranslate"><span class="pre">Edit</span></code> is not
+currently part of the <code class="docutils literal notranslate"><span class="pre">file</span></code> package. Edit exists to make it easier to
+implement locked read-modify-write operation. <code class="docutils literal notranslate"><span class="pre">Transform</span></code> simplifies the act
+of reading and then writing to a locked file.</p></li>
+<li><p>Making this package public will make it more used. A tiny surge of issues
+might come in the beginning; at the benefits of everyone. (Unless it’s bug
+free !!).</p></li>
+<li><p>There exists a https://godoc.org/github.com/rogpeppe/go-internal package that
+exports a lot of internal packages from the go repo. But if go-internal
+became wildly popular; in order to have a bug fixed or a feature introduced
+in; a user would still need to open a PR on the go repo; then the author of
+go-internal would need to update the package.</p></li>
+</ul>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>There are no retro-compatibility issues since this will be a code addition but
+ideally we don’t want to maintain two copies of this package going forward, and
+we probably don’t want to vendor <code class="docutils literal notranslate"><span class="pre">x/exp</span></code> into the <code class="docutils literal notranslate"><span class="pre">cmd</span></code> module.</p>
+<p>Perhaps that implies that this should go in the <code class="docutils literal notranslate"><span class="pre">x/sys</span></code> or <code class="docutils literal notranslate"><span class="pre">x/sync</span></code> repo instead?</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Adrien Delorme plans to do copy the exported types in the proposal section from
+<code class="docutils literal notranslate"><span class="pre">cmd/go/internal/lockedfile</span></code> to <code class="docutils literal notranslate"><span class="pre">x/sync</span></code>.</p>
+<p>Adrien Delorme plans to change the references to the <code class="docutils literal notranslate"><span class="pre">lockedfile</span></code> package in
+<code class="docutils literal notranslate"><span class="pre">cmd</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="34481-opencoded-defers.html" class="btn btn-neutral float-right" title="Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="32437-try-builtin.html" class="btn btn-neutral float-left" title="Proposal: A built-in Go error check function, try" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

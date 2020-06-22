@@ -1,0 +1,626 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Scaling the Go page allocator" href="35112-scaling-the-page-allocator.html" />
+    <link rel="prev" title="Proposal: make the internal lockedfile package public" href="33974-add-public-lockedfile-pkg.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#panic-processing">Panic processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/34481-opencoded-defers.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-low-cost-defers-through-inline-code-and-extra-funcdata-to-manage-the-panic-case">
+<h1>Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case<a class="headerlink" href="#proposal-low-cost-defers-through-inline-code-and-extra-funcdata-to-manage-the-panic-case" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Dan Scales, Keith Randall, and Austin Clements
+(with input from many others, including Russ Cox and Cherry Zhang)</p>
+<p>Last updated: 2019-09-23</p>
+<p>Discussion at https://golang.org/issue/34481</p>
+<p>General defer performance discussion at https://golang.org/issue/14939.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>As of Go 1.13, most <code class="docutils literal notranslate"><span class="pre">defer</span></code> operations take about 35ns (reduced from about 50ns
+in Go 1.12).
+In contrast, a direct call takes about 6ns.
+This gap incentivizes engineers to eliminate <code class="docutils literal notranslate"><span class="pre">defer</span></code> operations from hot code
+paths, which takes away time from more productive tasks, leads to less
+maintainable code (e.g., if a <code class="docutils literal notranslate"><span class="pre">panic</span></code> is later introduced, the “optimization” is
+no longer correct), and discourages people from using a language feature when it
+would otherwise be an appropriate solution to a problem.</p>
+<p>We propose a way to make most <code class="docutils literal notranslate"><span class="pre">defer</span></code> calls no more expensive than open-coding the
+call, hence eliminating the incentives to shy away from using this language
+feature to its fullest extent.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Go 1.13 implements the <code class="docutils literal notranslate"><span class="pre">defer</span></code> statement by calling into the runtime to push a
+“defer object” onto the defer chain.
+Then, in any function that contains <code class="docutils literal notranslate"><span class="pre">defer</span></code> statements, the compiler inserts a
+call to <code class="docutils literal notranslate"><span class="pre">runtime.deferreturn</span></code> at every function exit point to unwind that
+function’s defers.
+Both of these cause overhead: the defer object must be populated with function
+call information (function pointer, arguments, closure information, etc.) when
+it is added to the chain, and <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> must find the right defers to
+unwind, copy out the call information, and invoke the deferred calls.
+Furthermore, this inhibits compiler optimizations like inlining, since the defer
+functions are called from the runtime using the defer information.</p>
+<p>When a function panics, the runtime runs the deferred calls on the defer chain
+until one of these calls <code class="docutils literal notranslate"><span class="pre">recover</span></code> or it exhausts the chain, resulting in a
+fatal panic.
+The stack itself is <em>not</em> unwound unless a deferred call recovers.
+This has the important property that examining the stack from a deferred call
+run during a panic will include the panicking frame, even if the defer was
+pushed by an ancestor of the panicking frame.</p>
+<p>In general, this defer chain is necessary since a function can defer an
+unbounded or dynamic number of calls that must all run when it returns.
+For example, a <code class="docutils literal notranslate"><span class="pre">defer</span></code> statement can appear in a loop or an <code class="docutils literal notranslate"><span class="pre">if</span></code> block.
+This also means that, in general, the defer objects must be heap-allocated,
+though the runtime uses an allocation pool to reduce the cost of the allocation.</p>
+<p>This is notably different from exception handling in C++ or Java, where the
+applicable set of <code class="docutils literal notranslate"><span class="pre">except</span></code> or <code class="docutils literal notranslate"><span class="pre">finally</span></code> blocks can be determined statically at
+every program counter in a function.
+In these languages, the non-exception case is typically inlined and exception
+handling is driven by a side table giving the locations of the <code class="docutils literal notranslate"><span class="pre">except</span></code> and
+<code class="docutils literal notranslate"><span class="pre">finally</span></code> blocks that apply to each PC.</p>
+<p>However, while Go’s <code class="docutils literal notranslate"><span class="pre">defer</span></code> mechanism permits unbounded calls, the vast majority
+of functions that use <code class="docutils literal notranslate"><span class="pre">defer</span></code> invoke each <code class="docutils literal notranslate"><span class="pre">defer</span></code> statement at most once, and do
+not invoke <code class="docutils literal notranslate"><span class="pre">defer</span></code> in a loop.
+Go 1.13 adds an <a class="reference external" href="https://golang.org/cl/171758">optimization</a> to stack-allocate
+defer objects in this case, but they must still be pushed and popped from the
+defer chain.
+This applies to 363 out of the 370 static defer sites in the <code class="docutils literal notranslate"><span class="pre">cmd/go</span></code> binary and
+speeds up this case by 30% relative to heap-allocated defer objects.</p>
+<p>This proposal combines this insight with the insights used in C++ and Java to
+make the non-panic case of most <code class="docutils literal notranslate"><span class="pre">defer</span></code> operations no more expensive than the
+manually open-coded case, while retaining correct <code class="docutils literal notranslate"><span class="pre">panic</span></code> handling.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>While the common case of defer handling is simple enough, it can interact in
+often non-obvious ways with things like recursive panics, recover, and stack
+traces.
+Here we attempt to enumerate the requirements that any new defer implementation
+should likely satisfy, in addition to those in the language specification for
+<a class="reference external" href="https://golang.org/ref/spec#Defer_statements">Defer statements</a> and <a class="reference external" href="https://golang.org/ref/spec#Handling_panics">Handling
+panics</a>.</p>
+<ol class="simple">
+<li><p>Executing a <code class="docutils literal notranslate"><span class="pre">defer</span></code> statement logically pushes a deferred function call onto
+a per-goroutine stack.
+Deferred calls are always executed starting from the top of this stack (hence
+in the reverse order of the execution of <code class="docutils literal notranslate"><span class="pre">defer</span></code> statements).
+Furthermore, each execution of a <code class="docutils literal notranslate"><span class="pre">defer</span></code> statement corresponds to exactly one
+deferred call (except in the case of program termination, where a deferred
+function may not be called at all).</p></li>
+<li><p>Defer calls are executed in one of two ways.
+Whenever a function call returns normally, the runtime starts popping and
+executing all existing defer calls for that stack frame only (in reverse order
+of original execution).
+Separately, whenever a panic (or a call to Goexit) occurs, the runtime starts
+popping and executing all existing defer calls for the entire defer stack.
+The execution of any defer call may be interrupted by a panic within the
+execution of the defer call.</p></li>
+<li><p>A program may have multiple outstanding panics, since a recursive (second)
+panic may occur during any of the defer calls being executed during the
+processing of the first panic.
+A previous panic is “aborted” if the processing of defers by the new panic
+reaches the frame where the previous panic was processing defers when the new
+panic happened.
+When a defer call returns that did a successful <code class="docutils literal notranslate"><span class="pre">recover</span></code> that applies to a
+panic, the stack is immediately unwound to the frame which contains the defer
+that did the recover call, and any remaining defers in that frame are
+executed.
+Normal execution continues in the preceding frame (but note that normal
+execution may actually be continuing a defer call for an outer panic).
+Any panic that has not been recovered or aborted must still appear on the
+caller stack.
+Note that the first panic may never continue its defer processing, if the
+second panic actually successfully runs all defer calls, but the original
+panic must appear on the stack during all the processing by the second panic.</p></li>
+<li><p>When a defer call is executed because a function is returning normally
+(whether there are any outstanding panics or not), the call site of a
+deferred call must appear to be the function that invoked <code class="docutils literal notranslate"><span class="pre">defer</span></code> to push
+that function on the defer stack, at the line where that function is
+returning.
+A consequence of this is that, if the runtime is executing deferred calls in
+panic mode and a deferred call recovers, it must unwind the stack immediately
+after that deferred call returns and before executing another deferred call.</p></li>
+<li><p>When a defer call is executed because of an explicit panic, the call stack of
+a deferred function must include <code class="docutils literal notranslate"><span class="pre">runtime.gopanic</span></code> and the frame that
+panicked (and its callers) immediately below the deferred function call.
+As mentioned, the call stack must also include any outstanding previous
+panics.
+If a defer call is executed because of a run-time panic, the same condition
+applies, except that <code class="docutils literal notranslate"><span class="pre">runtime.gopanic</span></code> does not necessarily need to be on the
+stack.
+(In the current gc-go implementation, <code class="docutils literal notranslate"><span class="pre">runtime.gopanic</span></code> does appear on
+the stack even for run-time panics.)</p></li>
+</ol>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We propose optimizing deferred calls in functions where every <code class="docutils literal notranslate"><span class="pre">defer</span></code> is
+executed at most once (specifically, a <code class="docutils literal notranslate"><span class="pre">defer</span></code> may be on a conditional path, but
+is never in a loop in the control-flow graph).
+In this optimization, the compiler assigns a bit for every <code class="docutils literal notranslate"><span class="pre">defer</span></code> site to
+indicate whether that defer had been reached or not.
+The <code class="docutils literal notranslate"><span class="pre">defer</span></code> statement itself simply sets the corresponding bit and stores all
+necessary arguments in specific stack slots.
+Then, at every exit point of the function, the compiler open-codes each deferred
+call, protected by (and clearing) each corresponding bit.</p>
+<p>For example, the following:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="k">defer</span> <span class="nx">f1</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">cond</span> <span class="p">{</span>
+ <span class="k">defer</span> <span class="nx">f2</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">body</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>would compile to</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">deferBits</span> <span class="o">|=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">0</span>
+<span class="nx">tmpF1</span> <span class="p">=</span> <span class="nx">f1</span>
+<span class="nx">tmpA</span> <span class="p">=</span> <span class="nx">a</span>
+<span class="k">if</span> <span class="nx">cond</span> <span class="p">{</span>
+ <span class="nx">deferBits</span> <span class="o">|=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">1</span>
+ <span class="nx">tmpF2</span> <span class="p">=</span> <span class="nx">f2</span>
+ <span class="nx">tmpB</span> <span class="p">=</span> <span class="nx">b</span>
+<span class="p">}</span>
+<span class="nx">body</span><span class="o">...</span>
+<span class="nx">exit</span><span class="p">:</span>
+<span class="k">if</span> <span class="nx">deferBits</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">1</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+ <span class="nx">deferBits</span> <span class="o">&amp;^=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">1</span>
+ <span class="nx">tmpF2</span><span class="p">(</span><span class="nx">tmpB</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="nx">deferBits</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">0</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+ <span class="nx">deferBits</span> <span class="o">&amp;^=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">0</span>
+ <span class="nx">tmpF1</span><span class="p">(</span><span class="nx">tmpA</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In order to ensure that the value of <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> and all the tmp variables are
+available in case of a panic, these variables must be allocated explicit stack
+slots and the stores to deferBits and the tmp variables (<code class="docutils literal notranslate"><span class="pre">tmpF1</span></code>, <code class="docutils literal notranslate"><span class="pre">tmpA</span></code>, etc.)
+must write the values into these stack slots.
+In addition, the updates to <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> in the defer exit code must explicitly
+store the <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> value to the corresponding stack slot.
+This will ensure that panic processing can determine exactly which defers have
+been executed so far.</p>
+<p>However, the defer exit code can still be optimized significantly in many cases.
+We can refer directly to the <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> and tmpA ‘values’ (in the SSA sense),
+and these accesses can therefore be optimized in terms of using existing values
+in registers, propagating constants, etc.
+Also, if the defers were called unconditionally, then constant propagation may
+in some cases to eliminate the checks on <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> (because the value of
+<code class="docutils literal notranslate"><span class="pre">deferBits</span></code> is known statically at the exit point).</p>
+<p>If there are multiple exits (returns) from the function, we can either duplicate
+the defer exit code at each exit, or we can have one copy of the defer exit code
+that is shared among all (or most) of the exits.
+Note that any sharing of defer-exit code code may lead to less specific line
+numbers (which don’t indicate the exact exit location) if the user happens to
+look at the call stack while in a call made by the defer exit code.</p>
+<p>For any function that contains a defer which could be executed more than once
+(e.g. occurs in a loop), we will fall back to the current way of handling
+defers.
+That is, we will create a defer object at each defer statement and push it on to
+the defer chain.
+At function exit, we will call deferreturn to execute an active defer objects
+for that function.
+We may similarly revert to the defer chain implementation if there are too many
+defers or too many function exits.
+Our goal is to optimize the common cases where current defers overheads show up,
+which is typically in small functions with only a small number of defers
+statements.</p>
+</div>
+<div class="section" id="panic-processing">
+<h2>Panic processing<a class="headerlink" href="#panic-processing" title="Permalink to this headline">¶</a></h2>
+<p>Because no actual defer records have been created, panic processing is quite
+different and somewhat more complex in the open-coded approach.
+When generating the code for a function, the compiler also emits an extra set of
+<code class="docutils literal notranslate"><span class="pre">FUNCDATA</span></code> information that records information about each of the open-coded
+defers.
+For each open-coded defer, the compiler emits <code class="docutils literal notranslate"><span class="pre">FUNCDATA</span></code> that specifies the
+exact stack locations that store the function pointer and each of the arguments.
+It also emits the location of the stack slot containing <code class="docutils literal notranslate"><span class="pre">deferBits</span></code>.
+Since stack frames can get arbitrarily large, the compiler uses a varint
+encoding for the stack slot offsets.</p>
+<p>In addition, for all functions with open-coded defers, the compiler adds a small
+segment of code that does a call to <code class="docutils literal notranslate"><span class="pre">runtime.deferreturn</span></code> and then returns.
+This code segment is not reachable by the main code of the function, but is used
+to unwind the stack properly when a panic is successfully recovered.</p>
+<p>To handle a <code class="docutils literal notranslate"><span class="pre">panic</span></code>, the runtime conceptually walks the defer chain in parallel
+with the stack in order to interleave execution of pushed defers with defers in
+open-coded frames.
+When the runtime encounters an open-coded frame <code class="docutils literal notranslate"><span class="pre">F</span></code> executing function <code class="docutils literal notranslate"><span class="pre">f</span></code>, it
+executes the following steps.</p>
+<ol class="simple">
+<li><p>The runtime reads the funcdata for function <code class="docutils literal notranslate"><span class="pre">f</span></code> that contains the open-defer
+information.</p></li>
+<li><p>Using the information about the location in frame <code class="docutils literal notranslate"><span class="pre">F</span></code> of the stack slot for
+<code class="docutils literal notranslate"><span class="pre">deferBits</span></code>, the runtime loads the current value of <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> for this
+frame.
+The runtime processes each of the active defers, as specified by the value of
+<code class="docutils literal notranslate"><span class="pre">deferBits</span></code>, in reverse order.</p></li>
+<li><p>For each active defer, the runtime loads the function pointer for the defer
+call from the appropriate stack slot.
+It also builds up an argument frame by copying each of the defer arguments
+from its specified stack slot to the appropriate location in the argument
+frame.
+It then updates <code class="docutils literal notranslate"><span class="pre">deferBits</span></code> in its stack slot after masking off the bit for
+the current defer.
+Then it uses the function pointer and argument frame to call the deferred
+function.</p></li>
+<li><p>If the defer call returns normally without doing a recovery, then the runtime
+continues executing active defer calls for frame F until all active defer
+calls have finished.</p></li>
+<li><p>If any defer call returns normally but has done a successful recover, then
+the runtime stops processing defers in the current frame.
+There may or may not be any remaining defers to process.
+The runtime then arranges to jump to the <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> code segment and
+unwind the stack to frame <code class="docutils literal notranslate"><span class="pre">F</span></code>, by simultaneously setting the PC to the
+address of the <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> segment and setting the SP to the appropriate
+value for frame <code class="docutils literal notranslate"><span class="pre">F</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> code segment then calls back into the runtime.
+The runtime can now process any remaining active defers from frame <code class="docutils literal notranslate"><span class="pre">F</span></code>.
+But for these defers, the stack has been appropriately unwound and the defer
+appears to be called directly from function <code class="docutils literal notranslate"><span class="pre">f</span></code>.
+When all defers for the frame have finished, the deferreturn finishes and the
+code segment returns from frame F to continue execution.</p></li>
+</ol>
+<p>If a deferred call in step 3 itself panics, the runtime starts its normal panic
+processing again.
+For any frame with open-coded defers that has already run some defers, the
+deferBits value at the specified stack slot will always accurately reflect the
+remaining defers that need to be run.</p>
+<p>The processing for <code class="docutils literal notranslate"><span class="pre">runtime.Goexit</span></code> is similar.
+The main difference is that there is no panic happening, so there is no need to
+check for or do special handling for recovery in <code class="docutils literal notranslate"><span class="pre">runtime.Goexit</span></code>.
+A panic could happen while running defer functions for <code class="docutils literal notranslate"><span class="pre">runtime.Goexit</span></code>, but
+that will be handled in <code class="docutils literal notranslate"><span class="pre">runtime.gopanic</span></code>.</p>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>One other approach that we extensively considered (and prototyped) also has
+inlined defer code for the normal case, but actual executes the defer exit code
+directly even in the panic case.
+Executing the defer exit code in the panic case requires duplication of stack
+frame F and some complex runtime code to start execution of the defer exit code
+using this new duplicated frame and to regain control when the defer exit code
+complete.
+The required runtime code for this approach is much more architecture-dependent
+and seems to be much more complex (and possibly fragile).</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal does not change any user-facing APIs, and hence satisfies the <a class="reference external" href="https://golang.org/doc/go1compat">compatibility
+guidelines</a>.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>An implementation has been mostly done.
+The change is <a class="reference external" href="https://go-review.googlesource.com/c/go/+/190098/6">here</a>.
+Comments on the design or implementation are very welcome.</p>
+<p>Some miscellaneous implementation details:</p>
+<ol class="simple">
+<li><p>We need to restrict the number of defers in a function to the size of the
+deferBits bitmask.
+To minimize code size, we currently make deferBits to be 8 bits, and don’t do
+open-coded defers if there are more than 8 defers in a function.
+If there are more than 8 defers in a function, we revert to the standard
+defer chain implementation.</p></li>
+<li><p>The deferBits variable and defer arguments variables (such as <code class="docutils literal notranslate"><span class="pre">tmpA</span></code>) must be
+declared (via <code class="docutils literal notranslate"><span class="pre">OpVarDef</span></code>) in the entry block, since the unconditional defer
+exit code at the bottom of the function will access them, so these variables
+are live throughout the entire function.
+(And, of course, they can be accessed by panic processing at any point within
+the function that might cause a panic.)
+For any defer argument stack slots that are pointers (or contain pointers),
+we must initialize those stack slots to zero in the entry block.
+The initialization is required for garbage collection, which doesn’t know
+which of these defer arguments are active (i.e. which of the defer sites have
+been reached, but the corresponding defer call has not yet happened)</p></li>
+<li><p>Because the <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> code segment is disconnected from the rest of the
+function, it would not normally indicate that any stack slots are live.
+However, we want the liveness information at the <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> call to
+indicate that all of the stack slots associated with defers (which may
+include pointers to variables accessed by closures) and all of the return
+values are live.
+We must explicitly set the liveness for the <code class="docutils literal notranslate"><span class="pre">deferreturn</span></code> call to be the same
+as the liveness at the first defer call on the defer exit path.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="35112-scaling-the-page-allocator.html" class="btn btn-neutral float-right" title="Proposal: Scaling the Go page allocator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="33974-add-public-lockedfile-pkg.html" class="btn btn-neutral float-left" title="Proposal: make the internal lockedfile package public" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

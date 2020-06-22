@@ -1,0 +1,964 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: testing: programmatic sub-test and sub-benchmark support &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: A minimal release process for Go repositories" href="12302-release-proposal.html" />
+    <link rel="prev" title="Proposal: Decentralized GC coordination" href="11970-decentralized-gc.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: testing: programmatic sub-test and sub-benchmark support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subtests">Subtests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#flags">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subbenchmarks">Subbenchmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#alternative">Alternative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subtest-semantics">Subtest semantics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subbenchmark-semantics">Subbenchmark semantics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#parallelism">Parallelism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#teardown">Teardown</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: testing: programmatic sub-test and sub-benchmark support</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/12166-subtests.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-testing-programmatic-sub-test-and-sub-benchmark-support">
+<h1>Proposal: testing: programmatic sub-test and sub-benchmark support<a class="headerlink" href="#proposal-testing-programmatic-sub-test-and-sub-benchmark-support" title="Permalink to this headline">¶</a></h1>
+<p>Author: Marcel van Lohuizen</p>
+<p><em>With input from Sameer Ajmani, Austin Clements, Russ Cox, Bryan Mills, and Damien Neil.</em></p>
+<p>Last updated: September 2, 2015</p>
+<p>Discussion at https://golang.org/issue/12166.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This proposal introduces programmatic subtest and subbenchmarks for a variety
+of purposes.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Adding a Run methods for spawning subtests and subbenchmarks addresses a variety
+of features, including:</p>
+<ul class="simple">
+<li><p>an easy way to select single tests and benchmarks from a table from the
+command line (e.g. for debugging),</p></li>
+<li><p>simplify writing a collection of similar benchmarks,</p></li>
+<li><p>use of Fail and friends in subtests,</p></li>
+<li><p>creating subtests from an external/dynamic table source,</p></li>
+<li><p>more control over scope of setup and teardown than TestMain provides,</p></li>
+<li><p>more control over parallelism,</p></li>
+<li><p>cleaner code, compared to many top-level functions, both for tests and
+benchmarks, and</p></li>
+<li><p>eliminate need to prefix each error message in a test with its subtest’s name.</p></li>
+</ul>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>The proposal for tests and benchmarks are discussed separately below. A separate
+section explains logging and how to select subbenchmarks and subtests on the
+command line.</p>
+<div class="section" id="subtests">
+<h3>Subtests<a class="headerlink" href="#subtests" title="Permalink to this headline">¶</a></h3>
+<p>T gets the following method:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Run runs f as a subtest of t called name. It reports whether f succeeded.</span>
+<span class="c1">// Run will block until all its parallel subtests have completed.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">T</span><span class="p">)</span> <span class="nx">Run</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">f</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">))</span> <span class="kt">bool</span>
+</pre></div>
+</div>
+<p>Several methods get further clarification on their behavior for subfunctions.
+Changes inbetween square brackets:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Fail marks the function [and its calling functions] as having failed but</span>
+<span class="c1">// continues execution.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">common</span><span class="p">)</span> <span class="nx">Fail</span><span class="p">()</span>
+
+<span class="c1">// FailNow marks the function as having failed, stops its execution</span>
+<span class="c1">// [and aborts pending parallel subtests].</span>
+<span class="c1">// Execution will continue at the next test or benchmark.</span>
+<span class="c1">// FailNow must be called from the goroutine running the</span>
+<span class="c1">// test or benchmark function, not from other goroutines</span>
+<span class="c1">// created during the test. Calling FailNow does not stop</span>
+<span class="c1">// those other goroutines.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">common</span><span class="p">)</span> <span class="nx">FailNow</span><span class="p">()</span>
+
+<span class="c1">// SkipNow marks the test as having been skipped, stops its execution</span>
+<span class="c1">// [and aborts pending parallel subtests].</span>
+<span class="c1">// ... (analoguous to FailNow)</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">common</span><span class="p">)</span> <span class="nx">SkipNow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A NumFailed method might be useful as well.</p>
+<div class="section" id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h4>
+<p>A simple example:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">tests</span> <span class="o">:=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+     <span class="nx">A</span><span class="p">,</span> <span class="nx">B</span> <span class="kt">int</span>
+     <span class="nx">Sum</span>  <span class="kt">int</span>
+<span class="p">}{</span>
+    <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="p">},</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="nx">TestSum</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tc</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tests</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprint</span><span class="p">(</span><span class="nx">tc</span><span class="p">.</span><span class="nx">A</span><span class="p">,</span> <span class="s">&quot;+&quot;</span><span class="p">,</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">B</span><span class="p">),</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">got</span> <span class="o">:=</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">A</span> <span class="o">+</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">B</span><span class="p">;</span> <span class="nx">got</span> <span class="o">!=</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">Sum</span> <span class="p">{</span>
+                <span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;got %d; want %d&quot;</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">Sum</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that we write <code class="docutils literal notranslate"><span class="pre">t.Errorf(&quot;got</span> <span class="pre">%d;</span> <span class="pre">want</span> <span class="pre">%d&quot;)</span></code> instead of something like
+<code class="docutils literal notranslate"><span class="pre">t.Errorf(&quot;%d+%d</span> <span class="pre">=</span> <span class="pre">%d;</span> <span class="pre">want</span> <span class="pre">%d&quot;)</span></code>: the subtest’s name already uniquely
+identifies the test.</p>
+<p>Select (sub)tests from the command line using -test.run:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>go test --run=TestFoo/1+2  # selects the first test in TestFoo
+go test --run=TestFoo/1+   # selects tests for which A == 1 in TestFoo
+go test --run=.*/1+        # for any top-level test, select subtests matching ”1+”
+</pre></div>
+</div>
+<p>Skipping a subtest will not terminate subsequent tests in the calling test:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">TestFail</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">tc</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tests</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprint</span><span class="p">(</span><span class="nx">tc</span><span class="p">.</span><span class="nx">A</span><span class="p">,</span> <span class="s">&quot;+&quot;</span><span class="p">,</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">B</span><span class="p">),</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">A</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">t</span><span class="p">.</span><span class="nx">Skip</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="c1">// terminate test i, but proceed with test i+1.</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="nx">got</span> <span class="o">:=</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">A</span> <span class="o">+</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">B</span><span class="p">;</span> <span class="nx">got</span> <span class="o">!=</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">Sum</span> <span class="p">{</span>
+                <span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;got %d; want %d&quot;</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">tc</span><span class="p">.</span><span class="nx">Sum</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A more concrete and realistic use case is an adaptation of bufio.TestReader:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">TestReader</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">texts</span> <span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="kt">string</span>
+    <span class="nx">str</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span>
+    <span class="nx">all</span> <span class="o">:=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">texts</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">texts</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="nx">str</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span>
+        <span class="nx">all</span> <span class="o">+=</span> <span class="nx">texts</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+        <span class="nx">str</span> <span class="o">+=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">i</span><span class="o">%</span><span class="mi">26</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">texts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nx">texts</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">all</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">readmaker</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">readMakers</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="s">&quot;readmaker=&quot;</span><span class="o">+</span><span class="nx">readMaker</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">text</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">texts</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">bufreader</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">bufreaders</span> <span class="p">{</span>
+                    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">bufsize</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">bufsizes</span> <span class="p">{</span>
+                        <span class="nx">read</span> <span class="o">:=</span> <span class="nx">readmaker</span><span class="p">.</span><span class="nx">fn</span><span class="p">(</span><span class="nx">strings</span><span class="p">.</span><span class="nx">NewReader</span><span class="p">(</span><span class="nx">text</span><span class="p">))</span>
+                        <span class="nx">buf</span> <span class="o">:=</span> <span class="nx">NewReaderSize</span><span class="p">(</span><span class="nx">read</span><span class="p">,</span> <span class="nx">bufsize</span><span class="p">)</span>
+                        <span class="nx">s</span> <span class="o">:=</span> <span class="nx">bufreader</span><span class="p">.</span><span class="nx">fn</span><span class="p">(</span><span class="nx">buf</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nx">s</span> <span class="o">!=</span> <span class="nx">text</span> <span class="p">{</span>
+                            <span class="nx">t</span><span class="p">.</span><span class="nx">Fatalf</span><span class="p">(</span><span class="s">&quot;fn=%s bufsize=%d got=%q; want=%q&quot;</span><span class="p">,</span>
+                                <span class="nx">bufreader</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">bufsize</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">text</span><span class="p">)</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this example the use of <code class="docutils literal notranslate"><span class="pre">t.Fatalf</span></code> avoids getting a large number of similar
+errors for different buffer sizes.
+In case of failure, testing will resume with testing the next reader.</p>
+<p>Run a subtest in parallel:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">TestParallel</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tc</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tests</span> <span class="p">{</span>
+        <span class="nx">tc</span> <span class="o">:=</span> <span class="nx">tc</span> <span class="c1">// Must capture the range variable.</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">tc</span><span class="p">.</span><span class="nx">Name</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">t</span><span class="p">.</span><span class="nx">Parallel</span><span class="p">()</span>
+            <span class="o">...</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Run teardown code after a few tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">TestTeardown</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="s2">&quot;Test1&quot;</span><span class="p">,</span> <span class="n">test1</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="s2">&quot;Test2&quot;</span><span class="p">,</span> <span class="n">test2</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">Run</span><span class="p">(</span><span class="s2">&quot;Test3&quot;</span><span class="p">,</span> <span class="n">test3</span><span class="p">)</span>
+    <span class="o">//</span> <span class="n">teardown</span> <span class="n">code</span><span class="o">.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Run teardown code after parallel tests:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">TestTeardownParallel</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// By definition, this Run will not return until the parallel tests finish.</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="s">&quot;block&quot;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="s">&quot;Test1&quot;</span><span class="p">,</span> <span class="nx">parallelTest1</span><span class="p">)</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="s">&quot;Test2&quot;</span><span class="p">,</span> <span class="nx">parallelTest2</span><span class="p">)</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="s">&quot;Test3&quot;</span><span class="p">,</span> <span class="nx">parallelTest3</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="c1">// teardown code.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Test1-Test3 will run in parallel with each other, but not with any other
+parallel tests.
+This follows from the fact that <code class="docutils literal notranslate"><span class="pre">Run</span></code> will block until <em>all</em> subtests have
+completed and that both TestTeardownParallel and “block” are sequential.</p>
+</div>
+</div>
+<div class="section" id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">¶</a></h3>
+<p>The -test.run flag allows filtering of subtests given a prefix path where each
+path component is a regular expression, applying the following rules:</p>
+<ul class="simple">
+<li><p>Each test has its own (sub) name.</p></li>
+<li><p>Each test has a level. A top-level test (e.g. <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">TestFoo</span></code>) has level 1, a
+test invoked with Run by such test has level 2, a test invoked by such a
+subtest level 3, and so forth.</p></li>
+<li><p>A (sub)test is run if the (level-1)-th regular expression
+resulting from splitting -test.run by ‘/’ matches the test’s name or if this
+regular expression is not defined.
+So for a -test.run not containing a ‘/’ the behavior is identical to the current
+behavior.</p></li>
+<li><p>Spaces (as defined by unicode.IsSpace) are replaced by underscores.</p></li>
+</ul>
+<p>Rules for -test.bench are analogous, except that only a non-empty -test.bench
+flag triggers running of benchmarks.
+The implementation of these flags semantics can be done later.</p>
+<p>####Examples:
+Select top-level test “TestFoo” and all its subtests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">go</span> <span class="n">test</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">TestFoo</span>
+</pre></div>
+</div>
+<p>Select top-level tests that contain the string “Foo” and all their subtests that
+contain the string “A:3”.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">go</span> <span class="n">test</span> <span class="o">--</span><span class="n">run</span><span class="o">=</span><span class="n">Foo</span><span class="o">/</span><span class="n">A</span><span class="p">:</span><span class="mi">3</span>
+</pre></div>
+</div>
+<p>Select all subtests of level 2 which name contains the string “A:1 B:2” for any
+top-level test:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">go</span> <span class="n">test</span> <span class="o">--</span><span class="n">run</span><span class="o">=.*/</span><span class="n">A</span><span class="p">:</span><span class="mi">1</span><span class="n">_B</span><span class="p">:</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>The latter could match, for example, struct{A, B int}{1, 2} printed with %+v.</p>
+</div>
+<div class="section" id="subbenchmarks">
+<h3>Subbenchmarks<a class="headerlink" href="#subbenchmarks" title="Permalink to this headline">¶</a></h3>
+<p>The following method would be added to B:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Run</span> <span class="n">benchmarks</span> <span class="n">f</span> <span class="k">as</span> <span class="n">a</span> <span class="n">subbenchmark</span> <span class="k">with</span> <span class="n">the</span> <span class="n">given</span> <span class="n">name</span><span class="o">.</span> <span class="n">It</span> <span class="n">reports</span>
+<span class="o">//</span> <span class="n">whether</span> <span class="n">there</span> <span class="n">were</span> <span class="nb">any</span> <span class="n">failures</span><span class="o">.</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">A</span> <span class="n">subbenchmark</span> <span class="ow">is</span> <span class="n">like</span> <span class="nb">any</span> <span class="n">other</span> <span class="n">benchmark</span><span class="o">.</span> <span class="n">A</span> <span class="n">benchmark</span> <span class="n">that</span> <span class="n">calls</span> <span class="n">Run</span> <span class="n">at</span>
+<span class="o">//</span> <span class="n">least</span> <span class="n">once</span> <span class="n">will</span> <span class="ow">not</span> <span class="n">be</span> <span class="n">measured</span> <span class="n">itself</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">only</span> <span class="n">run</span> <span class="k">for</span> <span class="n">one</span> <span class="n">iteration</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">B</span><span class="p">)</span> <span class="n">Run</span><span class="p">(</span><span class="n">name</span> <span class="n">string</span><span class="p">,</span> <span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">))</span> <span class="nb">bool</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Benchmark</span></code> function gets an additional clarification (addition between []):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Benchmark</span> <span class="n">benchmarks</span> <span class="n">a</span> <span class="n">single</span> <span class="n">function</span><span class="o">.</span> <span class="n">Useful</span> <span class="k">for</span> <span class="n">creating</span>
+<span class="o">//</span> <span class="n">custom</span> <span class="n">benchmarks</span> <span class="n">that</span> <span class="n">do</span> <span class="ow">not</span> <span class="n">use</span> <span class="n">the</span> <span class="s2">&quot;go test&quot;</span> <span class="n">command</span><span class="o">.</span>
+<span class="o">//</span> <span class="p">[</span>
+<span class="o">//</span> <span class="n">If</span> <span class="n">f</span> <span class="n">calls</span> <span class="n">Run</span><span class="p">,</span> <span class="n">the</span> <span class="n">result</span> <span class="n">will</span> <span class="n">be</span> <span class="n">an</span> <span class="n">estimate</span> <span class="n">of</span> <span class="n">running</span> <span class="nb">all</span> <span class="n">its</span>
+<span class="o">//</span> <span class="n">subbenchmarks</span> <span class="n">that</span> <span class="n">don</span><span class="s1">&#39;t call Run in sequence in a single benchmark.]</span>
+<span class="n">func</span> <span class="n">Benchmark</span><span class="p">(</span><span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">B</span><span class="p">))</span> <span class="n">BenchmarkResult</span>
+</pre></div>
+</div>
+<p>See the Rational section for an explanation.</p>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>The following code shows the use of two levels of subbenchmarks.
+It is based on a possible rewrite of
+golang.org/x/text/unicode/norm/normalize_test.go.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">BenchmarkMethod</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">tt</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">allMethods</span> <span class="p">{</span>
+        <span class="nx">b</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">tt</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">d</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">textdata</span> <span class="p">{</span>
+                <span class="nx">fn</span> <span class="o">:=</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">f</span><span class="p">(</span><span class="nx">NFC</span><span class="p">,</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">data</span><span class="p">))</span> <span class="c1">// initialize the test</span>
+                <span class="nx">b</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">b</span><span class="p">.</span><span class="nx">SetBytes</span><span class="p">(</span><span class="nb">int64</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">data</span><span class="p">)))</span>
+                    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+                        <span class="nx">fn</span><span class="p">()</span>
+                    <span class="p">}</span>
+                <span class="p">})</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">allMethods</span> <span class="p">=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="kt">string</span>
+    <span class="nx">f</span>    <span class="kd">func</span><span class="p">(</span><span class="nx">to</span> <span class="nx">Form</span><span class="p">,</span> <span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kd">func</span><span class="p">()</span>
+<span class="p">}{</span>
+    <span class="p">{</span><span class="s">&quot;Transform&quot;</span><span class="p">,</span> <span class="nx">transform</span> <span class="p">},</span>
+    <span class="p">{</span><span class="s">&quot;Iter&quot;</span><span class="p">,</span> <span class="nx">iter</span> <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">transform</span><span class="p">(</span><span class="nx">f</span> <span class="nx">Form</span><span class="p">,</span> <span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kd">func</span><span class="p">()</span>
+<span class="kd">func</span> <span class="nx">iter</span><span class="p">(</span><span class="nx">f</span> <span class="nx">Form</span><span class="p">,</span> <span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kd">func</span><span class="p">()</span>
+
+<span class="kd">var</span> <span class="nx">textdata</span> <span class="p">=</span> <span class="p">[]</span><span class="kd">struct</span> <span class="p">{</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">data</span> <span class="kt">string</span> <span class="p">}{</span>
+    <span class="p">{</span><span class="s">&quot;small_change&quot;</span><span class="p">,</span> <span class="s">&quot;No\u0308rmalization&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&quot;small_no_change&quot;</span><span class="p">,</span> <span class="s">&quot;nörmalization&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&quot;ascii&quot;</span><span class="p">,</span> <span class="nx">ascii</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="nx">txt_all</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that there is some initialization code above the second Run.
+Because it is outside of Run, there is no need to call ResetTimer.
+As <code class="docutils literal notranslate"><span class="pre">Run</span></code> starts a new Benchmark, it is not possible to hoist the SetBytes call
+in a similar manner.</p>
+<p>The output for the above benchmark, without additional logging, could look something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Transform</span><span class="o">/</span><span class="n">small_change</span><span class="o">-</span><span class="mi">8</span>      <span class="mi">200000</span>           <span class="mi">668</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">22.43</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Transform</span><span class="o">/</span><span class="n">small_no_change</span><span class="o">-</span><span class="mi">8</span>  <span class="mi">1000000</span>           <span class="mi">100</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">139.13</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Transform</span><span class="o">/</span><span class="n">ascii</span><span class="o">-</span><span class="mi">8</span>              <span class="mi">10000</span>         <span class="mi">22430</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">735.60</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Transform</span><span class="o">/</span><span class="nb">all</span><span class="o">-</span><span class="mi">8</span>                 <span class="mi">1000</span>        <span class="mi">128511</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">43.82</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Iter</span><span class="o">/</span><span class="n">small_change</span><span class="o">-</span><span class="mi">8</span>           <span class="mi">200000</span>           <span class="mi">701</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">21.39</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Iter</span><span class="o">/</span><span class="n">small_no_change</span><span class="o">-</span><span class="mi">8</span>        <span class="mi">500000</span>           <span class="mi">321</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">43.52</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Iter</span><span class="o">/</span><span class="n">ascii</span><span class="o">-</span><span class="mi">8</span>                    <span class="mi">1000</span>        <span class="mi">210633</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">78.33</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Iter</span><span class="o">/</span><span class="nb">all</span><span class="o">-</span><span class="mi">8</span>                      <span class="mi">1000</span>        <span class="mi">235950</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">23.87</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">ToLower</span><span class="o">/</span><span class="n">small_change</span><span class="o">-</span><span class="mi">8</span>        <span class="mi">300000</span>           <span class="mi">475</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">31.57</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">ToLower</span><span class="o">/</span><span class="n">small_no_change</span><span class="o">-</span><span class="mi">8</span>     <span class="mi">500000</span>           <span class="mi">239</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">58.44</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">ToLower</span><span class="o">/</span><span class="n">ascii</span><span class="o">-</span><span class="mi">8</span>                  <span class="mi">500</span>        <span class="mi">297486</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">55.46</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">ToLower</span><span class="o">/</span><span class="nb">all</span><span class="o">-</span><span class="mi">8</span>                   <span class="mi">1000</span>        <span class="mi">151722</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">37.12</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">QuickSpan</span><span class="o">/</span><span class="n">small_change</span><span class="o">-</span><span class="mi">8</span>     <span class="mi">2000000</span>            <span class="mf">70.0</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>   <span class="mf">214.20</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">QuickSpan</span><span class="o">/</span><span class="n">small_no_change</span><span class="o">-</span><span class="mi">8</span>  <span class="mi">1000000</span>           <span class="mi">115</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">120.94</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">QuickSpan</span><span class="o">/</span><span class="n">ascii</span><span class="o">-</span><span class="mi">8</span>               <span class="mi">5000</span>         <span class="mi">25418</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">649.13</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">QuickSpan</span><span class="o">/</span><span class="nb">all</span><span class="o">-</span><span class="mi">8</span>                 <span class="mi">1000</span>        <span class="mi">175954</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">32.01</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkMethod</span><span class="o">/</span><span class="n">Append</span><span class="o">/</span><span class="n">small_change</span><span class="o">-</span><span class="mi">8</span>         <span class="mi">200000</span>           <span class="mi">721</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">20.78</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">ok</span>      <span class="n">golang</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">x</span><span class="o">/</span><span class="n">text</span><span class="o">/</span><span class="n">unicode</span><span class="o">/</span><span class="n">norm</span>  <span class="mf">5.601</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>The only change in the output is the characters allowable in the Benchmark name.
+The output is identical in the absence of subbenchmarks.
+This format is compatible with tools like benchstats.</p>
+</div>
+<div class="section" id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>Logs for tests are printed hierarchically. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span> <span class="n">FAIL</span><span class="p">:</span> <span class="n">TestFoo</span>  <span class="p">(</span><span class="mf">0.03</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">setup</span> <span class="n">issue</span>
+    <span class="o">---</span> <span class="n">FAIL</span><span class="p">:</span> <span class="n">TestFoo</span><span class="o">/</span><span class="p">{</span><span class="n">Alpha</span><span class="p">:</span><span class="mi">1</span><span class="n">_Beta</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>  <span class="p">(</span><span class="mf">0.01</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">:</span> <span class="n">want</span> <span class="mi">6</span>
+    <span class="o">---</span> <span class="n">FAIL</span><span class="p">:</span> <span class="n">TestFoo</span><span class="o">/</span><span class="p">{</span><span class="n">Alpha</span><span class="p">:</span><span class="mi">1</span><span class="n">_Beta</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>  <span class="p">(</span><span class="mf">0.01</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+    <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">setup</span> <span class="n">issue</span>
+    <span class="o">---</span> <span class="n">FAIL</span><span class="p">:</span> <span class="n">TestFoo</span><span class="o">/</span><span class="p">{</span><span class="n">Alpha</span><span class="p">:</span><span class="mi">1</span><span class="n">_Beta</span><span class="p">:</span><span class="mi">4</span><span class="p">}</span>  <span class="p">(</span><span class="mf">0.01</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+    <span class="o">---</span> <span class="n">FAIL</span><span class="p">:</span> <span class="n">TestFoo</span><span class="o">/</span><span class="p">{</span><span class="n">Alpha</span><span class="p">:</span><span class="mi">1</span><span class="n">_Beta</span><span class="p">:</span><span class="mi">8</span><span class="p">}</span>  <span class="p">(</span><span class="mf">0.01</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+    <span class="o">---</span> <span class="n">FAIL</span><span class="p">:</span> <span class="n">TestFoo</span><span class="o">/</span><span class="p">{</span><span class="n">Alpha</span><span class="p">:</span><span class="mi">1</span><span class="n">_Beta</span><span class="p">:</span><span class="mi">9</span><span class="p">}</span>  <span class="p">(</span><span class="mf">0.03</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">display_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span> <span class="n">Foo</span><span class="p">(</span><span class="n">Beta</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">want</span> <span class="mi">6</span>
+</pre></div>
+</div>
+<p>For each header, we include the full name, repeating the name of the parent.
+This makes it easier to identify the specific test from within the local context
+and obviates the need for tools to keep track of context.</p>
+<p>For benchmarks we adopt a different strategy. For benchmarks, it is important to
+be able to relate the logs that might have influenced performance to the
+respective benchmark.
+This means we should ideally interleave the logs with the benchmark results.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">768</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">/</span><span class="n">to_NFC</span><span class="o">-</span><span class="mi">8</span>            <span class="mi">10000</span>       <span class="mi">15914</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">166.64</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">768</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">776</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">/</span><span class="n">to_NFD</span><span class="o">-</span><span class="mi">8</span>            <span class="mi">10000</span>       <span class="mi">15914</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">166.64</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">776</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">/</span><span class="n">to_NFD</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">789</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">789</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">789</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">/</span><span class="n">to_NFKC</span><span class="o">-</span><span class="mi">8</span>           <span class="mi">10000</span>       <span class="mi">15170</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">174.82</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">776</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">/</span><span class="n">to_NFKD</span><span class="o">-</span><span class="mi">8</span>           <span class="mi">10000</span>       <span class="mi">15881</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>     <span class="mf">166.99</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">canonical</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">776</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">ext_latin</span><span class="o">/</span><span class="n">to_NFC</span><span class="o">-</span><span class="mi">8</span>             <span class="mi">5000</span>       <span class="mi">30720</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">52.86</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">768</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">ext_latin</span><span class="o">/</span><span class="n">to_NFD</span><span class="o">-</span><span class="mi">8</span>             <span class="mi">2000</span>       <span class="mi">71258</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">22.79</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="o">---</span> <span class="n">BENCH</span><span class="p">:</span> <span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">ext_latin</span><span class="o">/</span><span class="n">to_NFD</span><span class="o">-</span><span class="mi">8</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">789</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">789</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+        <span class="n">normalize_test</span><span class="o">.</span><span class="n">go</span><span class="p">:</span><span class="mi">789</span><span class="p">:</span> <span class="n">Some</span> <span class="n">message</span><span class="o">.</span>
+<span class="n">BenchmarkForm</span><span class="o">/</span><span class="n">from_NFC</span><span class="o">/</span><span class="n">ext_latin</span><span class="o">/</span><span class="n">to_NFKC</span><span class="o">-</span><span class="mi">8</span>            <span class="mi">5000</span>       <span class="mi">32233</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>      <span class="mf">50.38</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>No bench results are printed for “parent” benchmarks.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="alternative">
+<h3>Alternative<a class="headerlink" href="#alternative" title="Permalink to this headline">¶</a></h3>
+<p>One alternative to the given proposal is to define variants of tests as
+top-level tests or benchmarks that call helper functions.
+For example, the use case explained above could be written as:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">doSum</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">sum</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">got</span> <span class="o">:=</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span> <span class="nx">got</span> <span class="o">!=</span> <span class="nx">sum</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;got %d; want %d&quot;</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">sum</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">TestSumA1B2</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="nx">doSum</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="p">}</span>
+<span class="kd">func</span> <span class="nx">TestSumA1B1</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="nx">doSum</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
+<span class="kd">func</span> <span class="nx">TestSumA2B1</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="nx">doSum</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>This approach can work well for smaller sets, but starts to get tedious for
+larger sets.
+Some disadvantages of this approach:</p>
+<ol class="simple">
+<li><p>considerably more typing for larger test sets (less code, much larger test cases),</p></li>
+<li><p>duplication of information in test name and test values,</p></li>
+<li><p>may get unwieldy if a Cartesian product of multiple tables is used as source,</p></li>
+<li><p>doesn’t work well with dynamic table sources,</p></li>
+<li><p>does not allow for the same flexibility of inserting setup and teardown code
+as using Run,</p></li>
+<li><p>does not allow for the same flexibility in parallelism as using Run,</p></li>
+<li><p>no ability to terminate early a subgroup of tests.</p></li>
+</ol>
+<p>Some of these objections can be addressed by generating the test cases.
+It seems, though, that addressing anything beyond point 1 and 2 with generation
+would require more complexity than the addition of Run introduces.
+Overall, it seems that the benefits of the proposed addition outweigh the
+benefits of an approach using generation as well as expanding tests by hand.</p>
+</div>
+<div class="section" id="subtest-semantics">
+<h3>Subtest semantics<a class="headerlink" href="#subtest-semantics" title="Permalink to this headline">¶</a></h3>
+<p>A <em>subtest</em> refers to a call to Run and a <em>test function</em> refers to the function
+f passed to Run.
+A subtest will be like any other test.
+In fact, top-level tests are semantically equivalent to subtests of a single
+main test function.</p>
+<p>For all subtests holds:</p>
+<ol class="simple">
+<li><p>a Fail of a subtest causes the Fail of all of its ancestor tests,</p></li>
+<li><p>a FailNow of a test also causes its uncompleted descendants to be skipped,
+but does not cause any of its ancestor tests to be skipped,</p></li>
+<li><p>any subtest of a test must finish within the scope of this calling test,</p></li>
+<li><p>any Parallel test function will run only after the enclosing test function
+returns,</p></li>
+<li><p>at most –test.parallel subtests will run concurrently at any time.</p></li>
+</ol>
+<p>The combination of 3 and 4 means that all subtests marked as <code class="docutils literal notranslate"><span class="pre">Parallel</span></code> run
+after the enclosing test function returns but before the Run method invoking
+this test function returns.
+This corresponds to the semantics of <code class="docutils literal notranslate"><span class="pre">Parallel</span></code> as it exists today.</p>
+<p>These semantics enhance consistency: a call to <code class="docutils literal notranslate"><span class="pre">FailNow</span></code> will always terminate
+the same set of subtests.</p>
+<p>These semantics also guarantee that sequential tests are always run exclusively,
+while only parallel tests can run together.
+Also, parallel tests created by one sequentially running test will never run in
+parallel with parallel tests created by another sequentially running test.
+These simple rules allow for fairly extensive control over parallelism.</p>
+</div>
+<div class="section" id="subbenchmark-semantics">
+<h3>Subbenchmark semantics<a class="headerlink" href="#subbenchmark-semantics" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Benchmark</span></code> function defines the <code class="docutils literal notranslate"><span class="pre">BenchmarkResult</span></code> to be the result of
+running all of its subbenchmarks in sequence.
+This is equivalent to returning N == 1 and then the sum of all values for all
+benchmarks, normalized to a single iteration.
+It may be more appropriate to use a geometric mean, but as some of the values
+may be zero the usage of such is somewhat problematic.
+The proposed definition is meaningful and the user can still compute geometric
+means by replacing calls to Run with calls to Benchmark if needed.
+The main purpose of this definition is to define some semantics to using <code class="docutils literal notranslate"><span class="pre">Run</span></code>
+in functions passed to <code class="docutils literal notranslate"><span class="pre">Benchmark</span></code>.</p>
+</div>
+<div class="section" id="id1">
+<h3>Logging<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The rules for logging subtests are:</p>
+<ul class="simple">
+<li><p>Each subtest maintains its own buffer to which it logs.</p></li>
+<li><p>The Main test uses os.Stdout as its “buffer”.</p></li>
+<li><p>When a subtest finishes, it flushes its buffer to the parent test’s buffer,
+prefixed with a header to identify the subtest.</p></li>
+<li><p>Each subtest logs to the buffer with an indentation corresponding to its level.</p></li>
+</ul>
+<p>These rule are consistent with the sub-test semantics presented earlier.
+Combined with these semantics, logs have the following properties:</p>
+<ul class="simple">
+<li><p>Logs from a parallel subtests always come after the logs of its parent.</p></li>
+<li><p>Logs from a parallel subtests immediately follow the output of their parent.</p></li>
+<li><p>Messages logged by sequential tests will appear in chronological order in the
+overall test logs.</p></li>
+<li><p>Each logged message is only displayed once.</p></li>
+<li><p>The output is identical to the old log format absent calls to t.Run.</p></li>
+<li><p>The output is identical except for non-Letter characters being allowed in
+names if subtests are used.</p></li>
+</ul>
+<p>Printing hierarchically makes the relation between tests visually clear.
+It also avoids repeating printing some headers.</p>
+<p>For benchmarks the priorities for logging are different.
+It is important to visually correlate the logs with the benchmark lines.
+It is also relatively rare to log a lot during benchmarking, so repeating some
+headers is less of an issue.
+The proposed logging scheme for benchmarks takes this into account.</p>
+<p>As an alternative, we could use the same approach for benchmarks as for tests.
+In that case, logs would only be printed after each top-level test.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>BenchmarkForm/from_NFC/canonical/to_NFC-8       10000        23609 ns/op     112.33 MB/s
+BenchmarkForm/from_NFC/canonical/to_NFD-8       10000        16597 ns/op     159.78 MB/s
+BenchmarkForm/from_NFC/canonical/to_NFKC-8      10000        17188 ns/op     154.29 MB/s
+BenchmarkForm/from_NFC/canonical/to_NFKD-8      10000        16082 ns/op     164.90 MB/s
+BenchmarkForm/from_NFD/overflow/to_NFC-8          300       441589 ns/op      38.34 MB/s
+BenchmarkForm/from_NFD/overflow/to_NFD-8          300       483748 ns/op      35.00 MB/s
+BenchmarkForm/from_NFD/overflow/to_NFKC-8         300       467694 ns/op      36.20 MB/s
+BenchmarkForm/from_NFD/overflow/to_NFKD-8         300       515475 ns/op      32.85 MB/s
+--- FAIL: BenchmarkForm
+    --- FAIL: BenchmarkForm/from_NFC
+        normalize_test.go:768: Some failure.
+        --- BENCH: BenchmarkForm/from_NFC/canonical
+            normalize_test.go:776: Just a message.
+            normalize_test.go:776: Just a message.
+            --- BENCH: BenchmarkForm/from_NFC/canonical/to_NFD-8
+                normalize_test.go:789: Some message
+                normalize_test.go:789: Some message
+                normalize_test.go:789: Some message
+            normalize_test.go:776: Just a message.
+            normalize_test.go:776: Just a message.
+        normalize_test.go:768: Some failure.
+        …
+    --- FAIL: BenchmarkForm-8/from_NFD
+        normalize_test.go:768: Some failure.
+        …
+        normalize_test.go:768: Some failure.
+            --- BENCH: BenchmarkForm-8/from_NFD/overflow
+            normalize_test.go:776: Just a message.
+            normalize_test.go:776: Just a message.
+            --- BENCH: BenchmarkForm-8/from_NFD/overflow/to_NFD
+                normalize_test.go:789: Some message
+                normalize_test.go:789: Some message
+                normalize_test.go:789: Some message
+            normalize_test.go:776: Just a message.
+            normalize_test.go:776: Just a message.
+BenchmarkMethod/Transform/small_change-8            100000        1165 ns/op      12.87 MB/s
+BenchmarkMethod/Transform/small_no_change-8        1000000         103 ns/op     135.26 MB/s
+…
+</pre></div>
+</div>
+<p>It is still easy to see which logs influenced results (those marked <code class="docutils literal notranslate"><span class="pre">BENCH</span></code>), but
+the user will have to align the logs with the result lines to correlate the data.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>The API changes are fully backwards compatible.
+It introduces several minor changes in the logs:</p>
+<ul class="simple">
+<li><p>Names of tests and benchmarks may contain additional printable, non-space runes.</p></li>
+<li><p>Log items for tests may be indented.</p></li>
+</ul>
+<p>benchstats and benchcmp may need to be adapted to take into account the
+possibility of duplicate names.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Most of the work would be done by the author of this proposal.</p>
+<p>The first step consists of some minor refactorings to make the diffs for
+implementing T.Run and B.Run as small as possible.
+Subsequently, T.Run and B.Run can be implemented individually.</p>
+<p>Although the capability for parallel subtests will be implemented in the first
+iteration, they will initially only be allowed for top-level tests.
+Once we have a good way to detect improper usage of range variables, we could
+open up parallelism by introducing Go or enable calling <code class="docutils literal notranslate"><span class="pre">Parallel</span></code> on subtests.</p>
+<p>The aim is to have the first implementations of T.Run and B.Run in for 1.7.</p>
+<!-- ### Implementation details
+
+The proposed concurrency model only requires a small extension to the existing model. Handling communication between tests and subtests is new and is done by means of sync.WaitGroups.
+
+The “synchronization life-cycle” of a parallel test is as follows:
+
+While the parent is still blocking on the subtest, a subtest’s call to Parallel will:
+1. Add the test to the parent's list of subtests that should run in parallel. (**new**)
+2. Add 1 to the parent’s waitgroup. (**new**)
+3. Signal the parent the subtest is detaching and will be run in parallel.
+
+While the parent running unblocked, the subtest will:
+4. Wait for a channel that will be used to receive signal to run in parallel.  (**new**)
+5. Wait for a signal on the channel received in Step 4.
+6. Run test.
+7. Post list of parallel subtests for this test for release to concurrency manager. (**new**) The concurrency manager will signal these tests they may run in parallel (see 4 and 5).
+8. Signal completion to the manager goroutine spawned during the call to Parallel.
+
+The manager goroutine, run concurrently with a test if Parallel is used:
+9. Wait for completion of the test.
+10. Signal the concurrency manager the test is done (decrease running count).
+11. Wait for the test’s subtests to complete (through test’s WaitGroup). (**new**)
+12. Flush report to parent. (Done by concurrency manager in current implementation.)
+13. Signal parent completion (through parent’s WaitGroup).
+
+Notes:
+Unlike the old implementation, tests will only acquire a channel to receive a signal on to be run in parallel after the parent releases it to them (step 4.). This helps to retain the clarity in the code to see that subtests cannot be run earlier inadvertently.
+Top-level subtest share the same code-base as subtests run with t.Run. Under the hood top-level test would be started with t.Run as well. --></div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parallelism">
+<h3>Parallelism<a class="headerlink" href="#parallelism" title="Permalink to this headline">¶</a></h3>
+<p>Using Parallel in combination with closures is prone  to the “forgetting to
+capture a range variable” problem.
+We could define a Go method analogous to Run, defined as follows:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">T</span><span class="p">)</span> <span class="nx">Go</span><span class="p">(</span><span class="nx">name</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">f</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">T</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">Run</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">t</span><span class="p">.</span><span class="nx">Parallel</span><span class="p">()</span>
+        <span class="nx">f</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This suffers from the same problem, but at least would make it a) more explicit
+that a range variable requires capturing and b) makes it easier to detect misuse
+by go vet.
+If it is possible for go vet to detect whether t.Parallel is in the call graph
+of t.Run and whether the closure refers to a range variable this would be
+sufficient and the Go method might not be necessary.</p>
+<p>At first we could prohibit calls to Parallel from within subtests until we
+decide on one of these methods or find a better solution.</p>
+</div>
+<div class="section" id="teardown">
+<h3>Teardown<a class="headerlink" href="#teardown" title="Permalink to this headline">¶</a></h3>
+<p>We showed how it is possible to insert teardown code after running a few
+parallel tests.
+Thought not difficult, it is a bit clumsy.
+We could add the following method to make this easier:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// Wait blocks until all parallel subtests have finished. It will Skip</span>
+<span class="c1">// the current test if more than n subtests have failed. If n &lt; 0 it will</span>
+<span class="c1">// wait for all subtests to complete.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">T</span><span class="p">)</span> <span class="nx">Wait</span><span class="p">(</span><span class="nx">n</span> <span class="nx">numFailures</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The documentation in Run would have to be slightly changed to say that Run will
+call Wait(-1) before returning.
+The parallel teardown example could than be written as:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">TestTeardownParallel</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">Go</span><span class="p">(</span><span class="s">&quot;Test1&quot;</span><span class="p">,</span> <span class="nx">parallelTest1</span><span class="p">)</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">Go</span><span class="p">(</span><span class="s">&quot;Test2&quot;</span><span class="p">,</span> <span class="nx">parallelTest2</span><span class="p">)</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">Go</span><span class="p">(</span><span class="s">&quot;Test3&quot;</span><span class="p">,</span> <span class="nx">parallelTest3</span><span class="p">)</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">Wait</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">// teardown code.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This could be added later if there seems to be a need for it.
+The introduction of Wait would only require a minimal and backward compatible
+change to the sub-test semantics.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="12302-release-proposal.html" class="btn btn-neutral float-right" title="Proposal: A minimal release process for Go repositories" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="11970-decentralized-gc.html" class="btn btn-neutral float-left" title="Proposal: Decentralized GC coordination" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

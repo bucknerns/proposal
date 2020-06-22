@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: testing: better support test helper functions with TB.Helper &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Multi-dimensional slices" href="6282-table-data.html" />
+    <link rel="prev" title="Proposal: Multi-project gopls workspaces" href="37720-gopls-workspaces.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: testing: better support test helper functions with TB.Helper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ignore-the-problem-making-it-harder-to-debug-test-failures">1. Ignore the problem, making it harder to debug test failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pass-around-more-context-to-be-printed-as-part-of-the-error-message">2. Pass around more context to be printed as part of the error message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-the-r-workaround">3. Use the \r workaround</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#alternative-1-allow-the-user-to-specify-how-many-stack-frames-to-skip">Alternative 1: allow the user to specify how many stack frames to skip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alternative-2-use-a-special-logf-errorf-fatalf-sentinel">Alternative 2: use a special Logf/Errorf/Fatalf sentinel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: testing: better support test helper functions with TB.Helper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/4899-testing-helper.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-testing-better-support-test-helper-functions-with-tb-helper">
+<h1>Proposal: testing: better support test helper functions with TB.Helper<a class="headerlink" href="#proposal-testing-better-support-test-helper-functions-with-tb-helper" title="Permalink to this headline">¶</a></h1>
+<p>Author: Caleb Spare, based on previous work by Josh Bleecher Snyder</p>
+<p>Last updated: 2016-12-27</p>
+<p>Discussion at https://golang.org/issue/4899.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This proposal is about fixing the long-standing issue
+<a class="reference external" href="https://golang.org/issue/4899">#4899</a>.</p>
+<p>When a test calls a helper function that invokes, for instance,
+<code class="docutils literal notranslate"><span class="pre">&quot;*testing.T&quot;.Error</span></code>, the line number that is printed for the test failure
+indicates the <code class="docutils literal notranslate"><span class="pre">Error</span></code> call site as inside the helper method.
+This is almost always unhelpful for pinpointing the actual failure.</p>
+<p>We propose to add a new <code class="docutils literal notranslate"><span class="pre">testing.TB</span></code> method, <code class="docutils literal notranslate"><span class="pre">Helper</span></code>,
+which marks the calling function as a test helper.
+When logging test messages, package testing ignores frames
+that are inside marked helper functions.
+It prints the first stack position inside a non-helper function.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>In Go tests, it is common to use a helper function to perform some repeated
+non-trivial check.
+These are often of the form</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">helper</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>though other variants exist.
+Such helper functions may be local to the test package or may come from external packages.
+There are many examples of such helper functions in the standard library tests.
+Some are listed below.</p>
+<p>When a helper function calls <code class="docutils literal notranslate"><span class="pre">t.Error</span></code>, <code class="docutils literal notranslate"><span class="pre">t.Fatal</span></code>, or a related method,
+the error message includes file:lineno output that indicates the location of the failure.
+The failure location is currently considered inside the helper method, which is unhelpful.</p>
+<p>The misplaced failure location also inhibits useful IDE features like
+automatically jumping to the failure position.</p>
+<p>There are a variety of workarounds to which people have resorted.</p>
+<div class="section" id="ignore-the-problem-making-it-harder-to-debug-test-failures">
+<h3>1. Ignore the problem, making it harder to debug test failures<a class="headerlink" href="#ignore-the-problem-making-it-harder-to-debug-test-failures" title="Permalink to this headline">¶</a></h3>
+<p>This is a common approach.</p>
+<p>If the helper is only called once from the <code class="docutils literal notranslate"><span class="pre">Test*</span></code> function,
+then the problem is less severe:
+the test failure prints the name of the <code class="docutils literal notranslate"><span class="pre">Test*</span></code> function that failed,
+and by locating the only call to the helper within that function,
+the user knows the failure site.
+This is just an annoyance.</p>
+<p>When the helper is called more than once, it can be impossible to locate the
+source of the failure without further debugging.</p>
+<p>A few examples of this pattern in the standard library:</p>
+<ul class="simple">
+<li><p>cmd/cover: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">run(c</span> <span class="pre">*exec.Cmd,</span> <span class="pre">t</span> <span class="pre">*testing.T)</span></code></p></li>
+<li><p>cmd/go: the methods of <code class="docutils literal notranslate"><span class="pre">testgo</span></code></p></li>
+<li><p>compress/flate: <code class="docutils literal notranslate"><span class="pre">writeToType(t</span> <span class="pre">*testing.T,</span> <span class="pre">ttype</span> <span class="pre">string,</span> <span class="pre">bw</span> <span class="pre">*huffmanBitWriter,</span> <span class="pre">tok</span> <span class="pre">[]token,</span> <span class="pre">input</span> <span class="pre">[]byte)</span></code></p></li>
+<li><p>crypto/aes: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">mustPanic(t</span> <span class="pre">*testing.T,</span> <span class="pre">msg</span> <span class="pre">string,</span> <span class="pre">f</span> <span class="pre">func())</span></code></p></li>
+<li><p>database/sql: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">numPrepares(t</span> <span class="pre">*testing.T,</span> <span class="pre">db</span> <span class="pre">*DB)</span> <span class="pre">int</span></code></p></li>
+<li><p>encoding/json: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">diff(t</span> <span class="pre">*testing.T,</span> <span class="pre">a,</span> <span class="pre">b</span> <span class="pre">[]byte)</span></code></p></li>
+<li><p>fmt: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">presentInMap(s</span> <span class="pre">string,</span> <span class="pre">a</span> <span class="pre">[]string,</span> <span class="pre">t</span> <span class="pre">*testing.T)</span></code>, <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">check(t</span> <span class="pre">*testing.T,</span> <span class="pre">got,</span> <span class="pre">want</span> <span class="pre">string)</span></code></p></li>
+<li><p>html/template: the methods of <code class="docutils literal notranslate"><span class="pre">testCase</span></code></p></li>
+<li><p>image/gif: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">try(t</span> <span class="pre">*testing.T,</span> <span class="pre">b</span> <span class="pre">[]byte,</span> <span class="pre">want</span> <span class="pre">string)</span></code></p></li>
+<li><p>net/http: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">checker(t</span> <span class="pre">*testing.T)</span> <span class="pre">func(string,</span> <span class="pre">error)</span></code></p></li>
+<li><p>os: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">touch(t</span> <span class="pre">*testing.T,</span> <span class="pre">name</span> <span class="pre">string)</span></code></p></li>
+<li><p>reflect: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">assert(t</span> <span class="pre">*testing.T,</span> <span class="pre">s,</span> <span class="pre">want</span> <span class="pre">string)</span></code></p></li>
+<li><p>sync/atomic: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">shouldPanic(t</span> <span class="pre">*testing.T,</span> <span class="pre">name</span> <span class="pre">string,</span> <span class="pre">f</span> <span class="pre">func())</span></code></p></li>
+<li><p>text/scanner: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">checkPos(t</span> <span class="pre">*testing.T,</span> <span class="pre">got,</span> <span class="pre">want</span> <span class="pre">Position)</span></code> and some of its callers</p></li>
+</ul>
+</div>
+<div class="section" id="pass-around-more-context-to-be-printed-as-part-of-the-error-message">
+<h3>2. Pass around more context to be printed as part of the error message<a class="headerlink" href="#pass-around-more-context-to-be-printed-as-part-of-the-error-message" title="Permalink to this headline">¶</a></h3>
+<p>This approach adds enough information to the failure message to pinpoint the
+source of failure, at the cost of greater burden on the test writer.
+The result still isn’t entirely satisfactory for the test invoker:
+if the user only looks at the file:lineno in the failure message,
+they are still led astray until they examine the full message.</p>
+<p>Some standard library examples:</p>
+<ul class="simple">
+<li><p>bytes: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">check(t</span> <span class="pre">*testing.T,</span> <span class="pre">testname</span> <span class="pre">string,</span> <span class="pre">buf</span> <span class="pre">*Buffer,</span> <span class="pre">s</span> <span class="pre">string)</span></code></p></li>
+<li><p>context: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">testDeadline(c</span> <span class="pre">Context,</span> <span class="pre">name</span> <span class="pre">string,</span> <span class="pre">failAfter</span> <span class="pre">time.Duration,</span> <span class="pre">t</span> <span class="pre">testingT)</span></code></p></li>
+<li><p>debug/gosym: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">testDeadline(c</span> <span class="pre">Context,</span> <span class="pre">name</span> <span class="pre">string,</span> <span class="pre">failAfter</span> <span class="pre">time.Duration,</span> <span class="pre">t</span> <span class="pre">testingT)</span></code></p></li>
+<li><p>mime/multipart: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">expectEq(t</span> <span class="pre">*testing.T,</span> <span class="pre">expected,</span> <span class="pre">actual,</span> <span class="pre">what</span> <span class="pre">string)</span></code></p></li>
+<li><p>strings: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">equal(m</span> <span class="pre">string,</span> <span class="pre">s1,</span> <span class="pre">s2</span> <span class="pre">string,</span> <span class="pre">t</span> <span class="pre">*testing.T)</span> <span class="pre">bool</span></code></p></li>
+<li><p>text/scanner: <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">checkTok(t</span> <span class="pre">*testing.T,</span> <span class="pre">s</span> <span class="pre">*Scanner,</span> <span class="pre">line</span> <span class="pre">int,</span> <span class="pre">got,</span> <span class="pre">want</span> <span class="pre">rune,</span> <span class="pre">text</span> <span class="pre">string)</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="use-the-r-workaround">
+<h3>3. Use the \r workaround<a class="headerlink" href="#use-the-r-workaround" title="Permalink to this headline">¶</a></h3>
+<p>This technique is used by test helper packages in the wild.
+The idea is to print a carriage return from inside the test helper
+in order to hide the file:lineno printed by the testing package.
+Then the helper can print its own file:lineno and message.</p>
+<p>One example is
+<a class="reference external" href="https://github.com/stretchr/testify/blob/2402e8e7a02fc811447d11f881aa9746cdc57983/assert/assertions.go#L226">github.com/stretchr/testify</a>.</p>
+</div>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We propose to add two methods in package testing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Helper</span> <span class="n">marks</span> <span class="n">the</span> <span class="n">current</span> <span class="n">function</span> <span class="k">as</span> <span class="n">a</span> <span class="n">test</span> <span class="n">helper</span> <span class="n">function</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">When</span> <span class="n">printing</span> <span class="n">file</span> <span class="ow">and</span> <span class="n">line</span> <span class="n">information</span>
+<span class="o">//</span> <span class="kn">from</span> <span class="nn">methods</span> <span class="n">such</span> <span class="k">as</span> <span class="n">t</span><span class="o">.</span><span class="n">Error</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">Log</span><span class="p">,</span>
+<span class="o">//</span> <span class="n">the</span> <span class="n">current</span> <span class="n">function</span> <span class="n">will</span> <span class="n">be</span> <span class="n">skipped</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="n">Helper</span><span class="p">()</span>
+
+<span class="o">//</span> <span class="n">same</span> <span class="n">doc</span> <span class="n">comment</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">B</span><span class="p">)</span> <span class="n">Helper</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>When package testing prints file:lineno, it walks up the stack,
+skipping helper functions, and chooses the first entry in a non-helper function.</p>
+<p>We also propose to add <code class="docutils literal notranslate"><span class="pre">Helper()</span></code> to the <code class="docutils literal notranslate"><span class="pre">testing.TB</span></code> interface.</p>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="alternative-1-allow-the-user-to-specify-how-many-stack-frames-to-skip">
+<h3>Alternative 1: allow the user to specify how many stack frames to skip<a class="headerlink" href="#alternative-1-allow-the-user-to-specify-how-many-stack-frames-to-skip" title="Permalink to this headline">¶</a></h3>
+<p>An alternative fix is to give the user control over the number of stack frames to skip.
+This is similar to what package log already provides:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Output</span><span class="p">(</span><span class="n">calldepth</span> <span class="nb">int</span><span class="p">,</span> <span class="n">s</span> <span class="n">string</span><span class="p">)</span> <span class="n">error</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">l</span> <span class="o">*</span><span class="n">Logger</span><span class="p">)</span> <span class="n">Output</span><span class="p">(</span><span class="n">calldepth</span> <span class="nb">int</span><span class="p">,</span> <span class="n">s</span> <span class="n">string</span><span class="p">)</span> <span class="n">error</span>
+</pre></div>
+</div>
+<p>For instance, in https://golang.org/cl/12405043 &#64;robpike writes</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Up</span> <span class="n">returns</span> <span class="n">a</span> <span class="o">*</span><span class="n">T</span> <span class="nb">object</span> <span class="n">whose</span> <span class="n">error</span> <span class="n">reports</span> <span class="n">identify</span> <span class="n">the</span> <span class="n">line</span> <span class="n">n</span> <span class="n">callers</span>
+<span class="o">//</span> <span class="n">up</span> <span class="n">the</span> <span class="n">frame</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="n">Up</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span><span class="n">t</span> <span class="p">{</span> <span class="o">....</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>Then you could write</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="o">.</span><span class="n">Up</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s2">&quot;this would be tagged with the caller&#39;s line number&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>&#64;bradfitz mentions similar APIs in <a class="reference external" href="https://golang.org/issue/4899">#4899</a> and
+<a class="reference external" href="https://golang.org/issue/14128">#14128</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Helper</span></code> is easier to use, because the user doesn’t have to think about stack frames,
+and it does not break when refactoring.</p>
+<p>Also, it is not always easy to decide how many frames to skip.
+A helper may be called through multiple paths, so it may be a variable depth
+from the desired logging site.
+For example, in the cmd/go tests, the <code class="docutils literal notranslate"><span class="pre">&quot;*testgoData&quot;.must</span></code> helper is called directly
+by some tests, but is also called by other helpers such as <code class="docutils literal notranslate"><span class="pre">&quot;*testgoData&quot;.cd</span></code>.
+Manual stack control would require the user to pass state into this method
+in order to know whether to skip one or two frames.
+Using the <code class="docutils literal notranslate"><span class="pre">Helper</span></code> API, the user would simply mark both <code class="docutils literal notranslate"><span class="pre">must</span></code> and <code class="docutils literal notranslate"><span class="pre">cd</span></code> as helpers.</p>
+</div>
+<div class="section" id="alternative-2-use-a-special-logf-errorf-fatalf-sentinel">
+<h3>Alternative 2: use a special Logf/Errorf/Fatalf sentinel<a class="headerlink" href="#alternative-2-use-a-special-logf-errorf-fatalf-sentinel" title="Permalink to this headline">¶</a></h3>
+<p>Another approach given by &#64;bradfitz in
+<a class="reference external" href="https://github.com/golang/go/issues/14128#issuecomment-176254702">#14128</a>
+is to provide a magic format value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">t</span><span class="o">.</span><span class="n">Logf</span><span class="p">(</span><span class="s2">&quot;some value = %v&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">testing</span><span class="o">.</span><span class="n">NoDecorate</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This seems roughly equivalent in power to our proposal, but it has downsides:</p>
+<ul class="simple">
+<li><p>It breaks usual <code class="docutils literal notranslate"><span class="pre">printf</span></code> conventions (&#64;adg <a class="reference external" href="https://github.com/golang/go/issues/14128#issuecomment-176456878">points out that vet would have to
+be aware of it</a>).</p></li>
+<li><p>The mechanism is unusual – it lacks precedent in the standard library.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NoDecorate</span></code> is less obvious in godoc than a TB method.</p></li>
+<li><p>Every <code class="docutils literal notranslate"><span class="pre">testing.T</span></code> method in a helper method must be decorated.</p></li>
+<li><p>It is not clear how to handle nested helpers other than by manually specifying
+the number of stack frames to skip, inheriting the problems of alternative 1.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>Adding a method to <code class="docutils literal notranslate"><span class="pre">*testing.T</span></code> and <code class="docutils literal notranslate"><span class="pre">*testing.B</span></code> raises no compatibility issues.</p>
+<p>We will also add the method to the <code class="docutils literal notranslate"><span class="pre">testing.TB</span></code> interface.
+Normally changing interface method sets is verboten,
+but in this case it is be fine because <code class="docutils literal notranslate"><span class="pre">TB</span></code> has a private method
+specifically to prevent other implementations:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">A</span> <span class="n">private</span> <span class="n">method</span> <span class="n">to</span> <span class="n">prevent</span> <span class="n">users</span> <span class="n">implementing</span> <span class="n">the</span>
+<span class="o">//</span> <span class="n">interface</span> <span class="ow">and</span> <span class="n">so</span> <span class="n">future</span> <span class="n">additions</span> <span class="n">to</span> <span class="n">it</span> <span class="n">will</span> <span class="ow">not</span>
+<span class="o">//</span> <span class="n">violate</span> <span class="n">Go</span> <span class="mi">1</span> <span class="n">compatibility</span><span class="o">.</span>
+<span class="n">private</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>&#64;cespare will send a CL implementing <code class="docutils literal notranslate"><span class="pre">&quot;testing.TB&quot;.Helper</span></code> based on
+&#64;josharian’s previous work in https://golang.org/cl/79890043.</p>
+<p>The CL will be sent before April 30, 2017 in order to make the 1.9 release cycle.</p>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<p>This change directly solves <a class="reference external" href="https://golang.org/issue/4899">#4899</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="6282-table-data.html" class="btn btn-neutral float-right" title="Proposal: Multi-dimensional slices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="37720-gopls-workspaces.html" class="btn btn-neutral float-left" title="Proposal: Multi-project gopls workspaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

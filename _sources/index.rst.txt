@@ -1,0 +1,7 @@
+design documentation
+====================
+
+.. toctree::
+   :glob:
+
+   *

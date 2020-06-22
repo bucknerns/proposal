@@ -1,0 +1,1175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generalized Types In Go &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Generalized Types In Go</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/15292/2013-10-gen.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generalized-types-in-go">
+<h1>Generalized Types In Go<a class="headerlink" href="#generalized-types-in-go" title="Permalink to this headline">¶</a></h1>
+<p>This is a proposal for adding generics to Go, written by Ian Lance
+Taylor in October, 2013.
+This proposal will not be adopted.
+It is being presented as an example for what a complete generics
+proposal must cover.</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This document describes a possible implementation of generalized types
+in Go.
+We introduce a new keyword, <code class="docutils literal notranslate"><span class="pre">gen</span></code>, that declares one or more type
+parameters: types that are not known at compile time.
+These type parameters may then be used in other declarations,
+producing generalized types and functions.</p>
+<p>Some goals, borrowed from <a class="reference external" href="https://web.archive.org/web/20170812055356/http://www.crest.iu.edu/publications/prints/2003/comparing_generic_programming03.pdf">Garcia et al</a>:</p>
+<ul class="simple">
+<li><p>Do not require an explicit relationship between a definition of a generalized function and its use. The function should be callable with any suitable type.</p></li>
+<li><p>Permit interfaces to express relationships between types of methods, as in a comparison function that takes two parameters of the same unknown type.</p></li>
+<li><p>Given a generalized type, make it possible to use related types, such as a slice of that type.</p></li>
+<li><p>Do not require explicit instantiation of generalized functions.</p></li>
+<li><p>Permit type aliasing of generalized types.</p></li>
+</ul>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>My earlier proposal for generalized types had some flaws.</p>
+<p>People expect functions that operate on generalized types to be fast.
+They do not want a reflection based interface in all cases.
+The question is how to support that without excessively slowing down
+the compiler.</p>
+<p>People want to be able to write simple generalized functions like
+<code class="docutils literal notranslate"><span class="pre">Sum(v</span> <span class="pre">[]T)</span> <span class="pre">T</span></code>, a function that sums the values in the slice <code class="docutils literal notranslate"><span class="pre">v</span></code>.
+They are prepared to assume that <code class="docutils literal notranslate"><span class="pre">T</span></code> is a numeric type.
+They don’t want to have to write a set of methods simply to implement
+<code class="docutils literal notranslate"><span class="pre">Sum</span></code> or the many other similar functions for every numeric type,
+including their own named numeric types.</p>
+<p>People want to be able to write the same function to work on both
+<code class="docutils literal notranslate"><span class="pre">[]byte</span></code> and <code class="docutils literal notranslate"><span class="pre">string</span></code>, without requiring a copy.</p>
+<p>People want to write functions on generalized types that support
+simple operations like comparison.
+That is, they want to write a function that uses a generalized type
+and compares a value of that type to another value of the same type.
+That was awkward in my earlier proposal: it required using a form of
+the curiously recurring template pattern.</p>
+<p>Go’s use of structural typing means that you can use any type to meet
+an interface without an explicit declaration.
+Generalized types should work the same way.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We permit package-level type and func declarations to use generalized
+types.
+There are no restrictions on how these types may be used within their
+scope.
+At compile time each actual use of a generalized type or function is
+instantiated by replacing the generalized type with some concrete
+type.
+This may happen multiple times with different concrete types.
+A concrete type is only permitted if all the operations used with the
+generalized types are permitted for the concrete type.
+How to implement this efficiently is discussed below.</p>
+</div>
+<div class="section" id="syntax">
+<h2>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h2>
+<p>Any package-scope type or func declaration may be preceded with the
+new keyword <code class="docutils literal notranslate"><span class="pre">gen</span></code> followed by a list of type parameter names in square
+brackets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="nb">type</span> <span class="n">Vector</span> <span class="p">[]</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>This defines <code class="docutils literal notranslate"><span class="pre">T</span></code> as a type parameter for the generalized type <code class="docutils literal notranslate"><span class="pre">Vector</span></code>.
+The scope of <code class="docutils literal notranslate"><span class="pre">Vector</span></code> is the same as it would be if <code class="docutils literal notranslate"><span class="pre">gen</span></code> did not appear.</p>
+<p>A use of a generalized type must provide specific types to use for the
+type parameters.
+This is normally done using square brackets following the generalized
+type.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">VectorInt</span> <span class="n">Vector</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">var</span> <span class="n">v1</span> <span class="n">Vector</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">var</span> <span class="n">v2</span> <span class="n">Vector</span><span class="p">[</span><span class="n">float32</span><span class="p">]</span>
+<span class="n">gen</span> <span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span> <span class="nb">type</span> <span class="n">Pair</span> <span class="n">struct</span> <span class="p">{</span> <span class="n">first</span> <span class="n">T1</span><span class="p">;</span> <span class="n">second</span> <span class="n">T2</span> <span class="p">}</span>
+<span class="n">var</span> <span class="n">v3</span> <span class="n">Pair</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Type parameters may also be used with functions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">SetHead</span><span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">e</span> <span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+	<span class="k">return</span> <span class="n">e</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We permit a modified version of the factoring syntax used with <code class="docutils literal notranslate"><span class="pre">var</span></code>,
+<code class="docutils literal notranslate"><span class="pre">type</span></code>, and <code class="docutils literal notranslate"><span class="pre">const</span></code> to permit a series of declarations to share the
+same type parameters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span> <span class="p">(</span>
+<span class="nb">type</span> <span class="n">Pair</span> <span class="n">struct</span> <span class="p">{</span> <span class="n">first</span> <span class="n">T1</span><span class="p">;</span> <span class="n">second</span> <span class="n">T2</span> <span class="p">}</span>
+
+<span class="n">func</span> <span class="n">MakePair</span><span class="p">(</span><span class="n">first</span> <span class="n">T1</span><span class="p">,</span> <span class="n">second</span> <span class="n">T2</span><span class="p">)</span> <span class="n">Pair</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="n">Pair</span><span class="p">{</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">}</span>
+<span class="p">}</span>
+<span class="p">)</span> <span class="o">//</span> <span class="n">Ends</span> <span class="n">gen</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>References to other names declared within the same <code class="docutils literal notranslate"><span class="pre">gen</span></code> block do not
+have to specify the type parameters.
+When the type parameters are omitted, they are implied to simply be
+the parameters declared for the block.
+In the above example, <code class="docutils literal notranslate"><span class="pre">Pair</span></code> when used as the result type of <code class="docutils literal notranslate"><span class="pre">MakePair</span></code> is
+equivalent to <code class="docutils literal notranslate"><span class="pre">Pair[T1,</span> <span class="pre">T2]</span></code>.</p>
+<p>When this syntax is used we require that the entire contents of the
+block be valid for a given concrete type.
+The block is instantiated as a whole, not in individual pieces.</p>
+<p>As with generalized types, we must specify the types when we refer to
+a generalized function (but see the section on type deduction, below).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">MakeIntPair</span> <span class="o">=</span> <span class="n">MakePair</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="n">var</span> <span class="n">IntPairZero</span> <span class="o">=</span> <span class="n">MakeIntPair</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A generalized type can have methods.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="o">*</span><span class="n">Vector</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="n">SetHead</span><span class="p">(</span><span class="n">e</span> <span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+	<span class="k">return</span> <span class="n">e</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Of course a method of a generalized type may itself be a generalized function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span> <span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="o">*</span><span class="n">Vector</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="n">Transform</span><span class="p">(</span><span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">T2</span><span class="p">)</span> <span class="n">Vector</span><span class="p">[</span><span class="n">T2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">gen</span></code> keyword may only be used with a type or function.
+It may only appear in package scope, not within a function.
+A non-generalized type may not have a generalized method.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">gen</span></code> keyword may appear within the scope of another <code class="docutils literal notranslate"><span class="pre">gen</span></code> keyword.
+In that case, any use of the generalized type or function must specify
+all the type parameters, starting with the outermost ones.
+A different way of writing the last example would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="p">(</span>
+<span class="nb">type</span> <span class="n">Vector</span> <span class="p">[]</span><span class="n">T</span>
+<span class="n">gen</span> <span class="p">[</span><span class="n">T2</span><span class="p">]</span> <span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="o">*</span><span class="n">Vector</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="n">Transform</span><span class="p">(</span><span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">T2</span><span class="p">)</span> <span class="n">Vector</span><span class="p">[</span><span class="n">T2</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">var</span> <span class="n">v</span> <span class="n">Vector</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">var</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">Transform</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">](</span><span class="n">strconv</span><span class="o">.</span><span class="n">Itoa</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Type deduction, described below, would permit omitting the
+<code class="docutils literal notranslate"><span class="pre">[int,</span> <span class="pre">string]</span></code> in the last line, based on the types of <code class="docutils literal notranslate"><span class="pre">v</span></code> and
+<code class="docutils literal notranslate"><span class="pre">strconv.Itoa</span></code>.
+Inner type parameters shadow outer ones with the same name, as in
+other scopes in Go (although it’s hard to see a use for this
+shadowing).</p>
+<div class="section" id="a-note-on-syntax">
+<h3>A note on syntax<a class="headerlink" href="#a-note-on-syntax" title="Permalink to this headline">¶</a></h3>
+<p>While the use of the <code class="docutils literal notranslate"><span class="pre">gen</span></code> keyword fits reasonably well into the
+existing Go language, the use of square brackets to denote the
+specific types is new to Go.
+We have considered a number of different approaches:</p>
+<ul class="simple">
+<li><p>Use angle brackets, as in <code class="docutils literal notranslate"><span class="pre">Pair&lt;int,</span> <span class="pre">string&gt;</span></code>. This has the advantage of being familiar to C++ and Java programmers. Unfortunately, it means that <code class="docutils literal notranslate"><span class="pre">f&lt;T&gt;(true)</span></code> can be parsed as either a call to function <code class="docutils literal notranslate"><span class="pre">f&lt;T&gt;</span></code> or a comparison of <code class="docutils literal notranslate"><span class="pre">f&lt;T</span></code> (an expression that tests whether <code class="docutils literal notranslate"><span class="pre">f</span></code> is less than <code class="docutils literal notranslate"><span class="pre">T</span></code>) with <code class="docutils literal notranslate"><span class="pre">(true)</span></code>. While it may be possible to construct complex resolution rules, the Go syntax avoids that sort of ambiguity for good reason.</p></li>
+<li><p>Overload the dot operator again, as in <code class="docutils literal notranslate"><span class="pre">Vector.int</span></code> or <code class="docutils literal notranslate"><span class="pre">Pair.(int,</span> <span class="pre">string)</span></code>. This becomes confusing when we see <code class="docutils literal notranslate"><span class="pre">Vector.(int)</span></code>, which could be a type assertion.</p></li>
+<li><p>We considered using dot but putting the type first, as in <code class="docutils literal notranslate"><span class="pre">int.Vector</span></code> or <code class="docutils literal notranslate"><span class="pre">(int,</span> <span class="pre">string).Pair</span></code>.  It might be possible to make that work without ambiguity, but putting the types first seems to make the code harder to read.</p></li>
+<li><p>An earlier version of this proposal used parentheses for names after types, as in <code class="docutils literal notranslate"><span class="pre">Vector(int)</span></code>.  However, that proposal was flawed because there was no way to specify types for generalized functions, and extending the parentheses syntax led to <code class="docutils literal notranslate"><span class="pre">MakePair(int,</span> <span class="pre">string)(1,</span> <span class="pre">&quot;&quot;)</span></code> which seems less than ideal.</p></li>
+<li><p>We considered various different characters, such as backslash, dollar sign, at-sign or sharp.  The square brackets grouped the parameters nicely and provide an acceptable visual appearance.</p></li>
+</ul>
+<p>The use of square brackets to pick specific versions of generalized types and functions seems appropriate.
+However, the top-level declarations could work differently.</p>
+<ul class="simple">
+<li><p>We could omit the square brackets in a <code class="docutils literal notranslate"><span class="pre">gen</span></code> declaration without ambiguity.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gen</span> <span class="pre">T</span> <span class="pre">type</span> <span class="pre">Vector</span> <span class="pre">[]T</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gen</span> <span class="pre">T1,</span> <span class="pre">T2</span> <span class="pre">type</span> <span class="pre">Pair</span> <span class="pre">struct</span> <span class="pre">{</span> <span class="pre">f1</span> <span class="pre">T1;</span> <span class="pre">f2</span> <span class="pre">T2</span> <span class="pre">}</span></code></p></li>
+</ul>
+</li>
+<li><p>We could keep the square brackets, but use the existing <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword rather than introducing a new keyword.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">[T]</span> <span class="pre">type</span> <span class="pre">Vector</span> <span class="pre">[]T</span></code>
+I have a mild preference for the syntax described above but I’m OK with other choices as well.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="type-deduction">
+<h2>Type Deduction<a class="headerlink" href="#type-deduction" title="Permalink to this headline">¶</a></h2>
+<p>When calling a function, as opposed to referring to it without calling
+it, the type parameters may be omitted in some cases.
+A function call may omit the type parameters when every type parameter
+is used for a regular parameter, or, in other words, there are no type
+parameters that are used only for results.
+In that case the compiler will compare the actual type of the
+argument <code class="docutils literal notranslate"><span class="pre">A</span></code> with the type of the generalized parameter <code class="docutils literal notranslate"><span class="pre">P</span></code>, examining
+the arguments from left to right.
+<code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">P</span></code> must be identical.
+The first time we see a type parameter in <code class="docutils literal notranslate"><span class="pre">P</span></code>, it will be set to the
+appropriate portion of <code class="docutils literal notranslate"><span class="pre">A</span></code>.
+If the type parameter appears again, it must be identical to the
+actual type at that point.</p>
+<p>Note that at compile time the argument type may itself be a
+generalized type, when one generalized function calls another.
+The type deduction algorithm is the same.
+A type parameter of <code class="docutils literal notranslate"><span class="pre">P</span></code> may match a type parameter of <code class="docutils literal notranslate"><span class="pre">A</span></code>.
+Once this match is made, then every subsequent instance of the <code class="docutils literal notranslate"><span class="pre">P</span></code> type
+parameter must match the same <code class="docutils literal notranslate"><span class="pre">A</span></code> type parameter.</p>
+<p>When doing type deduction with an untyped constant, the constant does
+not determine anything about the generalized type.
+The deduction proceeds with the remaining arguments.
+If at the end of the deduction the type has not been determined, the
+untyped constants are re-examined in sequence, and given the type <code class="docutils literal notranslate"><span class="pre">int</span></code>,
+<code class="docutils literal notranslate"><span class="pre">rune</span></code>, <code class="docutils literal notranslate"><span class="pre">float64</span></code>, or <code class="docutils literal notranslate"><span class="pre">complex1281</span> <span class="pre">as</span> <span class="pre">usual.</span> <span class="pre">Type</span> <span class="pre">deduction</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">support</span> <span class="pre">passing</span> <span class="pre">an</span> <span class="pre">untyped</span> </code>nil<code class="docutils literal notranslate"><span class="pre">constant;</span></code>nil` may only be used with an explicit type conversion (or, of
+course, the type parameters may be written explicitly).</p>
+<p>Type deduction also applies to composite literals, in which the type
+parameters for a generalized struct type are deduced from the types of
+the literals.</p>
+<p>For example, these three variables will have the same type and value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">v1</span> <span class="o">=</span> <span class="n">MakePair</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">](</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">var</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">MakePair</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>			<span class="o">//</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="n">deduced</span><span class="o">.</span>
+<span class="n">var</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">Pair</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>			<span class="o">//</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="n">deduced</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>To explain the untyped constant rules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">b</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">a</span>
+<span class="p">}</span>
+<span class="n">var</span> <span class="n">i</span> <span class="nb">int</span>
+<span class="n">var</span> <span class="n">m1</span> <span class="o">=</span> <span class="n">Max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>		<span class="o">//</span> <span class="n">i</span> <span class="n">causes</span> <span class="n">T</span> <span class="n">to</span> <span class="n">be</span> <span class="n">deduced</span> <span class="k">as</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">0</span> <span class="ow">is</span> 
+<span class="o">//</span> <span class="n">passed</span> <span class="k">as</span> <span class="nb">int</span><span class="o">.</span>
+<span class="n">var</span> <span class="n">m2</span> <span class="o">=</span> <span class="n">Max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>		<span class="o">//</span> <span class="mi">0</span> <span class="n">ignored</span> <span class="n">on</span> <span class="n">first</span> <span class="k">pass</span><span class="p">,</span> <span class="n">i</span> <span class="n">causes</span>
+<span class="o">//</span> <span class="n">T</span> <span class="n">to</span> <span class="n">be</span> <span class="n">deduced</span> <span class="k">as</span> <span class="nb">int</span><span class="p">,</span> <span class="mi">0</span> <span class="ow">is</span> <span class="n">passed</span> <span class="k">as</span> 
+<span class="o">//</span> <span class="nb">int</span><span class="o">.</span>
+<span class="n">var</span> <span class="n">m3</span> <span class="o">=</span> <span class="n">Max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>		<span class="o">//</span> <span class="mi">1</span> <span class="ow">and</span> <span class="mf">2.5</span> <span class="n">ignored</span> <span class="n">on</span> <span class="n">first</span> <span class="k">pass</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">On</span> <span class="n">second</span> <span class="k">pass</span> <span class="mi">1</span> <span class="n">causes</span> <span class="n">T</span> <span class="n">to</span> <span class="n">be</span> <span class="n">deduced</span> 
+<span class="o">//</span> <span class="k">as</span> <span class="nb">int</span><span class="o">.</span>  <span class="n">Passing</span> <span class="mf">2.5</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">error</span><span class="o">.</span>
+<span class="n">var</span> <span class="n">m4</span> <span class="o">=</span> <span class="n">Max</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>		<span class="o">//</span> <span class="mf">2.5</span> <span class="ow">and</span> <span class="mi">1</span> <span class="n">ignored</span> <span class="n">on</span> <span class="n">first</span> <span class="k">pass</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">On</span> <span class="n">second</span> <span class="k">pass</span> <span class="mf">2.5</span> <span class="n">causes</span> <span class="n">T</span> <span class="n">to</span> <span class="n">be</span> 
+<span class="o">//</span> <span class="n">deduced</span> <span class="k">as</span> <span class="n">float64</span><span class="o">.</span>  <span class="mi">1</span> <span class="n">converted</span> <span class="n">to</span> 
+<span class="o">//</span> <span class="n">float64</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>A hash table.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span> <span class="n">hashmap</span>
+
+<span class="n">gen</span> <span class="p">[</span><span class="n">Keytype</span><span class="p">,</span> <span class="n">Valtype</span><span class="p">]</span> <span class="p">(</span>
+
+<span class="nb">type</span> <span class="n">bucket</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="nb">next</span> <span class="o">*</span><span class="n">bucket</span>
+	<span class="n">key</span> <span class="n">Keytype</span>
+	<span class="n">val</span> <span class="n">Valtype</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">Hashfn</span> <span class="n">func</span><span class="p">(</span><span class="n">Keytype</span><span class="p">)</span> <span class="n">uint</span>
+<span class="nb">type</span> <span class="n">Eqfn</span> <span class="n">func</span><span class="p">(</span><span class="n">Keytype</span><span class="p">,</span> <span class="n">Keytype</span><span class="p">)</span> <span class="nb">bool</span>
+
+<span class="nb">type</span> <span class="n">Hashmap</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">hashfn</span> <span class="n">Hashfn</span>
+	<span class="n">eqfn</span> <span class="n">Eqfn</span>
+	<span class="n">buckets</span> <span class="p">[]</span><span class="n">bucket</span>
+	<span class="n">entries</span> <span class="nb">int</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">This</span> <span class="n">function</span> <span class="n">must</span> <span class="n">be</span> <span class="n">called</span> <span class="k">with</span> <span class="n">explicit</span> <span class="nb">type</span> <span class="n">parameters</span><span class="p">,</span> <span class="k">as</span>
+<span class="o">//</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">no</span> <span class="n">way</span> <span class="n">to</span> <span class="n">deduce</span> <span class="n">the</span> <span class="n">value</span> <span class="nb">type</span><span class="o">.</span>  <span class="n">For</span> <span class="n">example</span><span class="p">,</span>
+<span class="o">//</span> <span class="n">h</span> <span class="o">:=</span> <span class="n">hashmap</span><span class="o">.</span><span class="n">New</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">](</span><span class="n">hashfn</span><span class="p">,</span> <span class="n">eqfn</span><span class="p">)</span>
+<span class="n">func</span> <span class="n">New</span><span class="p">(</span><span class="n">hashfn</span> <span class="n">Hashfn</span><span class="p">,</span> <span class="n">eqfn</span> <span class="n">Eqfn</span><span class="p">)</span> <span class="o">*</span><span class="n">Hashmap</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="n">Hashmap</span><span class="p">{</span><span class="n">hashfn</span><span class="p">,</span> <span class="n">eqfn</span><span class="p">,</span> <span class="n">make</span><span class="p">([]</span><span class="n">buckets</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="mi">0</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Hashmap</span><span class="p">)</span> <span class="n">Lookup</span><span class="p">(</span><span class="n">key</span> <span class="n">Keytype</span><span class="p">)</span> <span class="p">(</span><span class="n">val</span> <span class="n">Valtype</span><span class="p">,</span> <span class="n">found</span> <span class="nb">bool</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">h</span> <span class="o">:=</span> <span class="n">p</span><span class="o">.</span><span class="n">hashfn</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">buckets</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">b</span> <span class="o">:=</span> <span class="n">p</span><span class="o">.</span><span class="n">buckets</span><span class="p">[</span><span class="n">h</span><span class="p">];</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">nil</span><span class="p">;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">next</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">eqfn</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">true</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Hashmap</span><span class="p">)</span> <span class="n">Insert</span><span class="p">(</span><span class="n">key</span> <span class="n">Keytype</span><span class="p">,</span> <span class="n">val</span> <span class="n">Valtype</span><span class="p">)</span> <span class="p">(</span><span class="n">inserted</span> <span class="nb">bool</span><span class="p">)</span> <span class="p">{</span>
+	<span class="o">//</span> <span class="n">Implementation</span> <span class="n">omitted</span><span class="o">.</span>
+<span class="p">}</span>
+
+<span class="p">)</span> <span class="o">//</span> <span class="n">Ends</span> <span class="n">gen</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Using the hash table.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>package sample
+
+import (
+	&quot;fmt&quot;
+	&quot;hashmap&quot;
+	&quot;os&quot;
+)
+
+func hashint(i int) uint {
+	return uint(i)
+}
+
+func eqint(i, j int) bool {
+	return i == j
+}
+
+var v = hashmap.New[int, string](hashint, eqint)
+
+func Add(id int, name string) {
+	if !v.Insert(id, name) {
+		fmt.Println(“duplicate id”, id)
+		os.Exit(1)
+	}
+}
+
+func Find(id int) string {
+	val, found := v.Lookup(id)
+	if !found {
+		fmt.Println(“missing id”, id)
+		os.Exit(1)
+	}
+	return val
+}
+</pre></div>
+</div>
+<p>Sorting a slice given a comparison function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="p">(</span>
+
+<span class="n">func</span> <span class="n">SortSlice</span><span class="p">(</span><span class="n">s</span> <span class="p">[]</span><span class="n">T</span><span class="p">,</span> <span class="n">less</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="nb">bool</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">sort</span><span class="o">.</span><span class="n">Sort</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sorter</span><span class="p">{</span><span class="n">s</span><span class="p">,</span> <span class="n">less</span><span class="p">})</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">sorter</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">s</span> <span class="p">[]</span><span class="n">T</span>
+	<span class="n">less</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="nb">bool</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">sorter</span><span class="p">)</span> <span class="n">Len</span><span class="p">()</span> <span class="nb">int</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">s</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">sorter</span><span class="p">)</span> <span class="n">Less</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="nb">int</span><span class="p">)</span> <span class="nb">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span><span class="n">sorter</span><span class="p">)</span> <span class="n">Swap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="nb">int</span><span class="p">)</span> <span class="p">{</span> <span class="n">s</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">}</span>
+
+<span class="p">)</span> <span class="o">//</span> <span class="n">End</span> <span class="n">gen</span>
+</pre></div>
+</div>
+<p>Sorting a numeric slice (also works for string).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">This</span> <span class="n">can</span> <span class="n">be</span> <span class="n">successfully</span> <span class="n">instantiated</span> <span class="k">for</span> <span class="nb">any</span> <span class="nb">type</span> <span class="n">T</span> <span class="n">that</span> <span class="n">can</span> <span class="n">be</span>
+<span class="o">//</span> <span class="n">used</span> <span class="k">with</span> <span class="o">&lt;.</span>
+<span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">SortNumericSlice</span><span class="p">(</span><span class="n">s</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">SortSlice</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">T</span><span class="p">)</span> <span class="nb">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="p">})</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Merging two channels into one.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Merge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">&lt;-</span><span class="n">chan</span> <span class="n">T</span><span class="p">)</span> <span class="o">&lt;-</span><span class="n">chan</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">c</span> <span class="o">:=</span> <span class="n">make</span><span class="p">(</span><span class="n">chan</span> <span class="n">T</span><span class="p">)</span>
+	<span class="n">go</span> <span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">chan</span> <span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">nil</span> <span class="o">&amp;&amp;</span> <span class="n">b</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+			<span class="n">select</span> <span class="p">{</span>
+			<span class="n">case</span> <span class="n">v</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="n">a</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">ok</span> <span class="p">{</span>
+					<span class="n">c</span> <span class="o">&lt;-</span> <span class="n">v</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="n">a</span> <span class="o">=</span> <span class="n">nil</span>
+				<span class="p">}</span>
+			<span class="n">case</span> <span class="n">v</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="n">b</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">ok</span> <span class="p">{</span>
+					<span class="n">c</span> <span class="o">&lt;-</span> <span class="n">v</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="n">b</span> <span class="o">=</span> <span class="n">nil</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="n">close</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+	<span class="p">}(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">c</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Summing a slice.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Works</span> <span class="k">with</span> <span class="nb">any</span> <span class="nb">type</span> <span class="n">that</span> <span class="n">supports</span> <span class="o">+.</span>
+<span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">s</span> <span class="n">T</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+		<span class="n">s</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A generic interface.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="nb">type</span> <span class="n">Equaler</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">Equal</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="nb">bool</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Return</span> <span class="n">the</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">s</span> <span class="n">of</span> <span class="n">v1</span><span class="o">.</span>
+<span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Find</span><span class="p">(</span><span class="n">s</span> <span class="p">[]</span><span class="n">T</span><span class="p">,</span> <span class="n">v1</span> <span class="n">T</span><span class="p">)</span> <span class="nb">int</span> <span class="p">{</span>
+	<span class="n">eq</span><span class="p">,</span> <span class="n">eqok</span> <span class="o">:=</span> <span class="n">v1</span><span class="o">.</span><span class="p">(</span><span class="n">Equaler</span><span class="p">[</span><span class="n">T</span><span class="p">])</span>
+	<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v2</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">s</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">eqok</span> <span class="p">{</span>
+<span class="k">if</span> <span class="n">eq</span><span class="o">.</span><span class="n">Equal</span><span class="p">(</span><span class="n">v2</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="n">i</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">reflect</span><span class="o">.</span><span class="n">DeepEqual</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">i</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">S</span> <span class="p">[]</span><span class="nb">int</span>
+
+<span class="o">//</span> <span class="n">Slice</span> <span class="n">equality</span> <span class="n">that</span> <span class="n">treats</span> <span class="n">nil</span> <span class="ow">and</span> <span class="n">S</span><span class="p">{}</span> <span class="k">as</span> <span class="n">equal</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s1</span> <span class="n">S</span><span class="p">)</span> <span class="n">Equal</span><span class="p">(</span><span class="n">s2</span> <span class="n">S</span><span class="p">)</span> <span class="nb">bool</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">false</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v1</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">s1</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">v1</span> <span class="o">!=</span> <span class="n">s2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">false</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">true</span>
+<span class="p">}</span>
+
+<span class="n">var</span> <span class="n">i</span> <span class="o">=</span> <span class="n">Find</span><span class="p">([]</span><span class="n">S</span><span class="p">{</span><span class="n">S</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}},</span> <span class="n">S</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Joining sequences;
+works for any <code class="docutils literal notranslate"><span class="pre">T</span></code> that supports <code class="docutils literal notranslate"><span class="pre">len</span></code>, <code class="docutils literal notranslate"><span class="pre">copy</span></code> to <code class="docutils literal notranslate"><span class="pre">[]byte</span></code>, and
+conversion from <code class="docutils literal notranslate"><span class="pre">[]byte</span></code>;
+in other words, works for <code class="docutils literal notranslate"><span class="pre">[]byte</span></code> and <code class="docutils literal notranslate"><span class="pre">string</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Join</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="n">T</span><span class="p">,</span> <span class="n">sep</span> <span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">T</span><span class="p">([]</span><span class="n">byte</span><span class="p">{})</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+	<span class="n">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+		<span class="n">n</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">b</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([]</span><span class="n">byte</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+	<span class="n">bp</span> <span class="o">:=</span> <span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="p">{</span>
+		<span class="n">bp</span> <span class="o">+=</span> <span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">bp</span><span class="p">:],</span> <span class="n">sep</span><span class="p">)</span>
+		<span class="n">bp</span> <span class="o">+=</span> <span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">bp</span><span class="p">:],</span> <span class="n">v</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">T</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Require generalized types to implement an interface.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">A</span> <span class="n">vector</span> <span class="n">of</span> <span class="nb">any</span> <span class="nb">type</span> <span class="n">that</span> <span class="n">supports</span> <span class="n">the</span> <span class="n">io</span><span class="o">.</span><span class="n">Reader</span> <span class="n">interface</span><span class="o">.</span>
+<span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="p">(</span>
+
+<span class="nb">type</span> <span class="n">ReaderVector</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="o">//</span> <span class="n">This</span> <span class="n">function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">used</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">It</span> <span class="n">can</span> <span class="n">only</span> <span class="n">be</span> <span class="n">compiled</span> <span class="k">if</span> <span class="n">T</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">io</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="n">so</span> <span class="n">instantiating</span>
+<span class="o">//</span> <span class="n">this</span> <span class="n">block</span> <span class="k">with</span> <span class="nb">any</span> <span class="n">other</span> <span class="n">T</span> <span class="n">will</span> <span class="n">fail</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">_</span><span class="p">(</span><span class="n">t</span> <span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">_</span> <span class="n">io</span><span class="o">.</span><span class="n">Reader</span> <span class="o">=</span> <span class="n">t</span>
+<span class="p">}</span>
+
+<span class="p">)</span> <span class="o">//</span> <span class="n">Ends</span> <span class="n">gen</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>When the compiler sees a gen declaration, it must examine the
+associated types and functions and build a set of constraints on the
+generalized type.
+For example, if the type is used with binary <code class="docutils literal notranslate"><span class="pre">+</span></code> as in the <code class="docutils literal notranslate"><span class="pre">Sum</span></code> example,
+then the type must be a numeric or string type.
+If the type is used as <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+</span> <span class="pre">1</span></code> then it must be numeric.
+If a type method is called, then the type must support a method with
+that name that can accept the given argument types.
+If the type is passed to a function, then it must have a type
+acceptable to that function.</p>
+<p>The compiler can do minimal type checking on the generalized types: if
+the set of constraints on the generalized type can not be satisfied,
+the program is in error.
+For example, if we see both <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">+</span> <span class="pre">&quot;b&quot;</span></code>, where <code class="docutils literal notranslate"><span class="pre">a</span></code> is a
+variable of the same generalized type, the compiler should issue an
+error at that point.</p>
+<p>When the compiler needs to instantiate a generalized type or function,
+it compares the concrete type with the constraints.
+If some constraint fails, the instantiation is invalid.
+The compiler can give an appropriate error (<code class="docutils literal notranslate"><span class="pre">&quot;cannot</span> <span class="pre">use</span> <span class="pre">complex64</span> <span class="pre">with</span> <span class="pre">SortNumericSlice</span> <span class="pre">because</span> <span class="pre">complex64</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">support</span> <span class="pre">&lt;&quot;</span></code>).
+The ability to give good clear errors for such a case is important, to
+avoid the C++ cascading error problem.</p>
+<p>These constraints are used to build a set of methods required for the
+generalized type.
+When compiling a generalized function, each local variable of the
+generalized type (or any type derived from the generalized type) is
+changed to an interface type.
+Each use of the generalized type is changed to call a method on the
+generalized type.
+Each constraint becomes a method.
+Calling a generalized function then means passing in an interface type
+whose methods are built from the constraints.</p>
+<p>For example, start with the Sum function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">s</span> <span class="n">T</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+		<span class="n">s</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This get rewritten along the lines of</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">T</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">plus</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">S</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="nb">len</span><span class="p">()</span> <span class="nb">int</span>
+	<span class="n">index</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="n">T</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">GenSum</span><span class="p">(</span><span class="n">a</span> <span class="n">S</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">s</span> <span class="n">T</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="n">len</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">v</span> <span class="o">:=</span> <span class="n">a</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">plus</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This code is compiled as usual.
+In addition, the compiler generates instantiation templates.
+These could perhaps be plain text that can be included in the export
+data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">realT</span> <span class="o">&lt;</span><span class="n">instantiation</span> <span class="n">of</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">realT</span><span class="p">)</span> <span class="n">plus</span><span class="p">(</span><span class="n">a</span> <span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="p">(</span><span class="n">realT</span><span class="p">)</span> <span class="o">//</span> <span class="k">return</span> <span class="n">converts</span> <span class="n">realT</span> <span class="n">to</span> <span class="n">T</span>
+<span class="p">}</span>
+<span class="nb">type</span> <span class="n">realS</span> <span class="p">[]</span><span class="n">realT</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">realS</span><span class="p">)</span> <span class="nb">len</span><span class="p">()</span> <span class="nb">int</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">realS</span><span class="p">)</span> <span class="n">index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">//</span> <span class="k">return</span> <span class="n">converts</span> <span class="n">realT</span> <span class="n">to</span> <span class="n">T</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When instantiating <code class="docutils literal notranslate"><span class="pre">Sum</span></code> for a new type, the compiler builds and
+compiles this code for the new type and calls the compiled version of
+<code class="docutils literal notranslate"><span class="pre">Sum</span></code> with the interface value for the generated interface.
+As shown above, the methods automatically use type assertions and
+interface conversion as needed.
+The actual call to <code class="docutils literal notranslate"><span class="pre">Sum(s)</span></code> will be rewritten as <code class="docutils literal notranslate"><span class="pre">GenSum(s).(realT)</span></code>.
+The type assertions and interface conversions are checked at compile
+time and will always succeed.</p>
+<p>Note that another way to say whether a concrete type may be used to
+instantiate a generalized function is to ask whether the instantiation
+templates may be instantiated and compiled without error.</p>
+<p>More complex cases may of course involve multiple generalized types in
+a single expression such as a function call.
+The compiler can arbitrarily pick one value to carry the methods, and
+the method implementation will use type assertions to implement the
+call.
+This works because all the concrete types are known at instantiation
+time.</p>
+<p>For cases like <code class="docutils literal notranslate"><span class="pre">make</span></code> where the compiler has no value on which to invoke
+a method, there are two cases.
+For a generalized function, the compiler can write the function as a
+closure.
+The actual instantiation will pass a special object in the closure
+value.
+See the use of make in the next example.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">,</span> <span class="n">T3</span><span class="p">]</span> <span class="n">func</span> <span class="n">Combine</span><span class="p">(</span><span class="n">a</span> <span class="p">[]</span><span class="n">T1</span><span class="p">,</span> <span class="n">b</span> <span class="p">[]</span><span class="n">T2</span><span class="p">,</span> <span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">)</span> <span class="n">T3</span><span class="p">)</span> <span class="p">[]</span><span class="n">T3</span> <span class="p">{</span>
+	<span class="n">r</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([]</span><span class="n">T3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+	<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">r</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This will be rewritten as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>type S1 interface {
+	len() int
+	index(int) T1
+}
+type S2 interface {
+	index(int) T2
+}
+type S3 interface {
+	set(int, T3)
+}
+type F interface {
+	call(T1, T2) T3
+}
+type T1 interface{}
+type T2 interface{}
+type T3 interface{}
+type Maker interface {
+	make(int) S3
+}
+
+func GenCombine(a S1, b S2, f F) S3 {
+	// The maker var has type Maker and is accessed via the
+	// function’s closure.
+	r = maker.make(a.len())
+	for i := 0; i &lt; a.len(); i++ {
+		v := a.index(i)
+		r.set(i, f.call(v, b.index(i))
+	}
+	return r
+}
+</pre></div>
+</div>
+<p>The associated instantiation templates will be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">realT1</span> <span class="o">&lt;</span><span class="n">instantiation</span> <span class="n">of</span> <span class="n">T1</span><span class="o">&gt;</span>
+<span class="nb">type</span> <span class="n">realT2</span> <span class="o">&lt;</span><span class="n">instantiation</span> <span class="n">of</span> <span class="n">T2</span><span class="o">&gt;</span>
+<span class="nb">type</span> <span class="n">realT3</span> <span class="o">&lt;</span><span class="n">instantiation</span> <span class="n">of</span> <span class="n">T3</span><span class="o">&gt;</span>
+<span class="nb">type</span> <span class="n">realS1</span> <span class="p">[]</span><span class="n">realT1</span>
+<span class="nb">type</span> <span class="n">realS2</span> <span class="p">[]</span><span class="n">realT2</span>
+<span class="nb">type</span> <span class="n">realS3</span> <span class="p">[]</span><span class="n">realT3</span>
+<span class="nb">type</span> <span class="n">realF</span> <span class="n">func</span><span class="p">(</span><span class="n">realT1</span><span class="p">,</span> <span class="n">realT2</span><span class="p">)</span> <span class="n">realT3</span>
+<span class="nb">type</span> <span class="n">realMaker</span> <span class="n">struct</span><span class="p">{}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s1</span> <span class="n">realS1</span><span class="p">)</span> <span class="nb">len</span><span class="p">()</span> <span class="nb">int</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s1</span> <span class="n">realS1</span><span class="p">)</span> <span class="n">index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T1</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">s1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s2</span> <span class="n">realS2</span><span class="p">)</span> <span class="n">index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T2</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">s2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s3</span> <span class="n">realS3</span><span class="p">)</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">,</span> <span class="n">t3</span> <span class="n">T3</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">s3</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t3</span><span class="o">.</span><span class="p">(</span><span class="n">realT3</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">f</span> <span class="n">realF</span><span class="p">)</span> <span class="n">call</span><span class="p">(</span><span class="n">t1</span> <span class="n">T1</span><span class="p">,</span> <span class="n">t2</span> <span class="n">T2</span><span class="p">)</span> <span class="n">T3</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="p">(</span><span class="n">realT1</span><span class="p">),</span> <span class="n">t2</span><span class="o">.</span><span class="p">(</span><span class="n">realT2</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">m</span> <span class="n">realMaker</span><span class="p">)</span> <span class="n">make</span><span class="p">(</span><span class="n">l</span> <span class="nb">int</span><span class="p">)</span> <span class="n">S3</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">make</span><span class="p">(</span><span class="n">realT3</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A reference to <code class="docutils literal notranslate"><span class="pre">Combine</span></code> will then be built into a closure value with
+<code class="docutils literal notranslate"><span class="pre">GenCombine</span></code> as the function and a value of the <code class="docutils literal notranslate"><span class="pre">Maker</span></code> interface in the
+closure.
+The dynamic type of the <code class="docutils literal notranslate"><span class="pre">Maker</span></code> value will be <code class="docutils literal notranslate"><span class="pre">realMaker</span></code>.
+(If a function like <code class="docutils literal notranslate"><span class="pre">make</span></code> is invoked in a method on a generalized type,
+we can’t use a closure, so we instead add an appropriate hidden method
+on the generalized type.)</p>
+<p>With this implementation approach we are taking interface types in a
+different direction.
+The interface type in Go lets the programmer define methods and then
+implement them for different types.
+With generalized types the programmer describes how the interface is
+used, and the compiler uses that description to define the methods and
+their implementation.</p>
+<p>Another example.
+When a generalized type has methods, those methods need to be
+instantiated as calls to the generalized methods with appropriate type
+assertions and conversions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="p">(</span>
+<span class="nb">type</span> <span class="n">Vector</span> <span class="p">[]</span><span class="n">T</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">)</span> <span class="n">Len</span><span class="p">()</span> <span class="nb">int</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">Vector</span><span class="p">)</span> <span class="n">Index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span> <span class="k">return</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">}</span>
+<span class="p">)</span> <span class="o">//</span> <span class="n">Ends</span> <span class="n">gen</span><span class="o">.</span>
+
+<span class="nb">type</span> <span class="n">Readers</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">Len</span><span class="p">()</span> <span class="nb">int</span>
+	<span class="n">Index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">io</span><span class="o">.</span><span class="n">Reader</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">VectorReader</span> <span class="n">Vector</span><span class="p">[</span><span class="n">io</span><span class="o">.</span><span class="n">Reader</span><span class="p">]</span>
+<span class="n">var</span> <span class="n">_</span> <span class="o">=</span> <span class="n">make</span><span class="p">(</span><span class="n">VectorReader</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">Readers</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The last statement asserts that <code class="docutils literal notranslate"><span class="pre">VectorReader[io.Reader]</span></code> supports the
+Readers interface, as of course it should.
+The <code class="docutils literal notranslate"><span class="pre">Vector</span></code> type implementation will look like this.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">T</span> <span class="n">interface</span><span class="p">{}</span>
+<span class="nb">type</span> <span class="n">S</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="nb">len</span><span class="p">()</span> <span class="nb">int</span>
+	<span class="n">index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T</span>
+<span class="p">}</span>
+<span class="nb">type</span> <span class="n">V</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">S</span>
+<span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">V</span><span class="p">)</span> <span class="n">Len</span><span class="p">()</span> <span class="nb">int</span> <span class="p">{</span> <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">v</span> <span class="n">V</span><span class="p">)</span> <span class="n">Index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span> <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>The instantiation templates will be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">realT</span> <span class="o">&lt;</span><span class="n">instantiation</span> <span class="n">of</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="nb">type</span> <span class="n">realS</span> <span class="p">[]</span><span class="n">realT</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">realS</span><span class="p">)</span> <span class="nb">len</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">realS</span><span class="p">)</span> <span class="n">index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span> <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>When this is instantiated with <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code>, the compiler will generate
+additional methods.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">realS</span><span class="p">)</span> <span class="n">Len</span><span class="p">()</span> <span class="nb">int</span> <span class="p">{</span> <span class="k">return</span> <span class="n">V</span><span class="p">{</span><span class="n">s</span><span class="p">}</span><span class="o">.</span><span class="n">Len</span><span class="p">()</span> <span class="p">}</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">realS</span><span class="p">)</span> <span class="n">Index</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="n">io</span><span class="o">.</span><span class="n">Reader</span> <span class="p">{</span>
+<span class="k">return</span> <span class="n">V</span><span class="p">{</span><span class="n">s</span><span class="p">}</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">Reader</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>With an example this simple this seems like a pointless runaround.
+In general, though, the idea is that the bulk of the method
+implementation will be in the <code class="docutils literal notranslate"><span class="pre">V</span></code> methods, which are compiled once.
+The <code class="docutils literal notranslate"><span class="pre">realS</span></code> <code class="docutils literal notranslate"><span class="pre">len</span></code> and <code class="docutils literal notranslate"><span class="pre">index</span></code> methods support those <code class="docutils literal notranslate"><span class="pre">V</span></code> methods.
+The <code class="docutils literal notranslate"><span class="pre">realS</span></code> <code class="docutils literal notranslate"><span class="pre">Len</span></code> and <code class="docutils literal notranslate"><span class="pre">Index</span></code> methods simply call the <code class="docutils literal notranslate"><span class="pre">V</span></code> methods with
+appropriate type conversions.
+That ensures that the <code class="docutils literal notranslate"><span class="pre">Index</span></code> method returns <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code> rather than
+<code class="docutils literal notranslate"><span class="pre">T</span></code> aka <code class="docutils literal notranslate"><span class="pre">interface{}</span></code>, so that <code class="docutils literal notranslate"><span class="pre">realS</span></code> satisfies the <code class="docutils literal notranslate"><span class="pre">Readers</span></code>
+interface in the original code.</p>
+<p>Now an example with a variadic method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>gen [T] func F(v T) {
+	v.M(1)
+	v.M(“a”, “b”)
+}
+</pre></div>
+</div>
+<p>This looks odd, but it’s valid for a type with a method
+<code class="docutils literal notranslate"><span class="pre">M(...interface{})</span></code>.  This is rewritten as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>type T interface {
+	m(...interface{})	// Not the same as T’s method M.
+}
+func GF(v T) {
+	v.m(1)
+	v.m(“a”, “b”)
+}
+</pre></div>
+</div>
+<p>The instantiation templates will be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">realT</span> <span class="o">&lt;</span><span class="n">instantiation</span> <span class="n">of</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">t</span> <span class="n">realT</span><span class="p">)</span> <span class="n">m</span><span class="p">(</span><span class="n">a</span> <span class="o">...</span><span class="n">interface</span><span class="p">{})</span> <span class="p">{</span>
+	<span class="n">t</span><span class="o">.</span><span class="n">M</span><span class="p">(</span><span class="n">a</span><span class="o">...</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The basic rule is that if the same method is called with different
+numbers of arguments, it must be instantiated with a variadic method.
+If it is called with the same number of arguments with different
+types, it must be instantiated with interface{} arguments.
+In the general case the instantiation template may need to convert the
+argument types to the types that the real type’s method accepts.</p>
+<p>Because generalized types are implemented by interface types, there is
+no way to write generalized code that detects whether it was
+instantiated with an interface type.
+If the code can assume that a generalized function was instantiated by
+a non-interface type, then it can detect that type using a type switch
+or type assertion.
+If it is important to be able to detect whether a generalized function
+was instantiated with an interface type, some new mechanism will be
+required.</p>
+<p>In the above examples I’ve always described a rewritten implementation
+and instantiation templates.
+There is of course another implementation method that will be
+appropriate for simple generalized functions: inline the function.
+That would most likely be the implementation method of choice for
+something like a generalized <code class="docutils literal notranslate"><span class="pre">Max</span></code> function.
+I think this could be handled as a minor variant on traditional
+function inlinining.</p>
+<p>In some cases the compiler can determine that only a specific number
+of concrete types are permitted.
+For example, the <code class="docutils literal notranslate"><span class="pre">Sum</span></code> function can only be used with types that
+support that binary <code class="docutils literal notranslate"><span class="pre">+</span></code> operator, which means a numeric or string
+type.
+In that case the compiler could choose to instantiate and compile the
+function for each possible type.
+Uses of the generalized function would then call the appropriate
+instantiation.
+This would be more work when compiling the generalized function, but
+not much more work.
+It would mean no extra work for uses of the generalized function.</p>
+</div>
+<div class="section" id="spec-changes">
+<h2>Spec changes<a class="headerlink" href="#spec-changes" title="Permalink to this headline">¶</a></h2>
+<p>I don’t think many spec changes are needed other than a new section on
+generalized types.
+The syntax of generalized types would have to be described.
+The implementation details do not need to be in the spec.
+A generalized function instantiated with concrete types is valid if
+rewriting the function with the concrete types would produce valid Go
+code.</p>
+<p>There is a minor exception to that approach: we would want to permit
+type assertions and type switches for generalized types as well as for
+interface types, even if the concrete type is not an interface type.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This approach introduces a new keyword, <code class="docutils literal notranslate"><span class="pre">gen</span></code>.
+However, this keyword is only permitted in top-level declarations.
+That means that we could treat it as a new syntactic category, a
+top-level keyword that is only recognized as such when parsing a
+<code class="docutils literal notranslate"><span class="pre">TopLevelDecl</span></code>.
+That would mean that any code that currently compiles with Go 1 would
+continue to compile with this new proposal, as any existing use of gen
+at top-level is invalid.</p>
+<p>We could also maintain Go 1 compatibility by using the existing <code class="docutils literal notranslate"><span class="pre">type</span></code>
+keyword instead of <code class="docutils literal notranslate"><span class="pre">gen</span></code>.
+The square brackets used around the generalized type names would make
+this unambiguous.</p>
+<p>However, syntactic compatibility is only part of the story.
+If this proposal is adopted there will be a push toward rewriting
+certain parts of the standard library to use generalized types.
+For example, people will want to change the <code class="docutils literal notranslate"><span class="pre">container</span></code> and <code class="docutils literal notranslate"><span class="pre">sort</span></code>
+packages.
+A farther reaching change will be changing <code class="docutils literal notranslate"><span class="pre">io.Writer</span></code> to take a
+generalized type that is either <code class="docutils literal notranslate"><span class="pre">[]byte</span></code> or <code class="docutils literal notranslate"><span class="pre">string</span></code>, and work to push
+that through the <code class="docutils literal notranslate"><span class="pre">net</span></code> and <code class="docutils literal notranslate"><span class="pre">os</span></code> packages down to the <code class="docutils literal notranslate"><span class="pre">syscall</span></code> package.
+I do not know whether this work could be done while maintaining Go 1
+compatibility.
+I do not even know if this work should be done, although I’m sure that
+people will want it.</p>
+</div>
+<div class="section" id="comparison-to-other-languages">
+<h2>Comparison to other languages<a class="headerlink" href="#comparison-to-other-languages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="c">
+<h3>C<a class="headerlink" href="#c" title="Permalink to this headline">¶</a></h3>
+<p>Generalized types in C are implemented via preprocessor macros.
+The system described here can be seen as a macro system.
+However, unlike in C, each generalized function must be complete and
+compilable by itself.
+The result is in some ways less powerful than C preprocessor macros,
+but does not suffer from problems of namespace conflict and does not
+require a completely separate language (the preprocessor language) for
+implementation.</p>
+</div>
+<div class="section" id="id1">
+<h3>C++<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The system described here can be seen as a subset of C++ templates.
+Go’s very simple name lookup rules mean that there is none of the
+confusion of dependent vs. non-dependent names.
+Go’s lack of function overloading removes any concern over just which
+instance of a name is being used.
+Together these permit the explicit determination of constraints when
+compiling a generalized function, whereas in C++ where it’s nearly
+impossible to determine whether a type may be used to instantiate a
+template without effectively compiling the instantiated template and
+looking for errors (or using concepts, proposed for later addition to
+the language).</p>
+<p>C++ template metaprogramming uses template specialization, non-type
+template parameters, variadic templates, and SFINAE to implement a
+Turing complete language accessible at compile time.
+This is very powerful but at the same time has serious drawbacks: the
+template metaprogramming language has a baroque syntax, no variables
+or non-recursive loops, and is in general completely different from
+C++ itself.
+The system described here does not support anything similar to
+template metaprogramming for Go.
+I believe this is a feature.
+I think the right way to implement such features in Go would be to add
+support in the go tool for writing Go code to generate Go code, most
+likely using the go/ast package and friends, which is in turn compiled
+into the final program.
+This would mean that the metaprogramming language in Go is itself Go.</p>
+</div>
+<div class="section" id="java">
+<h3>Java<a class="headerlink" href="#java" title="Permalink to this headline">¶</a></h3>
+<p>I believe this system is slightly more powerful than Java generics, in
+that it permits direct operations on basic types without requiring
+explicit methods.
+This system also does not use type erasure.
+Although the implementation described above does insert type
+assertions in various places, all the types are fully checked at
+compile time and those type assertions will always succeed.</p>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>This proposal will not be adopted.
+It has significant flaws.</p>
+<p>The factored <code class="docutils literal notranslate"><span class="pre">gen</span></code> syntax is convenient but looks awkward on the page.
+You wind up with a trailing close parenthesis after a set of function
+definitions.
+Indenting all the function definitions looks silly.</p>
+<p>The description of constraints in the implementation section is
+imprecise.
+It’s hard to know how well it would work in practice.
+Can the proposed implementation really handle the possible cases?</p>
+<p>A type switch that uses cases with generalized types may wind up with
+identical types in multiple different cases.
+We need to clearly explain which case is chosen.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

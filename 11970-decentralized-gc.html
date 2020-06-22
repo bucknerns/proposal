@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Decentralized GC coordination &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: testing: programmatic sub-test and sub-benchmark support" href="12166-subtests.html" />
+    <link rel="prev" title="Proposal: Security Policy for Go" href="11502-securitypolicy.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Decentralized GC coordination</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Decentralized GC coordination</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/11970-decentralized-gc.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-decentralized-gc-coordination">
+<h1>Proposal: Decentralized GC coordination<a class="headerlink" href="#proposal-decentralized-gc-coordination" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements</p>
+<p>Last updated: 2015-10-25</p>
+<p>Discussion at https://golang.org/issue/11970.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>The Go 1.5 GC is structured as a straight-line coordinator goroutine
+plus several helper goroutines. All state transitions go through the
+coordinator. This makes state transitions dependent on the scheduler,
+which can delay transitions, in turn extending the length of the GC
+cycle, blocking allocation, and occasionally leading to long delays.</p>
+<p>We propose to replace this straight-line coordinator with an explicit
+state machine where state transitions can be performed by any
+goroutine.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>As of Go 1.5, all GC phase changes are managed through straight-line
+code in the <code class="docutils literal notranslate"><span class="pre">runtime.gc</span></code> function, which runs on a dedicated GC
+goroutine. However, much of the real work is done in other goroutines.
+These other goroutines generally detect when it is time for a phase
+change and must coordinate with the main GC goroutine to effect this
+phase change. This coordination delays phase changes and opens windows
+where, for example, the mutator can allocate uncontrolled, or nothing
+can be accomplished because everything is waiting on the coordinator
+to wake up. This has led to bugs like
+<a class="reference external" href="https://golang.org/issue/11677">#11677</a> and
+<a class="reference external" href="https://golang.org/issue/11911">#11911</a>. We’ve tried to mitigate this
+by handing control directly to the coordinator goroutine when we wake
+it up, but the scheduler isn’t designed for this sort of explicit
+co-routine scheduling, so this doesn’t always work and it’s more
+likely to fall apart under stress than an explicit design.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We will restructure the garbage collector as an explicit state machine
+where any goroutine can effect a state transition. This is primarily
+an implementation change, not an algorithm change: for the most part,
+these states and the transitions between them closely follow the
+current GC algorithm.</p>
+<p>Each state is global and determines the GC-related behavior of all
+goroutines. Each state also has an exit condition. State transitions
+are performed immediately by whatever goroutine detects that the
+current state’s exit condition is satisfied. Multiple goroutines may
+detect an exit condition simultaneously, in which case none of these
+goroutines may progress until the transition has been performed. For
+many transitions, this is necessary to prevent runaway heap growth.
+Each transition has a specific set of steps to prepare for the next
+state and the system enters the next state as soon as those steps are
+completed. Furthermore, each transition is designed to make the exit
+condition that triggers that transition false so that the transition
+happens once and only once per cycle.</p>
+<p>In principle, all of the goroutines that detect an exit condition
+could assist in performing the transition. However, we take a simpler
+approach where all transitions are protected by a global <em>transition
+lock</em> and transitions are designed to perform very little non-STW
+work. When a goroutine detects the exit condition, it acquires the
+transition lock, re-checks if the exit condition is still true and, if
+not, simply releases the lock and continues executing in whatever the
+new state is. It is necessary to re-check the condition, rather than
+simply check the current state, in case the goroutine is blocked
+though an entire GC cycle.</p>
+<p>The sequence of states and transitions is as follows:</p>
+<ul>
+<li><p><strong>State: Sweep/Off</strong> This is the initial state of the system. No
+scanning, marking, or assisting is performed. Mutators perform
+proportional sweeping on allocation and background sweeping performs
+additional sweeping on idle Ps.</p>
+<p>In this state, after allocating, a mutator checks if the heap size
+has exceeded the GC trigger size and, if so, it performs concurrent
+sweep termination by sweeping any remaining unswept spans (there
+shouldn’t be any for a heap-triggered transition). Once there are no
+unswept spans, it performs the <em>sweep termination</em> transition.
+Periodic (sysmon-triggered) GC and <code class="docutils literal notranslate"><span class="pre">runtime.GC</span></code> perform these same
+steps regardless of the heap size.</p>
+</li>
+<li><p><strong>Transition: Sweep termination and initialization</strong> Acquire
+<code class="docutils literal notranslate"><span class="pre">worldsema</span></code>. Start background workers. Stop the world. Perform sweep
+termination. Clear sync pools. Initialize GC state and statistics.
+Enable write barriers, assists, and background workers. If this is a
+concurrent GC, configure root marking, start the world, and enter
+<em>concurrent mark</em>. If this is a STW GC (<code class="docutils literal notranslate"><span class="pre">runtime.GC</span></code>), continue with
+the <em>mark termination</em> transition.</p></li>
+<li><p><strong>State: Concurrent mark 1</strong> In this state, background workers
+perform concurrent scanning and marking and mutators perform
+assists.</p>
+<p>Background workers initially participate in root marking and then
+switch to draining heap mark work.</p>
+<p>Mutators assist with heap marking work in response to allocation
+according to the assist ratio established by the GC controller.</p>
+<p>In this state, the system keeps an atomic counter of the number of
+active jobs, which includes the number of background workers and
+assists with checked out work buffers, plus the number of workers in
+root marking jobs. If this number drops to zero and
+<code class="docutils literal notranslate"><span class="pre">gcBlackenPromptly</span></code> is unset, the worker or assist that dropped it
+to zero transitions to <em>concurrent mark 2</em>. Note that it’s important
+that this transition not happen until all root mark jobs are done,
+which is why the counter includes this.</p>
+<p>Note: Assists could participate in root marking jobs just like
+background workers do and accumulate assist credit for this scanning
+work. This would particularly help at the beginning of the cycle
+when there may be little background credit or queued heap scan work.
+This would also help with load balancing. In this case, we would
+want to update <code class="docutils literal notranslate"><span class="pre">scanblock</span></code> to track scan credit and modify the scan
+work estimate to include roots.</p>
+</li>
+<li><p><strong>Transition: Disable workbuf caching</strong> Disable caching of workbufs
+by setting <code class="docutils literal notranslate"><span class="pre">gcBlackenPromptly</span></code>. Queue root mark jobs for globals.</p>
+<p>Note: It may also make sense to queue root mark jobs for stacks.
+This would require making it possible to re-scan a stack (and extend
+existing stack barriers).</p>
+</li>
+<li><p><strong>State: Concurrent mark 2</strong> The goroutine that performed the flush
+transition flushes all workbuf caches using <code class="docutils literal notranslate"><span class="pre">forEachP</span></code>. This counts
+as an active job to prevent the next transition from happening
+before this is done.</p>
+<p>Otherwise, this state is identical to <em>concurrent mark 1</em>, except
+that workbuf caches are disabled.</p>
+<p>Because workbuf caches are disabled, if the active workbuf count
+drops to zero, there is no more work. When this happens and
+<code class="docutils literal notranslate"><span class="pre">gcBlackenPromptly</span></code> is set, the worker or assist that dropped it the
+count to zero performs the <em>mark termination</em> transition.</p>
+</li>
+<li><p><strong>Transition: Mark termination</strong> Stop the world. Unblock all parked
+assists. Perform <code class="docutils literal notranslate"><span class="pre">gcMark</span></code>, checkmark (optionally), <code class="docutils literal notranslate"><span class="pre">gcSweep</span></code>, and
+re-mark (optionally). Start the world. Release <code class="docutils literal notranslate"><span class="pre">worldsema</span></code>. Print GC
+stats. Free stacks.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">gcMark</span></code> itself runs on all Ps, so this process is
+parallel even though it happens during a transition.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>There are various alternatives to this approach. The most obvious is
+to simply continue with what we do now: a central GC coordinator with
+hacks to deal with delays in various transitions. This is working
+surprisingly well right now, but only as a result of a good deal of
+engineering effort (primarily the cascade of fixes on
+<a class="reference external" href="https://github.com/golang/go/issues/11677">#11677</a>) and its fragility
+makes it difficult to make further changes to the garbage collector.</p>
+<p>Another approach would be make the scheduler treat the GC coordinator
+as a high priority goroutine and always schedule it immediately when
+it becomes runnable. This would consolidate several of our current
+state transition “hacks”, which attempt to help out the scheduler.
+However, in a concurrent setting it’s important to not only run the
+coordinator as soon as possible to perform a state transition, but
+also to disallow uncontrolled allocation on other threads while this
+transition is being performed. Scheduler hacks don’t address the
+latter problem.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This change is internal to the Go runtime. It does not change any
+user-facing Go APIs, and hence it satisfies Go 1 compatibility.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>This change will be implemented by Austin Clements, hopefully in the
+Go 1.6 development cycle. Much of the design has already been
+prototyped.</p>
+<p>Many of the prerequisite changes have already been completed. In
+particular, we’ve already moved most of the non-STW work out of the GC
+coordinator (<a class="reference external" href="https://go-review.googlesource.com/#/c/16059/">CL 16059</a>
+and <a class="reference external" href="https://go-review.googlesource.com/#/c/16070/">CL 16070</a>), made
+root marking jobs smaller
+(<a class="reference external" href="https://go-review.googlesource.com/#/c/16043">CL 16043</a>), and
+improved the synchronization of blocked assists
+(<a class="reference external" href="https://go-review.googlesource.com/#/c/15890">CL 15890</a>).</p>
+<p>The GC coordinator will be converted to a decentralized state machine
+incrementally, one state/transition at a time where possible. At the
+end of this, there will be no work left in the GC coordinator and it
+will be deleted.</p>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<p>There are devils in the details. One known devil in the current
+garbage collector that will affect this design in different ways is
+the complex constraints on scheduling within the garbage collector
+(and the runtime in general). For example, background workers are
+currently not allowed to block, which means they can’t stop the world
+to perform mark termination. These constraints were designed for the
+current coordinator-based system and we will need to find ways of
+resolving them in the decentralized design.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="12166-subtests.html" class="btn btn-neutral float-right" title="Proposal: testing: programmatic sub-test and sub-benchmark support" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="11502-securitypolicy.html" class="btn btn-neutral float-left" title="Proposal: Security Policy for Go" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Permit embedding of interfaces with overlapping method sets &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: [Title]" href="TEMPLATE.html" />
+    <link rel="prev" title="Proposal: Multi-dimensional slices" href="6282-table-data.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Permit embedding of interfaces with overlapping method sets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discussion">Discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#apendix-a-typical-example">Apendix: A typical example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Permit embedding of interfaces with overlapping method sets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/6977-overlapping-interfaces.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-permit-embedding-of-interfaces-with-overlapping-method-sets">
+<h1>Proposal: Permit embedding of interfaces with overlapping method sets<a class="headerlink" href="#proposal-permit-embedding-of-interfaces-with-overlapping-method-sets" title="Permalink to this headline">¶</a></h1>
+<p>Author: Robert Griesemer</p>
+<p>Last update: 2019-10-16</p>
+<p>Discussion at <a class="reference external" href="https://golang.org/issue/6977">golang.org/issue/6977</a>.</p>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>We propose to change the language spec such that embedded interfaces may have overlapping method sets.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>An interface specifies a <a class="reference external" href="https://golang.org/ref/spec#Method_sets">method set</a>. One constraint on method sets is that when specifying an interface, each interface method must have a <a class="reference external" href="https://golang.org/ref/spec#Uniqueness_of_identifiers">unique</a> non-<a class="reference external" href="https://golang.org/ref/spec#Blank_identifier">blank</a> name.</p>
+<p>For methods that are <em>explicitly</em> declared in the interface, this constraint has served us well. There is little reason to explicitly declare the same method more than once in an interface; doing so is at best confusing and likely a typo or copy-paste bug.</p>
+<p>But it is easy for multiple embedded interfaces to declare the same method. For example, we might want to (but cannot today) write:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span>	<span class="kd">type</span> <span class="nx">ReadWriteCloser</span> <span class="kd">interface</span> <span class="p">{</span>
+		<span class="nx">io</span><span class="p">.</span><span class="nx">ReadCloser</span>
+		<span class="nx">io</span><span class="p">.</span><span class="nx">WriteCloser</span>
+	<span class="p">}</span>
+</pre></div>
+</div>
+<p>This phrasing is invalid Go because it adds the same <code class="docutils literal notranslate"><span class="pre">Close</span></code> method to the interface twice, breaking the uniqueness constraint.</p>
+<p>Definitions in which embedding breaks the uniqueness constraint arise naturally for various reasons, including embedded interfaces not under programmer control, diamond-shaped interface embeddings, and other valid design choices; see the discussion below and <a class="reference external" href="http://golang.org/issue/6977">issue #6977</a> for examples. In general it may not be possible or reasonable to ensure that embedded interfaces do not have overlapping method sets. Today, the only recourse in this situation is to fall back to spelling out the interfaces one method at a time, creating duplication and potential for drift between definitions.</p>
+<p>Allowing methods contributed by embedded interfaces to duplicate other methods in the interface would make these natural definitions valid Go, with no runtime implication and only trivial compiler changes.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>Currently, in the section on <a class="reference external" href="https://golang.org/ref/spec#Interface_types">Interface types</a>, the language specification states:</p>
+<blockquote>
+<div><p>An interface <code class="docutils literal notranslate"><span class="pre">T</span></code> may use a (possibly qualified) interface type name <code class="docutils literal notranslate"><span class="pre">E</span></code> in place of a method specification. This is called <em>embedding</em> interface <code class="docutils literal notranslate"><span class="pre">E</span></code> in <code class="docutils literal notranslate"><span class="pre">T</span></code>; it adds all (exported and non-exported) methods of <code class="docutils literal notranslate"><span class="pre">E</span></code> to the interface <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
+</div></blockquote>
+<p>We propose to change this to:</p>
+<blockquote>
+<div><p>An interface <code class="docutils literal notranslate"><span class="pre">T</span></code> may use a (possibly qualified) interface type name <code class="docutils literal notranslate"><span class="pre">E</span></code> in place of a method specification. This is called <em>embedding</em> interface <code class="docutils literal notranslate"><span class="pre">E</span></code> in <code class="docutils literal notranslate"><span class="pre">T</span></code>. The method set of  <code class="docutils literal notranslate"><span class="pre">T</span></code> is the <em>union</em> of the method sets of <code class="docutils literal notranslate"><span class="pre">T</span></code>’s explicitly declared methods and of <code class="docutils literal notranslate"><span class="pre">T</span></code>’s embedded interfaces.</p>
+</div></blockquote>
+<p>And to add the following paragraph:</p>
+<blockquote>
+<div><p>A <em>union</em> of method sets contains the (exported and non-exported) methods of each method set exactly once, and methods with the same names must have identical signatures.</p>
+</div></blockquote>
+<p>Alternatively, this new paragraph could be added to the section on <a class="reference external" href="https://golang.org/ref/spec#Method_sets">Method sets</a>.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>As before, it will not be permitted to <em>explicitly</em> declare the same method multiple times:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">m</span><span class="p">()</span>
+	<span class="nx">m</span><span class="p">()</span>  <span class="c1">// invalid; m was already explicitly declared</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The current spec permits multiple embeddings of an <em>empty</em> interface:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">E</span> <span class="kd">interface</span> <span class="p">{}</span>
+<span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nx">E</span><span class="p">;</span> <span class="nx">E</span> <span class="p">}</span>  <span class="c1">// always been valid</span>
+</pre></div>
+</div>
+<p>With this proposal, multiple embeddings of the same interface is generalized to <em>any</em> (not just the empty) interface:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">E</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nx">m</span><span class="p">()</span> <span class="p">}</span>
+<span class="kd">type</span> <span class="nx">I</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nx">E</span><span class="p">;</span> <span class="nx">E</span> <span class="p">}</span>  <span class="c1">// becomes valid with this proposal</span>
+</pre></div>
+</div>
+<p>If different embedded interfaces provide a method with the same name, their signatures must match, otherwise the embedding interface is invalid:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">E1</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nx">m</span><span class="p">(</span><span class="nx">x</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">}</span>
+<span class="kd">type</span> <span class="nx">E2</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nx">m</span><span class="p">(</span><span class="nx">x</span> <span class="kt">float32</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">}</span>
+<span class="kd">type</span> <span class="nx">I</span>  <span class="kd">interface</span> <span class="p">{</span> <span class="nx">E1</span><span class="p">;</span> <span class="nx">E2</span> <span class="p">}</span>  <span class="c1">// invalid since E1.m and E2.m have the same name but different signatures</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="discussion">
+<h2>Discussion<a class="headerlink" href="#discussion" title="Permalink to this headline">¶</a></h2>
+<p>A more restricted approach might disallow embedded interfaces from overlapping with the method set defined by the explicitly declared methods of the embedding interface since it is always possible to not declare those “extra” methods. Or in other words, one can always remove explicitly declared methods if they are added via an embedded interface. We believe that would make this language change less robust. For example, consider a hypothetical database API for holding personnel data. A person’s record might be accessible through an interface:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Person</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">Name</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nx">Age</span><span class="p">()</span> <span class="kt">int</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A client might have a more specific implementation storing employees, which are also Persons:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span>type Employee interface {
+	Person
+	Level() int
+	…
+	String() string
+}
+</pre></div>
+</div>
+<p>An Employee happens to have a <code class="docutils literal notranslate"><span class="pre">String</span></code> method to ease debugging. If the underlying DB API changes and somebody adds a <code class="docutils literal notranslate"><span class="pre">String</span></code> method to Person, the Employee interface would become invalid, because now <code class="docutils literal notranslate"><span class="pre">String</span></code> would be a duplicated method in <code class="docutils literal notranslate"><span class="pre">Employee</span></code>. To make it work again, one would have to remove the <code class="docutils literal notranslate"><span class="pre">String</span></code> method from the <code class="docutils literal notranslate"><span class="pre">Employee</span></code> interface.</p>
+<p>Changing the language to ignore duplicated methods that arise from embedding enables more graceful code evolution (in this case, <code class="docutils literal notranslate"><span class="pre">Person</span></code> adding a String method without breaking <code class="docutils literal notranslate"><span class="pre">Employee</span></code>).</p>
+<p>Permitting method sets to overlap with the embedding interface is also a bit simpler to describe in the spec, which helps with keeping the added complexity small.</p>
+<p>In summary, we believe that allowing interfaces to have overlapping method sets removes a pain point for many programmers without adding undue complexity to the language and at a minor cost in the implementation.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This is a backward-compatible language change; any valid existing program will remain valid. This proposal simply expands the set of interfaces that may be embedded in another interface.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The implementation requires:</p>
+<ul class="simple">
+<li><p>Adjusting the compiler’s type-checker to allow overlapping embedded interfaces.</p></li>
+<li><p>Adjusting <code class="docutils literal notranslate"><span class="pre">go/types</span></code> analogously.</p></li>
+<li><p>Adjusting the Go spec as outlined earlier.</p></li>
+<li><p>Adjusting gccgo accordingly (type-checker).</p></li>
+<li><p>Testing the changes by adding new tests.</p></li>
+</ul>
+<p>No library changes are required. In particular, reflect only allows listing the methods in an interface; it does not expose information about embedding or other details of the interface definition.</p>
+<p>Robert Griesemer will do the spec and <code class="docutils literal notranslate"><span class="pre">go/types</span></code> changes including additional tests, and (probably) also the <code class="docutils literal notranslate"><span class="pre">cmd/compile</span></code> compiler changes. We aim to have all the changes ready at the start of the <a class="reference external" href="https://golang.org/wiki/Go-Release-Cycle">Go 1.14 cycle</a>, around August 1, 2019.</p>
+<p>Separately, Ian Lance Taylor will look into the gccgo changes, which is released according to a different schedule.</p>
+<p>As noted in our <a class="reference external" href="https://blog.golang.org/go2-here-we-come">“Go 2, here we come!” blog post</a>, the development cycle will serve as a way to collect experience about these new features and feedback from (very) early adopters.</p>
+<p>At the release freeze, November 1, we will revisit this proposed feature and decide whether to include it in Go 1.14.</p>
+<p><strong>Update</strong>: These changes were implemented around the beginning of August 2019. The <a class="reference external" href="https://golang.org/cl/187519"><code class="docutils literal notranslate"><span class="pre">cmd/compile</span></code> compiler changes</a> were done by Matthew Dempsky and turned out to be small. The <a class="reference external" href="https://golang.org/cl/191257"><code class="docutils literal notranslate"><span class="pre">go/types</span></code> changes</a> required a rewrite of the way type checking of interfaces was implemented because the old code was not easily adjustable to the new semantics. That rewrite led to a significant simplification with a code savings of approx. 400 lines. This proposal forced the rewrite, but the proposal was not the reason for the code savings; the rewrite would have been beneficial either way. (Had the rewrite been done before and independently of this proposal, the change required would have been as small as it was for <code class="docutils literal notranslate"><span class="pre">cmd/compile</span></code> since the relevant code in <code class="docutils literal notranslate"><span class="pre">go/types</span></code> and the compiler closely corresponds.)</p>
+</div>
+<div class="section" id="apendix-a-typical-example">
+<h2>Apendix: A typical example<a class="headerlink" href="#apendix-a-typical-example" title="Permalink to this headline">¶</a></h2>
+<p>Below is <a class="reference external" href="https://golang.org/issues/6977#issuecomment-218985935">an example</a> by <a class="reference external" href="https://github.com/hasty">Hasty Granbery</a>; this example is representative for a common situation - diamond shaped embedding graphs - where people run into problems with the status quo. A few more examples can be found in <a class="reference external" href="https://golang.org/issue/6977">issue 6977</a>.</p>
+<p>In this specific scenario, various different database APIs are defined via interfaces to fully hide the implementation and to simplify testing (it’s easy to install a mock implementation in the interface). A typical interface might be:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">user</span>
+
+<span class="kd">type</span> <span class="nx">Database</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">GetAccount</span><span class="p">(</span><span class="nx">accountID</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">Account</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A few other packages may want to be able to fetch accounts under some circumstances, so they require their databases to have all of <code class="docutils literal notranslate"><span class="pre">user.Database</span></code>’s methods:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">device</span>
+
+<span class="kd">type</span> <span class="nx">Database</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">user</span><span class="p">.</span><span class="nx">Database</span>
+    <span class="nx">SaveDevice</span><span class="p">(</span><span class="nx">accountID</span> <span class="kt">uint64</span><span class="p">,</span> <span class="nx">device</span> <span class="nx">model</span><span class="p">.</span><span class="nx">Device</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">wallet</span>
+
+<span class="kd">type</span> <span class="nx">Database</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">user</span><span class="p">.</span><span class="nx">Database</span>
+    <span class="nx">ReadWallet</span><span class="p">(</span><span class="nx">accountID</span> <span class="kt">uint64</span><span class="p">)</span> <span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">Wallet</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally, there is a package that needs both the <code class="docutils literal notranslate"><span class="pre">device</span></code> and <code class="docutils literal notranslate"><span class="pre">wallet</span></code> <code class="docutils literal notranslate"><span class="pre">Database</span></code>:</p>
+<div class="highlight-Go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">shopping</span>
+
+<span class="kd">type</span> <span class="nx">Database</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nx">device</span><span class="p">.</span><span class="nx">Database</span>
+    <span class="nx">wallet</span><span class="p">.</span><span class="nx">Database</span>
+    <span class="nx">Buy</span><span class="p">(</span><span class="nx">accountID</span> <span class="kt">uint64</span><span class="p">,</span> <span class="nx">deviceID</span> <span class="kt">uint64</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Since both <code class="docutils literal notranslate"><span class="pre">device.Database</span></code> and <code class="docutils literal notranslate"><span class="pre">wallet.Database</span></code> have the <code class="docutils literal notranslate"><span class="pre">GetAccount</span></code> method, <code class="docutils literal notranslate"><span class="pre">shopping.Database</span></code> is invalid with the current spec. If this proposal is accepted, this code will become valid.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="TEMPLATE.html" class="btn btn-neutral float-right" title="Proposal: [Title]" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="6282-table-data.html" class="btn btn-neutral float-left" title="Proposal: Multi-dimensional slices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

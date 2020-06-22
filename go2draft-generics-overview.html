@@ -1,0 +1,1263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generics — Problem Overview &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Type Parameters - Draft Design" href="go2draft-type-parameters.html" />
+    <link rel="prev" title="Error Values — Problem Overview" href="go2draft-error-values-overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generics — Problem Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#draft-design">Draft Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discussion-and-open-questions">Discussion and Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#designs-in-other-languages">Designs in Other Languages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ml-1975">ML, 1975</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clu-1977">CLU, 1977</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ada-1983">Ada, 1983</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-1991">C++, 1991</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#java-1997-2004">Java, 1997-2004</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-1999-2005">C#, 1999-2005</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d-2002">D, 2002</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rust-2012">Rust, 2012</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#swift-2017">Swift, 2017</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#earlier-go-designs">Earlier Go Designs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#type-functions-june-2010">Type Functions, June 2010</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generalized-types-march-2011">Generalized Types, March 2011</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generalized-types-ii-october-2013">Generalized Types II, October 2013</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#type-parameters-december-2013">Type Parameters, December 2013</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Generics — Problem Overview</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/go2draft-generics-overview.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generics-problem-overview">
+<h1>Generics — Problem Overview<a class="headerlink" href="#generics-problem-overview" title="Permalink to this headline">¶</a></h1>
+<p>Russ Cox<br />August 27, 2018</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This overview and the accompanying
+<a class="reference internal" href="go2draft-contracts.html"><span class="doc">detailed draft design</span></a>
+are part of a collection of <a class="reference internal" href="go2draft.html"><span class="doc">Go 2 draft design documents</span></a>.
+The overall goal of the Go 2 effort is to address
+the most significant ways that Go fails to scale
+to large code bases and large developer efforts.</p>
+<p>The Go team, and in particular Ian Lance Taylor,
+has been investigating and discussing possible designs for “generics”
+(that is, parametric polymorphism; see note below)
+since before Go’s first open source release.
+We understood from experience with C++ and Java
+that the topic was rich and complex and would take
+a long time to understand well enough to design a good solution.
+Instead of attempting that at the start,
+we spent our time on features more directly applicable to Go’s initial target
+of networked system software (now “cloud software”),
+such as concurrency, scalable builds, and low-latency garbage collection.</p>
+<p>After the release of Go 1, we continued to explore various possible
+designs for generics, and in April 2016 we
+<a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292-generics.md#">released those early designs</a>,
+discussed in detail below.
+As part of re-entering “design mode” for the Go 2 effort, we are again
+attempting to find a design for generics that we feel fits well into
+the language while providing enough of the flexibility and
+expressivity that users want.</p>
+<p>Some form of generics was one of the top two requested features in both the
+<a class="reference external" href="https://blog.golang.org/survey2016-results">2016</a> and
+<a class="reference external" href="https://blog.golang.org/survey2017-results">2017</a>
+Go user surveys (the other was package management).
+The Go community maintains a
+“<a class="reference external" href="https://docs.google.com/document/d/1vrAy9gMpMoS3uaVphB32uVXX4pi-HnNjkMEgyAHX4N4/view#heading=h.vuko0u3txoew">Summary of Go Generics Discussions</a>”
+document.</p>
+<p>Many people have concluded (incorrectly) that the Go team’s position
+is “Go will never have generics.” On the contrary, we understand the
+potential generics have, both to make Go far more flexible and
+powerful and to make Go far more complicated.
+If we are to add generics, we want to do it in a way that gets as much
+flexibility and power with as little added complexity as possible.</p>
+<p><em>Note on terminology</em>: Generalization based on type parameters was
+called parametric polymorphism when it was
+<a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.3161&amp;rep=rep1&amp;type=pdf">first identified in 1967</a>
+and for decades thereafter in the functional programming community.
+The <a class="reference external" href="http://homepages.inf.ed.ac.uk/wadler/papers/gj-oopsla/gj-oopsla-letter.pdf">GJ proposal</a>,
+which led to adding parametric polymorphism in Java 5, changed the
+terminology first to “genericity” and eventually to “generics”.
+All imperative languages since Java that have added support for
+parametric polymorphism have called it “generics.” We make no
+distinction between the terms, but it is important to emphasize that
+“generics” means more than just generic data containers.</p>
+</div>
+<div class="section" id="problem">
+<h2>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h2>
+<p>To scale Go to large code bases and developer efforts, it is important that code reuse work well.
+Indeed, one early focus for Go was simply to make sure that programs consisting of many independent packages built quickly, so that code reuse was not too expensive.
+One of Go’s key distinguishing features is its approach to interfaces, which are also targeted directly at code reuse.
+Specifically, interfaces make it possible to write abstract implementations of algorithms that elide unnecessary detail.
+For example,
+<a class="reference external" href="https://godoc.org/container/heap">container/heap</a>
+provides heap-maintenance algorithms as ordinary functions that operate on a
+<a class="reference external" href="https://godoc.org/container/heap#Interface">heap.Interface</a>,
+making them applicable to any backing storage, not just a slice of values.
+This can be very powerful.</p>
+<p>At the same time, most programmers who want a priority queue
+don’t want to implement the underlying storage for it and then invoke the heap algorithms.
+They would prefer to let the implementation manage its own array,
+but Go does not permit expressing that in a type-safe way.
+The closest one can come is to make a priority queue of <code class="docutils literal notranslate"><span class="pre">interface{}</span></code> values
+and use type assertions after fetching each element.
+(The standard <a class="reference external" href="https://golang.org/pkg/container/list"><code class="docutils literal notranslate"><span class="pre">container/list</span></code></a>
+and <a class="reference external" href="https://golang.org/pkg/container/ring"><code class="docutils literal notranslate"><span class="pre">container/ring</span></code></a> implementations take this approach.)</p>
+<p>Polymorphic programming is about more than data containers.
+There are many general algorithms we might want to implement
+as plain functions that would apply to a variety of types,
+but every function we write in Go today must apply to only a single type.
+Examples of generic functions we’d like to write include:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Keys</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">keys</span> <span class="kn">from</span> <span class="nn">a</span> <span class="nb">map</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Keys</span><span class="p">(</span><span class="n">m</span> <span class="nb">map</span><span class="p">[</span><span class="n">K</span><span class="p">]</span><span class="n">V</span><span class="p">)</span> <span class="p">[]</span><span class="n">K</span>
+
+<span class="o">//</span> <span class="n">Uniq</span> <span class="n">filters</span> <span class="n">repeated</span> <span class="n">elements</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">channel</span><span class="p">,</span>
+<span class="o">//</span> <span class="n">returning</span> <span class="n">a</span> <span class="n">channel</span> <span class="n">of</span> <span class="n">the</span> <span class="n">filtered</span> <span class="n">data</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Uniq</span><span class="p">(</span><span class="o">&lt;-</span><span class="n">chan</span> <span class="n">T</span><span class="p">)</span> <span class="o">&lt;-</span><span class="n">chan</span> <span class="n">T</span>
+
+<span class="o">//</span> <span class="n">Merge</span> <span class="n">merges</span> <span class="nb">all</span> <span class="n">data</span> <span class="n">received</span> <span class="n">on</span> <span class="nb">any</span> <span class="n">of</span> <span class="n">the</span> <span class="n">channels</span><span class="p">,</span>
+<span class="o">//</span> <span class="n">returning</span> <span class="n">a</span> <span class="n">channel</span> <span class="n">of</span> <span class="n">the</span> <span class="n">merged</span> <span class="n">data</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Merge</span><span class="p">(</span><span class="n">chans</span> <span class="o">...&lt;-</span><span class="n">chan</span> <span class="n">T</span><span class="p">)</span> <span class="o">&lt;-</span><span class="n">chan</span> <span class="n">T</span>
+
+<span class="o">//</span> <span class="n">SortSlice</span> <span class="n">sorts</span> <span class="n">a</span> <span class="nb">slice</span> <span class="n">of</span> <span class="n">data</span> <span class="n">using</span> <span class="n">the</span> <span class="n">given</span> <span class="n">comparison</span> <span class="n">function</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">SortSlice</span><span class="p">(</span><span class="n">data</span> <span class="p">[]</span><span class="n">T</span><span class="p">,</span> <span class="n">less</span> <span class="n">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="n">T</span><span class="p">)</span> <span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://golang.org/issue/26282">Doug McIlroy has suggested</a> that Go add two new
+channel primitives <code class="docutils literal notranslate"><span class="pre">splice</span></code> and <code class="docutils literal notranslate"><span class="pre">clone</span></code>.
+These could be implemented as polymorphic functions instead.</p>
+<p>The
+“<a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292-generics.md#">Go should have generics</a>” proposal
+and the “<a class="reference external" href="https://docs.google.com/document/d/1vrAy9gMpMoS3uaVphB32uVXX4pi-HnNjkMEgyAHX4N4/view#heading=h.vuko0u3txoew">Summary of Go Generics Discussions</a>”
+contain additional discussion of the problem.</p>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<p>Our goal is to address the problem of writing Go libraries that
+abstract away needless type detail, such as the examples in the
+previous section, by allowing parametric polymorphism with type
+parameters.</p>
+<p>In particular, in addition to the expected container types, we aim to
+make it possible to write useful libraries for manipulating arbitrary
+map and channel values, and ideally to write polymorphic functions
+that can operate on both <code class="docutils literal notranslate"><span class="pre">[]byte</span></code> and <code class="docutils literal notranslate"><span class="pre">string</span></code> values.</p>
+<p>It is not a goal to enable other kinds of parameterization, such as
+parameterization by constant values.
+It is also not a goal to enable specialized implementations of
+polymorphic definitions, such as defining a general <code class="docutils literal notranslate"><span class="pre">vector&lt;T&gt;</span></code> and a
+special-case <code class="docutils literal notranslate"><span class="pre">vector&lt;bool&gt;</span></code> using bit-packing.</p>
+<p>We want to learn from and avoid the problems that generics have caused
+for C++ and in Java (described in detail in the section about other
+languages, below).</p>
+<p>To support
+<a class="reference external" href="https://research.swtch.com/vgo-eng">software engineering over time</a>,
+generics for Go must record constraints on type parameters explicitly,
+to serve as a clear, enforced agreement between caller and
+implementation.
+It is also critical that the compiler report clear errors when a
+caller does not meet those constraints or an implementation exceeds
+them.</p>
+<p>Polymorphism in Go must fit smoothly into the surrounding language,
+without awkward special cases and without exposing implementation
+details.
+For example, it would not be acceptable to limit type parameters to
+those whose machine representation is a single pointer or single word.
+As another example, once the general <code class="docutils literal notranslate"><span class="pre">Keys(map[K]V)</span> <span class="pre">[]K</span></code> function
+contemplated above has been instantiated with <code class="docutils literal notranslate"><span class="pre">K</span></code> = <code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">V</span></code> = <code class="docutils literal notranslate"><span class="pre">string</span></code>,
+it must be treated semantically as equivalent to a hand-written
+non-generic function.
+In particular it must be assignable to a variable of type <code class="docutils literal notranslate"><span class="pre">func(map[int]string)</span> <span class="pre">[]int</span></code>.</p>
+<p>Polymorphism in Go should be implementable both at compile time (by
+repeated specialized compilation, as in C++) and at run time, so that
+the decision about implementation strategy can be left as a decision
+for the compiler and treated like any other compiler optimization.
+This flexibility would address the
+<a class="reference external" href="https://research.swtch.com/generic">generic dilemma</a> we’ve discussed
+in the past.</p>
+<p>Go is in large part a language that is straightforward and
+understandable for its users.
+If we add polymorphism, we must preserve that.</p>
+</div>
+<div class="section" id="draft-design">
+<h2>Draft Design<a class="headerlink" href="#draft-design" title="Permalink to this headline">¶</a></h2>
+<p>This section quickly summarizes the draft design, as a basis for
+high-level discussion and comparison with other approaches.</p>
+<p>The draft design adds a new syntax for introducing a type parameter
+list in a type or function declaration: <code class="docutils literal notranslate"><span class="pre">(type</span></code> &lt;<em>list of type names</em>&gt;<code class="docutils literal notranslate"><span class="pre">)</span></code>.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">List</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span><span class="p">)</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="n">func</span> <span class="n">Keys</span><span class="p">(</span><span class="nb">type</span> <span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">)(</span><span class="n">m</span> <span class="nb">map</span><span class="p">[</span><span class="n">K</span><span class="p">]</span><span class="n">V</span><span class="p">)</span> <span class="p">[]</span><span class="n">K</span>
+</pre></div>
+</div>
+<p>Uses of a parameterized declaration supply the type arguments using ordinary call syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">ints</span> <span class="n">List</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">keys</span> <span class="o">:=</span> <span class="n">Keys</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">string</span><span class="p">)(</span><span class="nb">map</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="n">string</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;two&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>The generalizations in these examples require nothing of the types <code class="docutils literal notranslate"><span class="pre">T</span></code>,
+<code class="docutils literal notranslate"><span class="pre">K</span></code>, and <code class="docutils literal notranslate"><span class="pre">V</span></code>: any type will do.
+In general an implementation may need to constrain the possible types
+that can be used.
+For example, we might want to define a <code class="docutils literal notranslate"><span class="pre">Set(T)</span></code>, implemented as a list
+or map, in which case values of type <code class="docutils literal notranslate"><span class="pre">T</span></code> must be able to be compared for
+equality.
+To express that, the draft design introduces the idea of a named
+<strong><em>contract</em></strong>.
+A contract is like a function body illustrating the operations the
+type must support.
+For example, to declare that values of type <code class="docutils literal notranslate"><span class="pre">T</span></code> must be comparable:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">contract</span> <span class="n">Equal</span><span class="p">(</span><span class="n">t</span> <span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">t</span> <span class="o">==</span> <span class="n">t</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To require a contract, we give its name after the list of type parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Set</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span> <span class="n">Equal</span><span class="p">)</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="o">//</span> <span class="n">Find</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">index</span> <span class="n">of</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">the</span> <span class="nb">set</span> <span class="n">s</span><span class="p">,</span>
+<span class="o">//</span> <span class="ow">or</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">contained</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">s</span> <span class="n">Set</span><span class="p">(</span><span class="n">T</span><span class="p">))</span> <span class="n">Find</span><span class="p">(</span><span class="n">x</span> <span class="n">T</span><span class="p">)</span> <span class="nb">int</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">s</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">x</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="n">i</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As another example, here is a generalized <code class="docutils literal notranslate"><span class="pre">Sum</span></code> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">contract</span> <span class="n">Addable</span><span class="p">(</span><span class="n">t</span> <span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">t</span> <span class="o">+</span> <span class="n">t</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span> <span class="n">Addable</span><span class="p">)(</span><span class="n">x</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">total</span> <span class="n">T</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">x</span> <span class="p">{</span>
+		<span class="n">total</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">total</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Generalized functions are invoked with type arguments
+to select a specialized function and then invoked again with their value arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">x</span> <span class="p">[]</span><span class="nb">int</span>
+<span class="n">total</span> <span class="o">:=</span> <span class="n">Sum</span><span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you might expect, the two invocations can be split:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">x</span> <span class="p">[]</span><span class="nb">int</span>
+<span class="n">intSum</span> <span class="o">:=</span> <span class="n">Sum</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">//</span> <span class="n">intSum</span> <span class="n">has</span> <span class="nb">type</span> <span class="n">func</span><span class="p">([]</span><span class="nb">int</span><span class="p">)</span> <span class="nb">int</span>
+<span class="n">total</span> <span class="o">:=</span> <span class="n">intSum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The call with type arguments can be omitted, leaving only the call with values,
+when the necessary type arguments can be inferred from the values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">x</span> <span class="p">[]</span><span class="nb">int</span>
+<span class="n">total</span> <span class="o">:=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">//</span> <span class="n">shorthand</span> <span class="k">for</span> <span class="n">Sum</span><span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>More than one type parameter is also allowed in types, functions, and contracts:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">contract</span> <span class="n">Graph</span><span class="p">(</span><span class="n">n</span> <span class="n">Node</span><span class="p">,</span> <span class="n">e</span> <span class="n">Edge</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">edges</span> <span class="p">[]</span><span class="n">Edge</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">Edges</span><span class="p">()</span>
+	<span class="n">var</span> <span class="n">nodes</span> <span class="p">[]</span><span class="n">Node</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">Nodes</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">ShortestPath</span><span class="p">(</span><span class="nb">type</span> <span class="n">N</span><span class="p">,</span> <span class="n">E</span> <span class="n">Graph</span><span class="p">)(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="n">N</span><span class="p">)</span> <span class="p">[]</span><span class="n">E</span>
+</pre></div>
+</div>
+<p>The contract is applied by default to the list of type parameters, so that <code class="docutils literal notranslate"><span class="pre">(type</span> <span class="pre">T</span> <span class="pre">Equal)</span></code> is shorthand for <code class="docutils literal notranslate"><span class="pre">(type</span> <span class="pre">T</span> <span class="pre">Equal(T))</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">(type</span> <span class="pre">N,</span> <span class="pre">E</span> <span class="pre">Graph)</span></code> is shorthand for <code class="docutils literal notranslate"><span class="pre">(type</span> <span class="pre">N,</span> <span class="pre">E</span> <span class="pre">Graph(N,</span> <span class="pre">E))</span></code>.</p>
+<p>For details, see the <a class="reference internal" href="go2draft-contracts.html"><span class="doc">draft design</span></a>.</p>
+</div>
+<div class="section" id="discussion-and-open-questions">
+<h2>Discussion and Open Questions<a class="headerlink" href="#discussion-and-open-questions" title="Permalink to this headline">¶</a></h2>
+<p>This draft design is meant only as a starting point for community discussion.
+We fully expect the details to be revised based on feedback and especially experience reports.
+This section outlines some of the questions that remain to be answered.</p>
+<p>Our previous four designs for generics in Go all had significant problems, which we identified very quickly.
+The current draft design appears to avoid the problems in the earlier ones: we’ve spent about half a year discussing and refining it so far and still believe it could work.
+While we are not formally proposing it today, we think it is at least a good enough starting point for a community discussion with the potential to lead to a formal proposal.</p>
+<p>Even after six months of (not full time) discussion, the design is still in its earliest stages.
+We have written a parser but no type checker and no implementation.
+It will be revised as we learn more about it.
+Here we identify a few important things we are unsure about, but there are certainly more.</p>
+<p><strong>Implied constraints</strong>.
+One of the examples above applies to maps of arbitrary key and value type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Keys</span><span class="p">(</span><span class="nb">type</span> <span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">)(</span><span class="n">m</span> <span class="nb">map</span><span class="p">[</span><span class="n">K</span><span class="p">]</span><span class="n">V</span><span class="p">)</span> <span class="p">[]</span><span class="n">K</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>But not all types can be used as key types,
+so this function should more precisely be written as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Keys</span><span class="p">(</span><span class="nb">type</span> <span class="n">K</span><span class="p">,</span> <span class="n">V</span> <span class="n">Equal</span><span class="p">(</span><span class="n">K</span><span class="p">))(</span><span class="n">m</span> <span class="nb">map</span><span class="p">[</span><span class="n">K</span><span class="p">]</span><span class="n">V</span><span class="p">)</span> <span class="p">[]</span><span class="n">K</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It is unclear whether that precision about
+<code class="docutils literal notranslate"><span class="pre">K</span></code> should be required of the user or inferred
+from the use of <code class="docutils literal notranslate"><span class="pre">map[K]V</span></code> in the function signature.</p>
+<p><strong>Dual implementation</strong>.
+We are hopeful that the draft design satisfies the
+“dual-implementation” constraint mentioned above,
+that every parameterized type or function can be implemented
+either by compile-time or run-time type substitution,
+so that the decision becomes purely a compiler optimization, not one of semantic significance.
+But we have not yet confirmed that.</p>
+<p>One consequence of the dual-implementation constraint
+is that we have not included support for type parameters in method declarations.
+The most common place where these arise is in modeling functional operations on general containers.
+It is tempting to allow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// A Set is a set of values of type T.
+type Set(type T) ...
+
+// Apply applies the function f to each value in the set s,
+// returning a set of the results.
+func (s Set(T)) Apply(type U)(f func(T) U) Set(U)  // NOT ALLOWED!
+</pre></div>
+</div>
+<p>The problem here is that a value of type <code class="docutils literal notranslate"><span class="pre">Set(int)</span></code>
+would require an infinite number of <code class="docutils literal notranslate"><span class="pre">Apply</span></code> methods to be available at runtime,
+one for every possible type <code class="docutils literal notranslate"><span class="pre">U</span></code>, all discoverable by reflection and type assertions.
+They could not all be compiled ahead of time.
+An earlier version of the design allowed generic methods but then disallowed their visibility in reflection and interface satisfaction, to avoid forcing the run-time implementation of generics.
+Disallowing generalized methods entirely seemed cleaner than allowing them with these awkward special cases.
+Note that it is still possible to write <code class="docutils literal notranslate"><span class="pre">Apply</span></code> as a top-level function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Apply</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span><span class="p">,</span> <span class="n">U</span><span class="p">)(</span><span class="n">s</span> <span class="n">Set</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">f</span> <span class="n">func</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">U</span><span class="p">)</span> <span class="n">Set</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Working within the intersection of compile-time and run-time implementations also requires being able to reject parameterized functions or types that cause generation of an arbitrary (or perhaps just very large) number of additional types.
+For example, here are a few unfortunate programs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">OK</span>
+<span class="nb">type</span> <span class="n">List</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span><span class="p">)</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">elem</span> <span class="n">T</span>
+	<span class="nb">next</span> <span class="o">*</span><span class="n">List</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">NOT</span> <span class="n">OK</span> <span class="o">-</span> <span class="n">Implies</span> <span class="n">an</span> <span class="n">infinite</span> <span class="n">sequence</span> <span class="n">of</span> <span class="n">types</span> <span class="k">as</span> <span class="n">you</span> <span class="n">follow</span> <span class="o">.</span><span class="n">next</span> <span class="n">pointers</span><span class="o">.</span>
+<span class="nb">type</span> <span class="n">Infinite</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span><span class="p">)</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="nb">next</span> <span class="o">*</span><span class="n">Infinite</span><span class="p">(</span><span class="n">Infinite</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">BigArray</span><span class="p">(</span><span class="n">T</span><span class="p">)(</span><span class="n">n</span><span class="p">)</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">nil</span> <span class="n">n</span><span class="o">-</span><span class="n">dimensional</span> <span class="nb">slice</span> <span class="n">of</span> <span class="n">T</span><span class="o">.</span>
+<span class="o">//</span> <span class="n">BigArray</span><span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="mi">1</span><span class="p">)</span> <span class="n">returns</span> <span class="p">[]</span><span class="nb">int</span>
+<span class="o">//</span> <span class="n">BigArray</span><span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="mi">2</span><span class="p">)</span> <span class="n">returns</span> <span class="p">[][]</span><span class="nb">int</span>
+<span class="o">//</span> <span class="o">...</span>
+<span class="n">func</span> <span class="n">BigArray</span><span class="p">(</span><span class="nb">type</span> <span class="n">T</span><span class="p">)(</span><span class="n">n</span> <span class="nb">int</span><span class="p">)</span> <span class="n">interface</span><span class="p">{}</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">1000000000</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="p">[]</span><span class="n">T</span><span class="p">(</span><span class="n">nil</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">BigArray</span><span class="p">([]</span><span class="n">T</span><span class="p">)(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It is unclear what the algorithm is for deciding which programs to accept and which to reject.</p>
+<p><strong>Contract bodies</strong>.
+Contracts are meant to look like little functions.
+They use a subset of function body syntax,
+but the actual syntax is much more limited than just “any Go code” (see the full design for details).
+We would like to understand better if it is feasible to allow any valid function body as a contract body.
+The hard part is defining precisely which generic function bodies are allowed by a given contract body.</p>
+<p>There are parallels with the C++ concepts design (discussed in detail below): the definition of a C++ concept started out being exactly a function body illustrating the necessary requirements, but over time the design changed to use a more limited list of requirements of a specific form.
+Clearly it was not workable in C++ to support arbitrary function bodies.
+But Go is a simpler language than C++ and it may be possible here.
+We would like to explore whether it is possible to implement contract body syntax as exactly function body syntax and whether that would be simpler for users to understand.</p>
+<p><strong>Feedback</strong>.
+The most useful general feedback would be examples of interesting uses that are enabled or disallowed by the draft design.
+We’d also welcome feedback about the points above, especially based on experience type-checking or implementing generics in other languages.</p>
+<p>We are most uncertain about exactly what to allow in contract bodies, to make them as easy to read and write for users while still being sure the compiler can enforce them as limits on the implementation.
+That is, we are unsure about the exact algorithm to deduce the properties required for type-checking a generic function from a corresponding contract.
+After that we are unsure about the details of a run-time-based (as opposed to compile-time-based) implementation.</p>
+<p>Feedback on semantics and implementation details is far more useful and important than feedback about syntax.</p>
+<p>We are collecting links to feedback at
+<a class="reference external" href="https://golang.org/wiki/Go2GenericsFeedback">golang.org/wiki/Go2GenericsFeedback</a>.</p>
+</div>
+<div class="section" id="designs-in-other-languages">
+<h2>Designs in Other Languages<a class="headerlink" href="#designs-in-other-languages" title="Permalink to this headline">¶</a></h2>
+<p>It is worth comparing the draft design with those in real-world use, either now or in the past.
+We are not fluent programmers in many of these languages.
+This is our best attempt to piece together the history, including links to references, but we would welcome corrections about the syntax, semantics, or history of any of these.</p>
+<p>The discussion of other language designs in this section focuses on the specification of type constraints and also implementation details and problems, because those ended up being the two most difficult parts of the Go draft design for us to work out.
+They are likely the two most difficult parts of any design for parametric polymorphism.
+In retrospect, we were biased too much by experience with C++ without concepts and Java generics. We would have been well-served to spend more time with CLU and C++ concepts earlier.</p>
+<p>We’ll use the <code class="docutils literal notranslate"><span class="pre">Set</span></code>, <code class="docutils literal notranslate"><span class="pre">Sum</span></code>, and <code class="docutils literal notranslate"><span class="pre">ShortestPath</span></code> examples above as points of comparison throughout this section.</p>
+<div class="section" id="ml-1975">
+<h3>ML, 1975<a class="headerlink" href="#ml-1975" title="Permalink to this headline">¶</a></h3>
+<p>ML was the first typed language to incorporate polymorphism.</p>
+<p>Christopher Strachey is usually given credit for introducing the term parametric polymorphism in his 1967 survey, “<a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.332.3161&amp;rep=rep1&amp;type=pdf">Fundamental Concepts in Programming Languages</a>.”</p>
+<p>Robin Milner’s 1978 paper “<a class="reference external" href="https://courses.engr.illinois.edu/cs421/sp2013/project/milner-polymorphism.pdf">A Theory of Type Polymorphism in Programming</a>” introduced an algorithm to infer the most general types of polymorphic function bodies, instead of forcing the use of concrete types.
+Milner had already implemented his algorithm for the ML language as part of the Edinburgh LCF system.
+He wanted to be able to write the kinds of general functions possible in LISP, but in a typed language.</p>
+<p>ML inferred constraints and for that matter the types themselves from the untyped function body.
+But the inference was limited - there were no objects, classes, methods, or operators, just values (including function values).
+There was not even equality checking.</p>
+<p>Milner
+<a class="reference external" href="http://www.lfcs.inf.ed.ac.uk/reports/87/ECS-LFCS-87-33/ECS-LFCS-87-33.pdf">suggested adding “equality types”</a> in 1987, distinguishing a type variable with no constraints (<code class="docutils literal notranslate"><span class="pre">'t</span></code>) from a type variable that must represent a type allowing equality checks (<code class="docutils literal notranslate"><span class="pre">''t</span></code>).</p>
+<p>The
+<a class="reference external" href="https://www.cs.princeton.edu/research/techreps/TR-097-87">Standard ML of New Jersey compiler</a> (1987) implements polymorphic functions by arranging that every value is
+<a class="reference external" href="https://www.cs.princeton.edu/research/techreps/TR-142-88">represented as a single machine word</a>.
+That uniformity of representation, combined with the near-complete lack of type constraints, made it possible to use one compiled body for all invocations.
+Of course, boxing has its own allocation time and space overheads.</p>
+<p>The
+<a class="reference external" href="http://mlton.org/History">MLton whole-program optimizing compiler</a> (1997) specializes polymorphic functions at compile time.</p>
+</div>
+<div class="section" id="clu-1977">
+<h3>CLU, 1977<a class="headerlink" href="#clu-1977" title="Permalink to this headline">¶</a></h3>
+<p>The research language CLU, developed by Barbara Liskov’s group at MIT, was the first to introduce what we would now recognize as modern generics.
+(CLU also introduced iterators and abstract data types.)</p>
+<p><a class="reference external" href="http://csg.csail.mit.edu/CSGArchives/memos/Memo-112-1.pdf">CLU circa 1975</a> allowed defining parameterized types without constraints, much like in ML.
+To enable implementing a generic set despite the lack of constraints, all types were required to implement an equal method.</p>
+<p>By 1977,
+<a class="reference external" href="https://web.eecs.umich.edu/~weimerw/2008-615/reading/liskov-clu-abstraction.pdf">CLU had introduced “where clauses”</a> to constrain parameterized types, allowing the set implementation to make its need for <code class="docutils literal notranslate"><span class="pre">equal</span></code> explicit.
+CLU also had operator methods, so that <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">==</span> <span class="pre">y</span></code> was syntactic sugar for <code class="docutils literal notranslate"><span class="pre">t$equal(x,</span> <span class="pre">y)</span></code> where <code class="docutils literal notranslate"><span class="pre">t</span></code> is the type of both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="o">=</span> <span class="n">cluster</span> <span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="nb">type</span><span class="p">]</span> <span class="ow">is</span> <span class="n">create</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">insert</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">elements</span>
+        <span class="n">where</span> <span class="n">t</span> <span class="n">has</span> <span class="n">equal</span><span class="p">:</span> <span class="n">proctype</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="n">returns</span> <span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">rep</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+    <span class="o">%</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">methods</span> <span class="n">here</span><span class="p">,</span> <span class="n">using</span> <span class="o">==</span> <span class="n">on</span> <span class="n">values</span> <span class="n">of</span> <span class="nb">type</span> <span class="n">t</span>
+<span class="n">end</span> <span class="nb">set</span>
+</pre></div>
+</div>
+<p>The more complex graph example is still simple in CLU:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shortestpath</span> <span class="o">=</span> <span class="n">proc</span><span class="p">[</span><span class="n">node</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="nb">type</span><span class="p">]</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">node</span><span class="p">)</span> <span class="n">returns</span> <span class="n">array</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
+        <span class="n">where</span> <span class="n">node</span> <span class="n">has</span> <span class="n">edges</span><span class="p">:</span> <span class="n">proctype</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="n">returns</span> <span class="n">array</span><span class="p">[</span><span class="n">edge</span><span class="p">],</span>
+              <span class="n">edge</span> <span class="n">has</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">proctype</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="n">returns</span> <span class="n">array</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+    <span class="o">...</span>
+<span class="n">end</span> <span class="n">shortestpath</span>
+</pre></div>
+</div>
+<p>The 1978 paper “<a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.106.3516&amp;rep=rep1&amp;type=pdf">Aspects of Implementing CLU</a>” discusses the compile-time versus run-time implementations of parameterized generics and details CLU’s run-time-only approach.
+The “BigArray” function shown earlier is also taken from this paper (translated to Go, of course).</p>
+<p>All the ingredients for modern generics are here: syntax for declaring generalized types and functions, syntax for invoking them, a simple constraint syntax, and a well thought-out implementation.
+There was no inference of type parameters.
+The CLU designers found it helpful to see all substitutions made explicitly.</p>
+<p>In her 1992 retrospective  “<a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download%3Bjsessionid=F5D7C821199F22C5D30A51F155DB9D23?doi=10.1.1.46.9499&amp;rep=rep1&amp;type=pdf">A History of CLU</a>,” Liskov observed, “CLU was way ahead of its time in its solution for parameterized modules.
+Even today, most languages do not support parametric polymorphism, although there is growing recognition of the need for it.”</p>
+</div>
+<div class="section" id="ada-1983">
+<h3>Ada, 1983<a class="headerlink" href="#ada-1983" title="Permalink to this headline">¶</a></h3>
+<p>Ada clearly lifted many ideas from CLU, including the approach for exceptions and parametric polymorphism, although not the elegant syntax.
+Here is an example generic squaring function from the
+<a class="reference external" href="https://swtch.com/ada-mil-std-1815a.pdf">Ada 1983 spec</a>, assembled from pages 197, 202, and 204 of the PDF.
+The generic declaration introduces a parameterized “unit” and then the function declaration appears to come separately:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">generic</span>
+	<span class="nb">type</span> <span class="n">ITEM</span> <span class="n">Is</span> <span class="n">private</span><span class="p">;</span>
+	<span class="k">with</span> <span class="n">function</span> <span class="s2">&quot;*&quot;</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">V</span> <span class="n">ITEM</span><span class="p">)</span> <span class="k">return</span> <span class="n">ITEM</span> <span class="ow">is</span> <span class="o">&lt;&gt;</span><span class="p">;</span>
+<span class="n">function</span> <span class="n">SQUARING</span><span class="p">(</span><span class="n">X</span> <span class="p">:</span> <span class="n">ITEM</span><span class="p">)</span> <span class="k">return</span> <span class="n">ITEM</span><span class="p">;</span>
+
+<span class="n">function</span> <span class="n">SQUARING</span><span class="p">(</span><span class="n">X</span> <span class="p">:</span> <span class="n">ITEM</span><span class="p">)</span> <span class="k">return</span> <span class="n">ITEM</span> <span class="ow">is</span>
+<span class="n">begin</span>
+	<span class="k">return</span> <span class="n">X</span><span class="o">*</span><span class="n">X</span><span class="p">;</span>
+<span class="n">end</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Interestingly, this definition introduces a function SQUARING parameterized by both the type ITEM and the * operation.
+If instantiated using type INTEGER, the * operation is taken from that type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">function</span> <span class="n">SQUARE</span> <span class="ow">is</span> <span class="n">new</span> <span class="n">SQUARING</span> <span class="p">(</span><span class="n">INTEGER</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>But the * operation can also be substituted directly, allowing definition of a matrix squarer using the MATRIX-PRODUCT function.
+These two instantiations are equivalent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">function</span> <span class="n">SQUARE</span> <span class="ow">is</span> <span class="n">new</span> <span class="n">SQUARING</span> <span class="p">(</span><span class="n">ITEM</span> <span class="o">-&gt;</span> <span class="n">MATRIX</span><span class="p">,</span> <span class="s2">&quot;*&#39;&quot;</span> <span class="o">=&gt;</span> <span class="n">MATRIX</span><span class="o">-</span><span class="n">PRODUCT</span><span class="p">);</span>
+<span class="n">function</span> <span class="n">SQUARE</span> <span class="ow">is</span> <span class="n">new</span> <span class="n">SQUARING</span> <span class="p">(</span><span class="n">MATRIX</span><span class="p">,</span> <span class="n">MATRIX</span><span class="o">-</span><span class="n">PRODUCT</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>We have not looked into how Ada generics were implemented.</p>
+<p>The initial Ada design contest
+<a class="reference external" href="https://www.red-gate.com/simple-talk/opinion/geek-of-the-week/tucker-taft-geek-of-the-week/">ran from 1975-1980 or so</a>, resulting eventually in the Ada 83 standard in 1983.
+We are not sure exactly when generics were added.</p>
+</div>
+<div class="section" id="c-1991">
+<h3>C++, 1991<a class="headerlink" href="#c-1991" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.stroustrup.com/hopl-almost-final.pdf">C++ introduced templates</a> in 1991, in the Cfront 3.0 release.
+The implementation was always by compile-time macro expansion, and there were no “where clauses” or other explicit constraints.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+
+<span class="k">class</span> <span class="nc">Set</span> <span class="p">{</span>
+	<span class="o">...</span>
+	<span class="n">void</span> <span class="n">Add</span><span class="p">(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">T</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">T</span> <span class="n">s</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">s</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Instead, if a template was invoked with an inappropriate type, such as a Sum&lt;char*&gt;, the compiler reported a type-checking error in the middle of the invoked function’s body.
+This was not terribly user-friendly and soured many developers on the idea of parametric polymorphism.
+The lack of type constraints enabled the creation of the STL and transformed C++ into a wholly different language than it had been.
+Then the problem became how to add explicit type constraints sufficiently expressive to allow all the tricks used in the STL.</p>
+<p>Programmers worked around the lack of constraints by establishing conventions for expressing them.
+Stroustrup’s 1994 book
+<a class="reference external" href="http://www.stroustrup.com/dne.html">The Design and Evolution of C++</a> gives some examples.
+The first option is to define constraints as classes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span> <span class="k">class</span> <span class="nc">Comparable</span> <span class="p">{</span>
+	<span class="n">T</span><span class="o">&amp;</span> <span class="n">operator</span><span class="o">=</span><span class="p">(</span><span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">);</span>
+	<span class="nb">int</span> <span class="n">operator</span><span class="o">==</span><span class="p">(</span><span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">);</span>
+	<span class="nb">int</span> <span class="n">operator</span><span class="o">&lt;=</span><span class="p">(</span><span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">);</span>
+	<span class="nb">int</span> <span class="n">operator</span><span class="o">&lt;</span><span class="p">(</span><span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">const</span> <span class="n">T</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="n">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span> <span class="p">:</span> <span class="n">Comparable</span><span class="o">&gt;</span>
+	<span class="k">class</span> <span class="nc">vector</span> <span class="p">{</span>
+		<span class="o">//</span> <span class="o">...</span>
+	<span class="p">};</span>
+</pre></div>
+</div>
+<p>Unfortunately, this requires the original type <code class="docutils literal notranslate"><span class="pre">T</span></code> to explicitly derive from <code class="docutils literal notranslate"><span class="pre">Comparable</span></code>.
+Instead, Stroustrup suggested writing a function, conventionally named <code class="docutils literal notranslate"><span class="pre">constraints</span></code>, illustrating the requirements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span> <span class="k">class</span> <span class="nc">X</span> <span class="p">{</span>
+	<span class="o">//</span> <span class="o">...</span>
+	<span class="n">void</span> <span class="n">constraints</span><span class="p">(</span><span class="n">T</span><span class="o">*</span> <span class="n">tp</span><span class="p">)</span>
+	<span class="p">{</span>	             <span class="o">//</span> <span class="n">T</span> <span class="n">must</span> <span class="n">have</span><span class="p">:</span>
+		<span class="n">B</span><span class="o">*</span> <span class="n">bp</span> <span class="o">=</span> <span class="n">tp</span><span class="p">;</span>  <span class="o">//</span>   <span class="n">an</span> <span class="n">accessible</span> <span class="n">base</span> <span class="n">B</span>
+		<span class="n">tp</span><span class="o">-&gt;</span><span class="n">f</span><span class="p">();</span>     <span class="o">//</span>   <span class="n">a</span> <span class="n">member</span> <span class="n">function</span> <span class="n">f</span>
+		<span class="n">T</span> <span class="n">a</span><span class="p">(</span><span class="n">l</span><span class="p">);</span>      <span class="o">//</span>   <span class="n">a</span> <span class="n">constructor</span> <span class="kn">from</span> <span class="nn">int</span>
+		<span class="n">a</span> <span class="o">=</span> <span class="o">*</span><span class="n">tp</span><span class="p">;</span>     <span class="o">//</span>   <span class="n">assignment</span>
+		<span class="o">//</span> <span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Compiler errors would at least be simple, targeted, and reported as a problem with <code class="docutils literal notranslate"><span class="pre">X&lt;T&gt;::constraints</span></code>.
+Of course, nothing checked that other templates used only the features of T illustrated in the constraints.</p>
+<p>In 2003, Stroustrup proposed formalizing this convention as
+<a class="reference external" href="http://www.stroustrup.com/N1522-concept-criteria.pdf">C++ concepts</a>.
+The feature was intended for C++0x (eventually C++11 (2011)) but
+<a class="reference external" href="http://www.drdobbs.com/cpp/the-c0x-remove-concepts-decision/218600111">removed in 2009</a>.
+Concepts were published as a
+<a class="reference external" href="https://www.iso.org/standard/64031.html">separate ISO standard in 2015</a>, shipped in GCC, and were intended for C++17 (2017)
+<a class="reference external" href="http://honermann.net/blog/2016/03/06/why-concepts-didnt-make-cxx17/">but removed in 2016</a>.
+They are now intended for C++20 (2020).</p>
+<p>The 2003 proposal gives this syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">concept</span> <span class="n">Element</span> <span class="p">{</span>
+	<span class="n">constraints</span><span class="p">(</span><span class="n">Element</span> <span class="n">e1</span><span class="p">,</span> <span class="n">Element</span> <span class="n">e2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nb">bool</span> <span class="n">b</span> <span class="o">=</span> <span class="n">e1</span><span class="o">&lt;</span><span class="n">e2</span><span class="p">;</span>  <span class="o">//</span> <span class="n">Elements</span> <span class="n">can</span> <span class="n">be</span> <span class="n">compared</span> <span class="n">using</span> <span class="o">&lt;</span>
+		<span class="n">swap</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span><span class="n">e2</span><span class="p">);</span>     <span class="o">//</span> <span class="n">Elements</span> <span class="n">can</span> <span class="n">be</span> <span class="n">swapped</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>By 2015, the syntax had changed a bit but the underlying idea was still the same.
+Stroustrup’s 2015 paper “<a class="reference external" href="http://www.stroustrup.com/good_concepts.pdf">Concepts: The Future of Generic Programming, or How to design good concepts and use them well</a>” presents as an example a concept for having equality checking.
+(In C++, <code class="docutils literal notranslate"><span class="pre">==</span></code> and <code class="docutils literal notranslate"><span class="pre">!=</span></code> are unrelated operations so both must be specified.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="n">concept</span> <span class="nb">bool</span> <span class="n">Equality_comparable</span> <span class="o">=</span>
+<span class="n">requires</span> <span class="p">(</span><span class="n">T</span> <span class="n">a</span><span class="p">,</span> <span class="n">T</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+	<span class="p">{</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="p">}</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span> <span class="o">//</span> <span class="n">compare</span> <span class="n">Ts</span> <span class="k">with</span> <span class="o">==</span>
+	<span class="p">{</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">b</span> <span class="p">}</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span> <span class="o">//</span> <span class="n">compare</span> <span class="n">Ts</span> <span class="k">with</span> <span class="o">!=</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>A requires expression evaluates to true if each of the listed requirements is satisfied, false otherwise.
+Thus <code class="docutils literal notranslate"><span class="pre">Equality_comparable&lt;T&gt;</span></code> is a boolean constant whose value depends on <code class="docutils literal notranslate"><span class="pre">T</span></code>.</p>
+<p>Having defined the predicate, we can define our parameterized set:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">Equality_comparable</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Set</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">};</span>
+
+<span class="n">Set</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="nb">set</span><span class="p">;</span>
+<span class="nb">set</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">&lt;Equality_comparable</span> <span class="pre">T&gt;</span></code> introduces a type variable <code class="docutils literal notranslate"><span class="pre">T</span></code> with the constraint that <code class="docutils literal notranslate"><span class="pre">Equality_comparable&lt;T&gt;</span> <span class="pre">==</span> <span class="pre">true</span></code>.
+The class declaration above is shorthand for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+	<span class="n">requires</span> <span class="n">Equality_comparable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Set</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>By allowing a single concept to constrain a group of related types, the C++ concept proposal makes it easy to define our shortest path example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">Node</span><span class="p">,</span> <span class="n">typename</span> <span class="n">Edge</span><span class="o">&gt;</span>
+<span class="n">concept</span> <span class="nb">bool</span> <span class="n">Graph</span> <span class="o">=</span>
+	<span class="n">requires</span><span class="p">(</span><span class="n">Node</span> <span class="n">n</span><span class="p">,</span> <span class="n">Edge</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">{</span> <span class="n">n</span><span class="o">.</span><span class="n">Edges</span><span class="p">()</span> <span class="p">}</span> <span class="o">-&gt;</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span><span class="p">;</span>
+		<span class="p">{</span> <span class="n">e</span><span class="o">.</span><span class="n">Nodes</span><span class="p">()</span> <span class="p">}</span> <span class="o">-&gt;</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">;</span>
+	<span class="p">};</span>
+
+<span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Edge</span><span class="o">&gt;</span>
+	<span class="n">requires</span> <span class="n">Graph</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span> <span class="n">Edge</span><span class="p">)</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">ShortestPath</span><span class="p">(</span><span class="n">Node</span> <span class="n">src</span><span class="p">,</span> <span class="n">Node</span> <span class="n">dst</span><span class="p">)</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="java-1997-2004">
+<h3>Java, 1997-2004<a class="headerlink" href="#java-1997-2004" title="Permalink to this headline">¶</a></h3>
+<p>In 1997, Martin Odersky and Philip Wadler introduced
+<a class="reference external" href="http://pizzacompiler.sourceforge.net/doc/pizza-language-spec.pdf">Pizza</a>, a strict superset of Java, compiled to Java bytecodes, adding three features from functional programming: parametric polymorphism, higher-order functions, and algebraic data types.</p>
+<p>In 1998, Odersky and Wadler, now joined by Gilad Bracha and David Stoutamire, introduced
+<a class="reference external" href="http://homepages.inf.ed.ac.uk/wadler/papers/gj-oopsla/gj-oopsla-letter.pdf">GJ</a>, a Pizza-derived Java superset targeted solely at parametric polymorphism, now called generics.
+The GJ design was adopted with minor changes in Java 5, released in 2004.</p>
+<p>As seen in the example, this design uses interfaces to express type constraints, with the result that parameterized interfaces must be used to create common self-referential constraints such as having an equal method that checks two items of the same type for equality.
+In CLU this constraint was written directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="o">=</span> <span class="n">cluster</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="nb">type</span><span class="p">]</span> <span class="o">...</span>
+        <span class="n">where</span> <span class="n">t</span> <span class="n">has</span> <span class="n">equal</span><span class="p">:</span> <span class="n">proctype</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="n">returns</span> <span class="nb">bool</span>
+</pre></div>
+</div>
+<p>In Java 5, the same constraint is written indirectly, by first defining <code class="docutils literal notranslate"><span class="pre">Equal&lt;T&gt;</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">interface</span> <span class="n">Equal</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="n">boolean</span> <span class="n">equal</span><span class="p">(</span><span class="n">T</span> <span class="n">o</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then the constraint is <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">implements</span> <span class="pre">Equal&lt;T&gt;</span></code> as in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="n">T</span> <span class="n">implements</span> <span class="n">Equal</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+	<span class="o">...</span>
+	<span class="n">public</span> <span class="n">void</span> <span class="n">add</span><span class="p">(</span><span class="n">T</span> <span class="n">o</span><span class="p">)</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Set</span><span class="o">&lt;</span><span class="nb">int</span><span class="o">&gt;</span> <span class="nb">set</span><span class="p">;</span>
+<span class="nb">set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is Java’s variant of the C++ “<a class="reference external" href="https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern">curiously recurring template pattern</a>” and is a common source of confusion (or at least rote memorization) among Java programmers first learning generics.</p>
+<p>The graph example is even more complex:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">interface</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">Edges</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">interface</span> <span class="n">Edge</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span> <span class="n">Nodes</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">ShortestPath</span><span class="o">&lt;</span><span class="n">N</span> <span class="n">implements</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">E</span> <span class="n">implements</span> <span class="n">Edge</span><span class="o">&lt;</span><span class="n">N</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+	<span class="n">static</span> <span class="n">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="n">Find</span><span class="p">(</span><span class="n">Node</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Java 4 and earlier had provided untyped, heterogeneous container classes like <code class="docutils literal notranslate"><span class="pre">List</span></code> and <code class="docutils literal notranslate"><span class="pre">Set</span></code> that used the non-specific element type <code class="docutils literal notranslate"><span class="pre">Object</span></code>.
+Java 5 generics aimed to provide type parameterization for those legacy containers.
+The originals became <code class="docutils literal notranslate"><span class="pre">List&lt;Object&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">Set&lt;Object&gt;</span></code>, but now programmers could also write <code class="docutils literal notranslate"><span class="pre">List&lt;String&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">List&lt;Set&lt;String&gt;&gt;</span></code>, and so on.</p>
+<p>The implementation was by “type erasure,” converting to the original untyped containers, so that at runtime there were only the unparameterized implementations <code class="docutils literal notranslate"><span class="pre">List</span></code> and <code class="docutils literal notranslate"><span class="pre">Set</span></code> (of <code class="docutils literal notranslate"><span class="pre">Object</span></code>).</p>
+<p>Because the implementation needed to be memory-compatible with <code class="docutils literal notranslate"><span class="pre">List&lt;Object&gt;</span></code>, which is to say a list of pointers, Java value types like <code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">boolean</span></code> could not be used as type parameters: no <code class="docutils literal notranslate"><span class="pre">List&lt;int&gt;</span></code>.
+Instead there is <code class="docutils literal notranslate"><span class="pre">List&lt;Integer&gt;</span></code>, in which each element becomes an class object instead of a plain <code class="docutils literal notranslate"><span class="pre">int</span></code>, with all the associated memory and allocation overhead.</p>
+<p>Because of the erasure, reflection on these values, including dynamic type checks using <code class="docutils literal notranslate"><span class="pre">instanceof</span></code>, has no information about the expected type of elements.
+Reflection and code written using untyped collections like <code class="docutils literal notranslate"><span class="pre">List</span></code> or <code class="docutils literal notranslate"><span class="pre">Set</span></code> therefore served as back doors to bypass the new type system.
+The inability to use <code class="docutils literal notranslate"><span class="pre">instanceof</span></code> with generics introduced other rough edges, such as not being able to define parameterized exception classes, or more precisely being able to throw an instance of a parameterized class but not catch one.</p>
+<p>Angelika Langer has written an
+<a class="reference external" href="http://www.angelikalanger.com/GenericsFAQ/JavaGenericsFAQ.html">extensive FAQ</a>, the size of which gives a sense of the complexity of Java generics.</p>
+<p>Java 10 may add runtime access to type parameter information.</p>
+<p>Experience watching the Java generics story unfold, combined with discussions with some of the main players, was the primary reason we avoided tackling any sort of generics in the first version of Go.
+Since much of the complexity arose from the design being boxed in by pre-existing container types, we mostly avoided adding container types to the standard library (<a class="reference external" href="https://golang.org/pkg/container/list"><code class="docutils literal notranslate"><span class="pre">container/list</span></code></a>
+and <a class="reference external" href="https://golang.org/pkg/container/ring"><code class="docutils literal notranslate"><span class="pre">container/ring</span></code></a> are the exceptions, but they are not widely used).</p>
+<p>Many developers associate Java generics first with the complexity around container types.
+That complexity, combined with the fact that Java lacks the concept of a plain function (such as <code class="docutils literal notranslate"><span class="pre">Sum</span></code>) as opposed to methods bound to a class, led to the common belief that generics means parameterized data structures, or containers, ignoring parameterized functions.
+This is particularly ironic given the original inspiration from functional programming.</p>
+</div>
+<div class="section" id="c-1999-2005">
+<h3>C#, 1999-2005<a class="headerlink" href="#c-1999-2005" title="Permalink to this headline">¶</a></h3>
+<p>C#, and more broadly the .NET Common Language Runtime (CLR), added
+<a class="reference external" href="https://msdn.microsoft.com/en-us/library/ms379564(v=vs.80).aspx">support for generics</a> in C# 2.0, released in 2005 and the culmination of
+<a class="reference external" href="http://mattwarren.org/2018/03/02/How-generics-were-added-to-.NET/">research beginning in 1999</a>.</p>
+<p>The syntax and definition of type constraints mostly follows Java’s, using parameterized interfaces.</p>
+<p>Learning from the Java generics implementation experience, C# removes many of the rough edges.
+It makes parameterization information available at runtime, so that reflection can distinguish <code class="docutils literal notranslate"><span class="pre">List&lt;string&gt;</span></code> from <code class="docutils literal notranslate"><span class="pre">List&lt;List&lt;string&gt;&gt;</span></code>.
+It also allows parameterization to use basic types like int, so that <code class="docutils literal notranslate"><span class="pre">List&lt;int&gt;</span></code> is valid and efficient.</p>
+</div>
+<div class="section" id="d-2002">
+<h3>D, 2002<a class="headerlink" href="#d-2002" title="Permalink to this headline">¶</a></h3>
+<p>D
+<a class="reference external" href="https://wiki.dlang.org/Language_History_and_Future">added templates in D 0.40</a>, released in September 2002.
+We have not tracked down the original design to see how similar it was to the current templates.
+The current D template mechanism allows parameterizing a block of arbitrary code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="n">Template</span><span class="p">(</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">)</span> <span class="p">{</span>
+	<span class="o">...</span> <span class="n">code</span> <span class="n">using</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The block is instantiated using <code class="docutils literal notranslate"><span class="pre">Template!</span></code> followed by actual types, as in <code class="docutils literal notranslate"><span class="pre">Template!(int,</span> <span class="pre">float64)</span></code>.
+It appears that instantiation is always at compile-time, like in C++.
+If a template contains a single declaration of the same name, the usage is shortened:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>template Sum(T) {
+	T Sum(T[] x) {
+		...
+	}
+}
+
+int[] x = ...
+int sum = Sum!(int)(x) // short for Sum!(int).Sum(x)
+</pre></div>
+</div>
+<p>This code compiles and runs, but it can be made clearer by adding an
+<a class="reference external" href="https://dlang.org/concepts.html">explicit constraint on <code class="docutils literal notranslate"><span class="pre">T</span></code></a> to say that it must support equality:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>template hasEquals(T) {
+	const hasEquals = __traits(compiles, (T t) {
+		return t == t;
+	});
+}
+
+template Sum(T) if (hasEquals!(T)) {
+	T Sum(T []x) {
+		...
+	}
+}
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">__traits(compiles,</span> <span class="pre">...)</span></code> construct is a variant of the C++ concepts idea (see C++ discussion above).</p>
+<p>As in C++, because the constraints can be applied to a group of types, defining <code class="docutils literal notranslate"><span class="pre">Graph</span></code> does not require mutually-recursive gymnastics:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>template isGraph(Node, Edge) {
+	const isGraph = __traits(compiles, (Node n, Edge e) {
+		Edge[] edges = n.Edges();
+		Node[] nodes = e.Nodes();
+	});
+}
+
+template ShortestPath(Node, Edge)
+		if (isGraph!(Node, Edge)) {
+	Edge[] ShortestPath(Node src, Node dst) {
+		...
+	}
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="rust-2012">
+<h3>Rust, 2012<a class="headerlink" href="#rust-2012" title="Permalink to this headline">¶</a></h3>
+<p>Rust
+<a class="reference external" href="https://github.com/rust-lang/rust/blob/master/RELEASES.md#version-01--2012-01-20">included generics in version 0.1</a>, released in 2012.</p>
+<p>Rust defines generics with syntax similar to C#, using traits (Rust’s interfaces) as type constraints.</p>
+<p>Rust avoids Java’s and C#’s curiously-recurring interface pattern for direct self-reference by introducing a <code class="docutils literal notranslate"><span class="pre">Self</span></code> type.
+For example, the protocol for having an <code class="docutils literal notranslate"><span class="pre">Equals</span></code> method can be written:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pub</span> <span class="n">trait</span> <span class="n">Equals</span> <span class="p">{</span>
+	<span class="n">fn</span> <span class="n">eq</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+	<span class="n">fn</span> <span class="n">ne</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(In Rust, <code class="docutils literal notranslate"><span class="pre">&amp;self</span></code> denotes the method’s receiver variable, written without an explicit type; elsewhere in the function signature, <code class="docutils literal notranslate"><span class="pre">&amp;Self</span></code> can be used to denote the receiver type.)</p>
+<p>And then our <code class="docutils literal notranslate"><span class="pre">Set</span></code> type can be written:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">struct</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span> <span class="n">Equals</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is shorthand for</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">struct</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">where</span> <span class="n">T</span><span class="p">:</span> <span class="n">Equals</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The graph example still needs explicitly mutually-recursive traits:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pub</span> <span class="n">trait</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="n">fn</span> <span class="n">edges</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vec</span><span class="o">&lt;</span><span class="n">Edge</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">pub</span> <span class="n">trait</span> <span class="n">Edge</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="n">fn</span> <span class="n">nodes</span><span class="p">(</span><span class="o">&amp;</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vec</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">pub</span> <span class="n">fn</span> <span class="n">shortest_path</span><span class="o">&lt;</span><span class="n">N</span><span class="p">,</span> <span class="n">E</span><span class="o">&gt;</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vec</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span>
+		<span class="n">where</span> <span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">E</span><span class="p">:</span> <span class="n">Edge</span><span class="o">&lt;</span><span class="n">N</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In keeping with its “no runtime” philosophy, Rust implements generics by compile-time expansion, like C++ templates.</p>
+</div>
+<div class="section" id="swift-2017">
+<h3>Swift, 2017<a class="headerlink" href="#swift-2017" title="Permalink to this headline">¶</a></h3>
+<p>Swift added generics in Swift 4, released in 2017.</p>
+<p>The
+<a class="reference external" href="https://docs.swift.org/swift-book/LanguageGuide/Generics.html">Swift language guide</a> gives an example of sequential search through an array, which requires that the type parameter <code class="docutils literal notranslate"><span class="pre">T</span></code> support equality checking. (This is a popular example; it dates back to CLU.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>func findIndex&lt;T: Equatable&gt;(of valueToFind: T, in array:[T]) -&gt; Int? {
+	for (index, value) in array.enumerated() {
+		if value == valueToFind {
+			return index
+		}
+	}
+	return nil
+}
+</pre></div>
+</div>
+<p>Declaring that <code class="docutils literal notranslate"><span class="pre">T</span></code> satisfies the
+<a class="reference external" href="https://developer.apple.com/documentation/swift/equatable"><code class="docutils literal notranslate"><span class="pre">Equatable</span></code></a> protocol makes the use of <code class="docutils literal notranslate"><span class="pre">==</span></code> in the function body valid.
+<code class="docutils literal notranslate"><span class="pre">Equatable</span></code> appears to be a built-in in Swift, not possible to define otherwise.</p>
+<p>Like Rust, Swift avoids Java’s and C#’s curiously recurring interface pattern for direct self-reference by introducing a <code class="docutils literal notranslate"><span class="pre">Self</span></code> type.
+For example, the protocol for having an <code class="docutils literal notranslate"><span class="pre">Equals</span></code> method is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protocol</span> <span class="n">EqualsMethod</span> <span class="p">{</span>
+	<span class="n">func</span> <span class="n">Equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Protocols cannot be parameterized, but declaring “associated types” can be used for the same effect:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">protocol</span> <span class="n">Node</span> <span class="p">{</span>
+	<span class="n">associatedtype</span> <span class="n">Edge</span><span class="p">;</span>
+	<span class="n">func</span> <span class="n">Edges</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">Edge</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="n">protocol</span> <span class="n">Edge</span> <span class="p">{</span>
+	<span class="n">associatedtype</span> <span class="n">Node</span><span class="p">;</span>
+	<span class="n">func</span> <span class="n">Nodes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">Node</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">ShortestPath</span><span class="o">&lt;</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">E</span><span class="p">:</span> <span class="n">Edge</span><span class="o">&gt;</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="n">dst</span><span class="p">:</span> <span class="n">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">E</span><span class="p">]</span>
+		<span class="n">where</span> <span class="n">N</span><span class="o">.</span><span class="n">Edge</span> <span class="o">==</span> <span class="n">E</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">Node</span> <span class="o">==</span> <span class="n">N</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Swift’s default implementation of generic code is by single compilation with run-time substitution, via “<a class="reference external" href="https://www.reddit.com/r/swift/comments/3r4gpt/how_is_swift_generics_implemented/cwlo64w/?st=jkwrobje&amp;sh=6741ba8b">witness tables</a>”.
+The compiler is allowed to compile specialized versions of generic code as an optimization, just as we would like to do for Go.</p>
+</div>
+</div>
+<div class="section" id="earlier-go-designs">
+<h2>Earlier Go Designs<a class="headerlink" href="#earlier-go-designs" title="Permalink to this headline">¶</a></h2>
+<p>As noted above, the Go team, and in particular Ian Lance Taylor, has been investigating and discussing possible designs for “generics” since before the open source release.
+In April 2016, we
+<a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292-generics">published the four main designs</a> we most seriously considered (before the current one).
+Looking back over the designs and comparing them to the current draft design, it is helpful to focus on four features that varied in the designs over time: syntax, type constraints, type inference, and implementation strategy.</p>
+<p><strong>Syntax</strong>.
+How are generic types, funcs, or methods declared? How are generic types, funcs, or methods used?</p>
+<p><strong>Type Constraints</strong>.
+How are type constraints defined?</p>
+<p><strong>Type Inference</strong>.
+When can explicit function call type instantiations be omitted (inferred by the compiler)?</p>
+<p><strong>Implementation</strong>.
+Is compile-time substitution required? Is run-time substitution required? Are both required? Can the compiler choose one or the other as it sees fit?</p>
+<div class="section" id="type-functions-june-2010">
+<h3><a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292/2010-06-type-functions">Type Functions</a>, June 2010<a class="headerlink" href="#type-functions-june-2010" title="Permalink to this headline">¶</a></h3>
+<p>The first design we explored was based on the idea of a “type function.”</p>
+<p><strong>Syntax.</strong> “Type function” was the name for the syntax for a parameterized type.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Vector</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="p">[]</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>Every use of a type function had to specify concrete instantiations for the type variables, as in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">VectorInt</span> <span class="n">Vector</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Func definitions introduced type parameters implicitly by use of a type function or explicitly by use of an argument of type “<code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span> <span class="pre">type</span></code>”, as in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="n">Vector</span><span class="p">(</span><span class="n">T</span> <span class="nb">type</span><span class="p">))</span> <span class="n">T</span>
+
+<span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="p">[]</span><span class="n">T</span> <span class="nb">type</span><span class="p">)</span> <span class="n">T</span>
+</pre></div>
+</div>
+<p><strong>Constraints.</strong>
+Type constraints were specified by optional interface names following the type parameter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">PrintableVector</span><span class="p">(</span><span class="n">T</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Stringer</span><span class="p">)</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="n">func</span> <span class="n">Print</span><span class="p">(</span><span class="n">x</span> <span class="n">T</span> <span class="nb">type</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Stringer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To allow use of operators like addition in generic code, this proposal relied upon a separate proposal to introduce “operator methods” (as in CLU), which would in turn make them available in interface definitions.</p>
+<p><strong>Inference.</strong> There were no function call type instantiations.
+Instead there was an algorithm for determining the type instantiations, with no explicit fallback when the algorithm failed.</p>
+<p><strong>Implementation.</strong> Overall the goal was to enable writing complex type-independent code once, at a run-time cost: the implementation would always compile only a generic version of the code, which would be passed a type descriptor to supply necessary details.
+This would make generics unsuitable for high-performance uses or even trivial uses like <code class="docutils literal notranslate"><span class="pre">Min</span></code> and <code class="docutils literal notranslate"><span class="pre">Max</span></code>.</p>
+<p>If type <code class="docutils literal notranslate"><span class="pre">Vector(T)</span></code> defined a method <code class="docutils literal notranslate"><span class="pre">Read(b</span> <span class="pre">[]T)</span> <span class="pre">(int,</span> <span class="pre">error)</span></code>, it was unclear how the generic <code class="docutils literal notranslate"><span class="pre">Read</span></code> implementation specialized to byte would necessarily be compatible in calling convention with <code class="docutils literal notranslate"><span class="pre">io.Reader</span></code>.</p>
+<p>The proposal permitted the idea of unbound type parameters
+that seemed to depend on unspecified runtime support, producing “generic values”.
+The doc uses as an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">Unknown</span><span class="p">()</span> <span class="n">T</span> <span class="nb">type</span>
+
+<span class="n">x</span> <span class="o">:=</span> <span class="n">Unknown</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It was not clear exactly what this meant or how it would be implemented.
+Overall it seemed that the need for the concept of a “generic value” was an indicator that something was not quite right.</p>
+</div>
+<div class="section" id="generalized-types-march-2011">
+<h3><a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292/2011-03-gen">Generalized Types</a>, March 2011<a class="headerlink" href="#generalized-types-march-2011" title="Permalink to this headline">¶</a></h3>
+<p>The next design we explored was called “generalized types,” although type parameters applied equally to types and functions.</p>
+<p><strong>Syntax.</strong> A type variable was introduced by the syntax <code class="docutils literal notranslate"><span class="pre">gen</span> <span class="pre">[T]</span></code> before a declaration and instantiated by listing the types in square brackets after the declared name.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="nb">type</span> <span class="n">Vector</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="nb">type</span> <span class="n">VectorInt</span> <span class="n">Vector</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+<span class="n">gen</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span>
+
+<span class="n">gen</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="n">Vector</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="n">T</span>
+
+<span class="nb">sum</span> <span class="o">:=</span> <span class="n">Sum</span><span class="p">[</span><span class="nb">int</span><span class="p">]([]</span><span class="nb">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">})</span>
+
+<span class="n">gen</span><span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span> <span class="n">MakePair</span><span class="p">(</span><span class="n">x</span> <span class="n">T1</span><span class="p">,</span> <span class="n">y</span> <span class="n">T2</span><span class="p">)</span> <span class="n">Pair</span><span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>As an aside, we discussed but ultimately rejected reserving <code class="docutils literal notranslate"><span class="pre">gen</span></code> or <code class="docutils literal notranslate"><span class="pre">generic</span></code> as keywords for Go 1 in anticipation of adopting some proposal like this.
+It is interesting to note that the current design avoids the need for any such keyword and does not seem to suffer for it.</p>
+<p><strong>Constraints.</strong> The type variable could be followed by an interface name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span> <span class="n">Stringer</span><span class="p">]</span> <span class="nb">type</span> <span class="n">PrintableVector</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="n">gen</span> <span class="p">[</span><span class="n">T</span> <span class="n">Stringer</span><span class="p">]</span> <span class="n">func</span> <span class="n">Print</span><span class="p">(</span><span class="n">x</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The proposal suggested adding language-defined method names for operators, so that <code class="docutils literal notranslate"><span class="pre">Sum</span></code> could be written:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="nb">type</span> <span class="n">Number</span> <span class="n">interface</span> <span class="p">{</span>
+	<span class="n">Plus</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span>
+<span class="p">}</span>
+
+<span class="n">gen</span> <span class="p">[</span><span class="n">T</span> <span class="n">Number</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">total</span> <span class="n">T</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">x</span> <span class="p">{</span>
+		<span class="n">total</span> <span class="o">=</span> <span class="n">total</span><span class="o">.</span><span class="n">Plus</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">total</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Inference.</strong> This proposal defined a simple left-to-right greedy unification of the types of the function call arguments with the types of the generic parameter list.
+The current proposal is non-greedy: it unifies the types, and then verifies that all type parameters were unified to the same type.
+The reason the earlier proposal used a greedy algorithm was to handle untyped constants; in the current proposal untyped constants are handled by ignoring them in the first pass and doing a second pass if required.</p>
+<p><strong>Implementation.</strong> This proposal noted that every actual value in a running Go program would have a concrete type.
+It eliminated the “generic values” of the previous proposal.</p>
+<p>This was the first proposal that aimed to support both generic and specialized compilation, with an appropriate choice made by the compiler.
+(Because the proposal was never implemented, it is unclear whether it would have achieved that goal.)</p>
+</div>
+<div class="section" id="generalized-types-ii-october-2013">
+<h3><a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292/2013-10-gen">Generalized Types II</a>, October 2013<a class="headerlink" href="#generalized-types-ii-october-2013" title="Permalink to this headline">¶</a></h3>
+<p>This design was an adaptation of the previous design, at that point two years old, with only one significant change.
+Instead of getting bogged down in specifying interfaces, especially interfaces for operators, the design discarded type constraints entirely.
+This allowed writing <code class="docutils literal notranslate"><span class="pre">Sum</span></code> with the usual <code class="docutils literal notranslate"><span class="pre">+</span></code> operator instead of a new <code class="docutils literal notranslate"><span class="pre">.Plus</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">func</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span> <span class="p">{</span>
+	<span class="n">s</span> <span class="o">:=</span> <span class="n">T</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">x</span> <span class="p">{</span>
+		<span class="n">s</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">s</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As such, it was the first generics design that did not call for operator methods as well.</p>
+<p>Unfortunately, the design did not explain exactly how constraints could be inferred and whether that was even feasible.
+Worse, if contracts are not written down, there’s no way to ensure that an API does not change its requirements accidentally and therefore break clients unexpectedly.</p>
+</div>
+<div class="section" id="type-parameters-december-2013">
+<h3><a class="reference external" href="https://go.googlesource.com/proposal/+/master/design/15292/2013-12-type-params">Type Parameters</a>, December 2013<a class="headerlink" href="#type-parameters-december-2013" title="Permalink to this headline">¶</a></h3>
+<p>This design kept most of the semantics of the previous design but introduced new syntax.
+It dropped the gen keyword and moved the type-variable-introducing brackets after the func or type keyword, as in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">Vector</span> <span class="p">[]</span><span class="n">T</span>
+
+<span class="nb">type</span> <span class="n">VectorInt</span> <span class="n">Vector</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+<span class="n">func</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="p">[]</span><span class="n">T</span><span class="p">)</span> <span class="n">T</span>
+
+<span class="n">func</span> <span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="n">Sum</span><span class="p">(</span><span class="n">x</span> <span class="n">Vector</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="n">T</span>
+
+<span class="nb">sum</span> <span class="o">:=</span> <span class="n">Sum</span><span class="p">[</span><span class="nb">int</span><span class="p">]([]</span><span class="nb">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">})</span>
+
+<span class="n">func</span> <span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span> <span class="n">MakePair</span><span class="p">(</span><span class="n">x</span> <span class="n">T1</span><span class="p">,</span> <span class="n">y</span> <span class="n">T2</span><span class="p">)</span> <span class="n">Pair</span><span class="p">[</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This design retained the implicit constraints of the previous one, but now with a much longer discussion of exactly how to infer restrictions from function bodies.
+It was still unclear if the approach was workable in practice, and it seemed clearly incomplete.
+The design noted ominously:</p>
+<blockquote>
+<div><p>The goal of the restrictions listed above is not to try to handle every possible case.
+It is to provide a reasonable and consistent approach to type checking of parameterized functions and preliminary type checking of types used to instantiate those functions.</p>
+<p>It’s possible that future compilers will become more restrictive; a parameterized function that can not be instantiated by any type argument is invalid even if it is never instantiated, but we do not require that every compiler diagnose it.
+In other words, it’s possible that even if a package compiles successfully today, it may fail to compile in the future if it defines an invalid parameterized function.</p>
+</div></blockquote>
+<p>Still, after many years of struggling with explicit enumerations of type constraints, “just look at the function body” seemed quite attractive.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="go2draft-type-parameters.html" class="btn btn-neutral float-right" title="Type Parameters - Draft Design" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="go2draft-error-values-overview.html" class="btn btn-neutral float-left" title="Error Values — Problem Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

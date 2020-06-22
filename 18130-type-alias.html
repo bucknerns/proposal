@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Type Aliases &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: percpu.Sharded, an API for reducing cache contention" href="18802-percpu-sharded.html" />
+    <link rel="prev" title="Proposal: Concurrent stack re-scanning" href="17505-concurrent-rescan.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Type Aliases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#comparison-of-type-declarations-and-type-aliases">Comparison of type declarations and type aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#type-cycles">Type cycles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-byte-and-rune">Relationship to byte and rune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#effect-on-embedding">Effect on embedding</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cmd-compile">cmd/compile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gccgo">gccgo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-ast">go/ast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-doc">go/doc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-parser">go/parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-printer">go/printer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-types">go/types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-importer">go/importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reflect">reflect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cmd-api">cmd/api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cmd-doc">cmd/doc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cmd-gofmt">cmd/gofmt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cmd-vet">cmd/vet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-cmd-goimports">golang.org/x/tools/cmd/goimports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-cmd-godex">golang.org/x/tools/cmd/godex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-cmd-guru">golang.org/x/tools/cmd/guru</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-go-callgraph-rta">golang.org/x/tools/go/callgraph/rta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-go-gcexportdata">golang.org/x/tools/go/gcexportdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-go-internal-gccgoimporter">golang.org/x/tools/go/internal/gccgoimporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-go-pointer">golang.org/x/tools/go/pointer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-go-ssa">golang.org/x/tools/go/ssa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-go-types-typeutil">golang.org/x/tools/go/types/typeutil</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-godoc-analysis">golang.org/x/tools/godoc/analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#golang-org-x-tools-refactor">golang.org/x/tools/refactor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Type Aliases</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/18130-type-alias.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-type-aliases">
+<h1>Proposal: Type Aliases<a class="headerlink" href="#proposal-type-aliases" title="Permalink to this headline">¶</a></h1>
+<p>Authors: Russ Cox, Robert Griesemer</p>
+<p>Last updated: December 16, 2016</p>
+<p>Discussion at https://golang.org/issue/18130.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>We propose to add to the Go language a type alias declaration, which introduces an alternate name for an existing type. The primary motivation is to enable gradual code repair during large-scale refactorings, in particular moving a type from one package to another in such a way that code referring to the old name interoperates with code referring to the new name. Type aliases may also be useful for allowing large packages to be split into multiple implementation packages with a single top-level exported API, and for experimenting with extended versions of existing packages.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>The article <a class="reference external" href="https://talks.golang.org/2016/refactor.article">Codebase Refactoring (with help from Go)</a> presents the background for this change in detail.</p>
+<p>In short, one of Go’s goals is to scale well to large codebases. In those codebases, it’s important to be able to refactor the overall structure of the codebase, including changing which APIs are in which packages. In those large refactorings, it is important to support a transition period in which the API is available from both the old and new locations and references to old and new can be mixed and interoperate. Go provides workable mechanisms for this kind of change when the API is a const, func, or var, but not when the API is a type. There is today no way to arrange that oldpkg.OldType and newpkg.NewType are identical and that code referring to the old name interoperates with code referring to the new name. Type aliases provide that mechanism.</p>
+<p>This proposal is a replacement for the <a class="reference external" href="https://golang.org/design/16339-alias-decls">generalized alias proposal</a> originally targeted for, but held back from, Go 1.8.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>The new type declaration syntax <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">T1</span> <span class="pre">=</span> <span class="pre">T2</span></code> declares <code class="docutils literal notranslate"><span class="pre">T1</span></code> as a <em>type alias</em> for <code class="docutils literal notranslate"><span class="pre">T2</span></code>. After such a declaration, T1 and T2 are <a class="reference external" href="https://golang.org/ref/spec#Type_identity">identical types</a>. In effect, <code class="docutils literal notranslate"><span class="pre">T1</span></code> is merely an alternate spelling for <code class="docutils literal notranslate"><span class="pre">T2</span></code>.</p>
+<p>The language grammar changes by modifying the current definition of TypeSpec from</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TypeSpec</span>     <span class="o">=</span> <span class="n">identifier</span> <span class="n">Type</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TypeSpec</span>     <span class="o">=</span> <span class="n">identifier</span> <span class="p">[</span> <span class="s2">&quot;=&quot;</span> <span class="p">]</span> <span class="n">Type</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Like in any declaration, T1 must be an <a class="reference external" href="https://golang.org/ref/spec#Identifiers">identifier</a>. If T1 is an <a class="reference external" href="https://golang.org/ref/spec#Exported_identifiers">exported identifier</a>, then T1 is exported for use by importing packages. There are no restrictions on the form of <code class="docutils literal notranslate"><span class="pre">T2</span></code>: it may be <a class="reference external" href="https://golang.org/ref/spec#Type">any type</a>, including but not limited to types imported from other packages. Anywhere a TypeSpec is allowed today, a TypeSpec introducing a type alias is valid, including inside function bodies.</p>
+<p>Note that because T1 is an alternate spelling for T2, nearly all analysis of code involving T1 proceeds by first expanding T1 to T2. In particular, T1 is not necessarily a <a class="reference external" href="https://golang.org/ref/spec#Types">named type</a> for purposes such as evaluating <a class="reference external" href="https://golang.org/ref/spec#Assignability">assignability</a>.</p>
+<p>To make the point about named types concrete, consider:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Name1</span> <span class="nb">map</span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="n">string</span>
+<span class="nb">type</span> <span class="n">Name2</span> <span class="nb">map</span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="n">string</span>
+<span class="nb">type</span> <span class="n">Alias</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="n">string</span>
+</pre></div>
+</div>
+<p>According to <a class="reference external" href="https://golang.org/ref/spec#Assignability">Go assignability</a>, a value of type Name1  is assignable to map[string]string (because the latter is not a named type) but a value of type Name1 is not assignable to Name2 (because both are named types, and the names differ). In this example, because Alias is an alternate spelling for map[string]string, a value of type Name1 is assignable to Alias (because Alias is the same as map[string]string, which is not a named type).</p>
+<p>Note: It’s possible that due to aliases, the spec term “named type” should be clarified or reworded in some way, or a new term should replace it, like “declared type”. This proposal uses words like “written” or “spelled” when describing aliases to avoid the term “named”. We could also use a better pair of names than “type declaration” and “type alias declaration”.</p>
+<div class="section" id="comparison-of-type-declarations-and-type-aliases">
+<h3>Comparison of type declarations and type aliases<a class="headerlink" href="#comparison-of-type-declarations-and-type-aliases" title="Permalink to this headline">¶</a></h3>
+<p>Go already has a <a class="reference external" href="https://golang.org/ref/spec#Type_declarations">type declaration</a> <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">Tnamed</span> <span class="pre">Tunderlying</span></code>. That declaration defines a new type Tnamed, different from (not identical to) Tunderlying. Because Tnamed is different from all other types, notably Tunderlying, composite types built from Tnamed and Tunderlying are different. For example, these pairs are all different types:</p>
+<ul class="simple">
+<li><p>*Tnamed and *Tunderlying</p></li>
+<li><p>chan Tnamed and chan Tunderlying</p></li>
+<li><p>func(Tnamed) and func(Tunderlying)</p></li>
+<li><p>interface{ M() Tnamed } and interface{ M() Tunderlying }</p></li>
+</ul>
+<p>Because Tnamed and Tunderlying are different types, a Tunderlying stored in an interface value x does not match a type assertion <code class="docutils literal notranslate"><span class="pre">x.(Tnamed)</span></code> and does not match a type switch <code class="docutils literal notranslate"><span class="pre">case</span> <span class="pre">Tnamed</span></code>; similarly, a Tnamed does not match <code class="docutils literal notranslate"><span class="pre">x.(Tunderlying)</span></code> nor <code class="docutils literal notranslate"><span class="pre">case</span> <span class="pre">Tunderlying</span></code>.</p>
+<p>Tnamed, being a named type, can have <a class="reference external" href="https://golang.org/ref/spec#Method_declarations">method declarations</a> associated with it.</p>
+<p>In contrast, the new type alias declaration <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">T1</span> <span class="pre">=</span> <span class="pre">T2</span></code> defines T1 as an alternate way to write T2. The two <em>are</em> identical, and so these pairs are all identical types:</p>
+<ul class="simple">
+<li><p>*T1 and *T2</p></li>
+<li><p>chan T1 and chan T2</p></li>
+<li><p>func(T1) and func(T2)</p></li>
+<li><p>interface{ M() T1 } and interface{ M() T2 }</p></li>
+</ul>
+<p>Because T1 and T2 are identical types, a T2 stored in an interface value x does match a type assertion <code class="docutils literal notranslate"><span class="pre">x.(T1)</span></code> and does match a type switch <code class="docutils literal notranslate"><span class="pre">case</span> <span class="pre">T1</span></code>; similarly a T1 does match <code class="docutils literal notranslate"><span class="pre">x.(T2)</span></code> and <code class="docutils literal notranslate"><span class="pre">case</span> <span class="pre">T2</span></code>.</p>
+<p>Because T1 and T2 are identical types, it is not valid to list both as different cases in a type switch, just as it is not valid to list T1 twice or T2 twice. (The spec already says, “<a class="reference external" href="https://golang.org/ref/spec#Type_switches">The types listed in the cases of a type switch must all be different.</a>”)</p>
+<p>Since T1 is just another way to write T2, it does not have its own set of method declarations. Instead, T1’s method set is the same as T2’s. At least for the initial trial, there is no restriction against method declarations using T1 as a receiver type, provided using T2 in the same declaration would be valid.
+Note that if T1 is an alias for a type T2 defined in an imported package, method declarations using T1 as a receiver type are invalid, just as method declarations using T2 as a receiver type are invalid.</p>
+</div>
+<div class="section" id="type-cycles">
+<h3>Type cycles<a class="headerlink" href="#type-cycles" title="Permalink to this headline">¶</a></h3>
+<p>In a type alias declaration, in contrast to a type declaration, T2 must never refer, directly or indirectly, to T1. For example <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">T</span> <span class="pre">=</span> <span class="pre">*T</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">T</span> <span class="pre">=</span> <span class="pre">struct</span> <span class="pre">{</span> <span class="pre">next</span> <span class="pre">*T</span> <span class="pre">}</span></code> are not valid type alias declarations. In contrast, if the equals signs were dropped, those would become valid ordinary type declarations. The distinction is that ordinary type declarations introduce formal names that provide a way to describe the recursion. In contrast, aliases must be possible to “expand out”, and there is no way to expand out an alias like <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">T</span> <span class="pre">=</span> <span class="pre">*T</span></code>.</p>
+</div>
+<div class="section" id="relationship-to-byte-and-rune">
+<h3>Relationship to byte and rune<a class="headerlink" href="#relationship-to-byte-and-rune" title="Permalink to this headline">¶</a></h3>
+<p>The language specification already defines <code class="docutils literal notranslate"><span class="pre">byte</span></code> as an alias for <code class="docutils literal notranslate"><span class="pre">uint8</span></code> and similarly <code class="docutils literal notranslate"><span class="pre">rune</span></code> as an alias for <code class="docutils literal notranslate"><span class="pre">int32</span></code>, using the word alias as an informal term. It is a goal that the new type declaration semantics not introduce a different meaning for alias. That is, it should be possible to describe the existing meanings of <code class="docutils literal notranslate"><span class="pre">byte</span></code> and <code class="docutils literal notranslate"><span class="pre">uint8</span></code> by saying that they behave as if predefined by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">byte</span> <span class="o">=</span> <span class="n">uint8</span>
+<span class="nb">type</span> <span class="n">rune</span> <span class="o">=</span> <span class="n">int32</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="effect-on-embedding">
+<h3>Effect on embedding<a class="headerlink" href="#effect-on-embedding" title="Permalink to this headline">¶</a></h3>
+<p>Although T1 and T2 may be identical types, they are written differently. The distinction is important in an <a class="reference external" href="https://golang.org/ref/spec#Struct_types">embedded field</a> within a struct. In this case, the effective name of the embedded field depends on how the type was written: in the struct</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">MyStruct</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="n">T1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>the field always has name T1 (and only T1), even when T1 is an alias for T2. This choice avoids needing to understand how T1 is defined in order to understand the struct definition. Only if (or when) MyStruct’s definition changes from using T1 to using T2 would the field name change. Also, T2 may not be a named type at all: consider embedding a MyMap defined by <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">MyMap</span> <span class="pre">=</span> <span class="pre">map[string]interface{}</span></code>.</p>
+<p>Similarly, because an embedded T1 must be accessed using the name T1, not T2, it is valid to embed both T1 and T2 (assuming T2 is a named type):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">MyStruct</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="n">T1</span>
+    <span class="n">T2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>References to myStruct.T1 or myStruct.T2 resolve to the corresponding fields. (Of course, this situation is unlikely to arise, and if T1 (= T2) is a struct type, then any fields within the struct would be inaccessible by direct access due to the usual <a class="reference external" href="https://golang.org/ref/spec#Selectors">selector ambiguity rules</a>.</p>
+<p>These choices also match the current meaning today of the byte and rune aliases. For example, it is valid today to write</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">MyStruct</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="n">byte</span>
+    <span class="n">uint8</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Because neither type has methods, that declaration is essentially equivalent to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">MyStruct</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="n">byte</span>  <span class="n">byte</span>
+    <span class="n">uint8</span> <span class="n">uint8</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>An alternate approach would be <a class="reference external" href="https://golang.org/design/16339-alias-decls">generalized aliases</a>, as discussed during the Go 1.8 cycle. However, generalized aliases overlap with and complicate other declaration forms, and the only form where the need is keenly felt is types. In contrast, this proposal limits the change in the language to types, and there is still plenty to do; see the Implementation section.</p>
+<p>The implementation changes for type aliases are smaller than for generalized aliases, because while there is new syntax there is no need for a new AST type (the new syntax is still represented as an ast.TypeSpec, matching the grammar). With generalized aliases, any program processing ASTs needed updates for the new forms. With type aliases, most programs processing ASTs care only that they are holding a TypeSpec and can treat type alias declarations and regular type declarations the same, with no code changes. For example, we expect that cmd/vet and cmd/doc may need no changes for type aliases; in contrast, they both crashed and needed updates when generalized aliases were tried.</p>
+<p>The question of the meaning of an embedded type alias was identified as <a class="reference external" href="https://github.com/golang/go/issues/17746">issue 17746</a>, during the exploration of general aliases. The rationale for the decision above is given inline with the decision. A key property is that it matches the current handling of byte and rune, so that the language need not have two different classes of type alias (predefined vs user-defined) with different semantics.</p>
+<p>The syntax and distinction between type declarations and type alias declarations ends up being nearly identical to that of <a class="reference external" href="https://www.freepascal.org/docs-html/ref/refse19.html">Pascal</a>. The alias syntax itself is also the same as in later languages like <a class="reference external" href="https://doc.rust-lang.org/book/type-aliases.html">Rust</a>.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This is a new language feature; existing code continues to compile, in keeping
+with the <a class="reference external" href="https://golang.org/doc/go1compat">compatibility guidelines</a>.</p>
+<p>In the libraries, there is a new field in go/ast’s TypeSpec, and there is a new type in go/types, namely types.Alias (details in the Implementation section below). These are both permitted changes at the library level. Code that cares about the semantics of Go types may need updating to handle aliases. This affects programming tools and is unavoidable with nearly any language change.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Since this is a language change, the implementation affects many pieces of the
+Go distribution and subrepositories.
+The goal is to have basic functionality ready and checked in at the start of the Go 1.9 development cycle, to enable exploration and experimentation by users during the
+entire three month development cycle.</p>
+<p>The implementation work is split out below, with owners and target dates listed (Feb 1 is beginning of Go 1.9).</p>
+<div class="section" id="cmd-compile">
+<h3>cmd/compile<a class="headerlink" href="#cmd-compile" title="Permalink to this headline">¶</a></h3>
+<p>The gc compiler needs to be updated to parse the new syntax, to apply the type checking rules appropriately, and to include appropriate information in its export format.</p>
+<p>Minor compiler changes will also be needed to generate proper reflect information for embedded fields, but that is a current bug in the handling of byte and rune. Those will be handled as part of the reflect changes.</p>
+<p>Owner: gri, mdempsky, by Jan 31</p>
+</div>
+<div class="section" id="gccgo">
+<h3>gccgo<a class="headerlink" href="#gccgo" title="Permalink to this headline">¶</a></h3>
+<p>Gccgo needs to be updated to parse the new syntax, to apply the type checking rules appropriately, and to include appropriate information in its export format.</p>
+<p>It may also need the same reflect fix.</p>
+<p>Owner: iant, by Jan 31</p>
+</div>
+<div class="section" id="go-ast">
+<h3>go/ast<a class="headerlink" href="#go-ast" title="Permalink to this headline">¶</a></h3>
+<p>Reflecting the expansion of the grammar rule, ast.TypeSpec will need some additional field to declare that a type specifier defines a type alias. The likely choice is <code class="docutils literal notranslate"><span class="pre">EqualsPos</span> <span class="pre">token.Pos</span></code>, with a zero pos meaning there is no equals sign (an ordinary type declaration).</p>
+<p>Owner: gri, by Jan 31</p>
+</div>
+<div class="section" id="go-doc">
+<h3>go/doc<a class="headerlink" href="#go-doc" title="Permalink to this headline">¶</a></h3>
+<p>Because go/doc only works with go/ast, not go/types, it may need no updates.</p>
+<p>Owner: rsc, by Jan 31</p>
+</div>
+<div class="section" id="go-parser">
+<h3>go/parser<a class="headerlink" href="#go-parser" title="Permalink to this headline">¶</a></h3>
+<p>The parser needs to be updated to recognize the new TypeSpec grammar including an equals sign and to generate the appropriate ast.TypeSpec. There should be no user-visible API changes to the package.</p>
+<p>Owner: gri, by Jan 31</p>
+</div>
+<div class="section" id="go-printer">
+<h3>go/printer<a class="headerlink" href="#go-printer" title="Permalink to this headline">¶</a></h3>
+<p>The printer needs to be updated to print an ast.TypeSpec with an equal sign when present, including lining up equal signs in adjacent type alias specifiers.</p>
+<p>Owner: gri, by Jan 31</p>
+</div>
+<div class="section" id="go-types">
+<h3>go/types<a class="headerlink" href="#go-types" title="Permalink to this headline">¶</a></h3>
+<p>The types.Type interface is implemented by a set of concrete implementations, one for each kind of type. Most likely, a new concrete implementation *types.Alias will need to be defined.
+The *types.Alias form will need a new method <code class="docutils literal notranslate"><span class="pre">Defn()</span> <span class="pre">type.Type</span></code> that gives the definition of the alias.</p>
+<p>The types.Type interface defines a method <code class="docutils literal notranslate"><span class="pre">Underlying()</span> <span class="pre">types.Type</span></code>. A *types.Alias will implement Underlying as Defn().Underlying(), so that code calling Underlying finds its way through both aliases and named types to the underlying form.</p>
+<p>Any clients of this package that attempt an exhaustive type switch over types.Type possibilities will need to be updated; clients that type switch over typ.Underlying() may not need updates.</p>
+<p>Note that code (like in the subrepos) that needs to compile with Go 1.8 will not be able to use the new API in go/types directly. Instead, there should probably be a new subrepo package, say golang.org/x/tools/go/types/typealias, that contains pre-Go 1.9 and Go 1.9 implementations of a combined type check vs destructure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">IsAlias</span><span class="p">(</span><span class="n">t</span> <span class="n">types</span><span class="o">.</span><span class="n">Type</span><span class="p">)</span> <span class="p">(</span><span class="n">name</span> <span class="o">*</span><span class="n">types</span><span class="o">.</span><span class="n">TypeName</span><span class="p">,</span> <span class="n">defn</span> <span class="n">types</span><span class="o">.</span><span class="n">Type</span><span class="p">,</span> <span class="n">ok</span> <span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Code in the subrepos can import this package and use this function any time it needs to consider the possibility of an alias type.</p>
+<p>Owner: gri, adonovan, by Jan 31</p>
+</div>
+<div class="section" id="go-importer">
+<h3>go/importer<a class="headerlink" href="#go-importer" title="Permalink to this headline">¶</a></h3>
+<p>The go/importer’s underlying import data decoders must be updated so they can understand export data containing alias information. This should be done more or less simultaneously with the compiler changes.</p>
+<p>Owner: gri, by Jan 31 (for go/internal/gcimporter)
+Owner: gri, by Jan 31 (for go/internal/gccgoimporter)</p>
+</div>
+<div class="section" id="reflect">
+<h3>reflect<a class="headerlink" href="#reflect" title="Permalink to this headline">¶</a></h3>
+<p>Type aliases are mostly invisible at runtime. In particular, since reflect uses reflect.Type equality as type identity, aliases must in general not appear in the reflect runtime data or API.</p>
+<p>An exception is the names of embedded fields. To date, package reflect has assumed that the name can be inferred from the type of the field. Aliases make that not true. Embedding type T1 = map[string]interface{} will show up as an embedded field of type map[string]interface{}, which has no name. Embedding type T1 = T2 will show up as an embedded field of type T2, but it has name T1.</p>
+<p>Reflect already gets this <a class="reference external" href="https://github.com/golang/go/issues/17766">wrong for the existing aliases byte and rune</a>. The fix for byte and rune should work unchanged for general type aliases as well.</p>
+<p>The reflect.StructField already contains an <code class="docutils literal notranslate"><span class="pre">Anonymous</span> <span class="pre">bool</span></code> separate from <code class="docutils literal notranslate"><span class="pre">Name</span> <span class="pre">string</span></code>. Fixing the problem should be a matter of emitting the right information in the compiler and populating StructField.Name correctly.</p>
+<p>There should be no API changes that affect clients of reflect.</p>
+<p>Owner: rsc, by Jan 31</p>
+</div>
+<div class="section" id="cmd-api">
+<h3>cmd/api<a class="headerlink" href="#cmd-api" title="Permalink to this headline">¶</a></h3>
+<p>The API checker cmd/api contains a type switch over implementations of types.Type. It will need to be updated to handle types.Alias.</p>
+<p>Owner: bradfitz, by Jan 31</p>
+</div>
+<div class="section" id="cmd-doc">
+<h3>cmd/doc<a class="headerlink" href="#cmd-doc" title="Permalink to this headline">¶</a></h3>
+<p>Both godoc and cmd/doc (invoked as ‘go doc’) need to be able to display type aliases.</p>
+<p>If possible, the changes to go/ast, go/doc, go/parser, and go/printer should be engineered so that godoc and ‘go doc’ need no changes at all, other than compiling against the newer versions of these packages. In particular, having no new go/ast type means that type switches need not be updated, and existing code processing TypeSpec is likely to continue to work for type alias-declaring TypeSpecs.</p>
+<p>(It would be nice to have the same property for go/types, but that doesn’t seem possible: go/types must expose the new concept of alias.)</p>
+<p>Owner: rsc, by Jan 31</p>
+</div>
+<div class="section" id="cmd-gofmt">
+<h3>cmd/gofmt<a class="headerlink" href="#cmd-gofmt" title="Permalink to this headline">¶</a></h3>
+<p>Gofmt should need no updating beyond compiling with the new underlying packages.</p>
+<p>Owner: gri, by Jan 31</p>
+</div>
+<div class="section" id="cmd-vet">
+<h3>cmd/vet<a class="headerlink" href="#cmd-vet" title="Permalink to this headline">¶</a></h3>
+<p>Vet uses go/types but does not appear to have any exhaustive switches on types.Type. It may need no updating.</p>
+<p>Owner: rsc, by Jan 31</p>
+</div>
+<div class="section" id="golang-org-x-tools-cmd-goimports">
+<h3>golang.org/x/tools/cmd/goimports<a class="headerlink" href="#golang-org-x-tools-cmd-goimports" title="Permalink to this headline">¶</a></h3>
+<p>Goimports should need no updating beyond compiling with the new underlying packages. Goimports does care about the set of exported symbols from a package, but it already handles exported type definitions as represented by TypeSpecs; the same code should work unmodified for aliases.</p>
+<p>Owner: bradfitz, by Jan 31</p>
+</div>
+<div class="section" id="golang-org-x-tools-cmd-godex">
+<h3>golang.org/x/tools/cmd/godex<a class="headerlink" href="#golang-org-x-tools-cmd-godex" title="Permalink to this headline">¶</a></h3>
+<p>May not need much updating. printer.writeTypeInternal has a switch on types.Type with a default that does p.print(t.String()). This may be right for aliases and may just work, or may need to be updated.</p>
+<p>Owner: gri, by Apr 30.</p>
+</div>
+<div class="section" id="golang-org-x-tools-cmd-guru">
+<h3>golang.org/x/tools/cmd/guru<a class="headerlink" href="#golang-org-x-tools-cmd-guru" title="Permalink to this headline">¶</a></h3>
+<p>Various switches on types.Type that may need updating.</p>
+<p>Owner: adonovan, by Feb 28.</p>
+</div>
+<div class="section" id="golang-org-x-tools-go-callgraph-rta">
+<h3>golang.org/x/tools/go/callgraph/rta<a class="headerlink" href="#golang-org-x-tools-go-callgraph-rta" title="Permalink to this headline">¶</a></h3>
+<p>Has type switches on types.Type.</p>
+<p>Owner: adonovan, by Apr 30.</p>
+</div>
+<div class="section" id="golang-org-x-tools-go-gcexportdata">
+<h3>golang.org/x/tools/go/gcexportdata<a class="headerlink" href="#golang-org-x-tools-go-gcexportdata" title="Permalink to this headline">¶</a></h3>
+<p>Implemented in terms of golang.org/x/tools/go/gcimporter15, which contains type switches on types.Type. Must also update to understand aliases in export data. golang.org/x/tools/go/gcimporter15 contains mostly modified copies of the code under go/internal/gcimporter. They should be updated simultaneously.</p>
+<p>Owner: gri, by Jan 31.</p>
+</div>
+<div class="section" id="golang-org-x-tools-go-internal-gccgoimporter">
+<h3>golang.org/x/tools/go/internal/gccgoimporter<a class="headerlink" href="#golang-org-x-tools-go-internal-gccgoimporter" title="Permalink to this headline">¶</a></h3>
+<p>Must update to understand aliases in export data. This code is mostly a modified copy of the code under go/internal/gccgoimporter. They should be updated simultaneously.</p>
+<p>Owner: gri, by Apr 30.</p>
+</div>
+<div class="section" id="golang-org-x-tools-go-pointer">
+<h3>golang.org/x/tools/go/pointer<a class="headerlink" href="#golang-org-x-tools-go-pointer" title="Permalink to this headline">¶</a></h3>
+<p>Semantically, type aliases should have very little effect. May not need significant updates, but there are a few type switches on types.Type.</p>
+<p>Owner: adonovan, matloob, by Apr 30.</p>
+</div>
+<div class="section" id="golang-org-x-tools-go-ssa">
+<h3>golang.org/x/tools/go/ssa<a class="headerlink" href="#golang-org-x-tools-go-ssa" title="Permalink to this headline">¶</a></h3>
+<p>Semantically, type aliases should have very little effect. May not need significant updates, but there are a few type switches on types.Type.</p>
+<p>Owner: adonovan, matloob, by Apr 30.</p>
+</div>
+<div class="section" id="golang-org-x-tools-go-types-typeutil">
+<h3>golang.org/x/tools/go/types/typeutil<a class="headerlink" href="#golang-org-x-tools-go-types-typeutil" title="Permalink to this headline">¶</a></h3>
+<p>Contains an exhaustive type switch on types.Type in Hasher.hashFor. Will need to be updated for types.Alias.</p>
+<p>Owner: gri, adonovan, by Apr 30.</p>
+</div>
+<div class="section" id="golang-org-x-tools-godoc-analysis">
+<h3>golang.org/x/tools/godoc/analysis<a class="headerlink" href="#golang-org-x-tools-godoc-analysis" title="Permalink to this headline">¶</a></h3>
+<p>Contains mentions of types.Named, but apparently no code with a type switch on types.Type (<code class="docutils literal notranslate"><span class="pre">case</span> <span class="pre">*types.Named</span></code> never appears). It is possible that no updates are needed.</p>
+<p>Owner: adonovan, gri, by Jan 31.</p>
+</div>
+<div class="section" id="golang-org-x-tools-refactor">
+<h3>golang.org/x/tools/refactor<a class="headerlink" href="#golang-org-x-tools-refactor" title="Permalink to this headline">¶</a></h3>
+<p>Has a switch on a types.Type of an embedded field to look for the type of the field and checks for *types.Pointer pointing at *types.Named and also *types.Named. Will need to allow *types.Alias in both places as well.</p>
+<p>Owner: adonovan, matloob, by Apr 30.</p>
+</div>
+</div>
+<div class="section" id="open-issues-if-applicable">
+<h2>Open issues (if applicable)<a class="headerlink" href="#open-issues-if-applicable" title="Permalink to this headline">¶</a></h2>
+<p>As noted above, the language specification term “named type” may need to be rephrased in some places. This proposal is clear on the semantics, but alternate phrasing may help make the specification clearer.</p>
+<p>The <a class="reference external" href="https://github.com/golang/go/issues/18130#issue-192757828">discussion summary</a> includes a list of possible restrictions and concerns for abuse. While it is likely that many concerns will not in practice have the severity to merit restrictions, we may need to work out agreed-upon guidance for uses of type aliases. In general this is similar to any other language feature: the first response to potential for abuse is education, not restrictions.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="18802-percpu-sharded.html" class="btn btn-neutral float-right" title="Proposal: percpu.Sharded, an API for reducing cache contention" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="17505-concurrent-rescan.html" class="btn btn-neutral float-left" title="Proposal: Concurrent stack re-scanning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

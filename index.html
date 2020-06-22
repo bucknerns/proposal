@@ -1,0 +1,1876 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>design documentation &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Security Policy for Go" href="11502-securitypolicy.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>design documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="design-documentation">
+<h1>design documentation<a class="headerlink" href="#design-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="11502-securitypolicy.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11502-securitypolicy.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11502-securitypolicy.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11502-securitypolicy.html#implementation">Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#reporting-a-security-bug">Reporting a Security Bug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#flagging-existing-issues-as-security-related">Flagging Existing Issues as Security-related</a></li>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#disclosure-process">Disclosure Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#receiving-security-updates">Receiving Security Updates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#comments-on-this-policy">Comments on This Policy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#plaintext-pgp-key-for-security-golang-org">Plaintext PGP Key for security&#64;golang.org</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="11502-securitypolicy.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#early-disclosure">Early Disclosure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="11502-securitypolicy.html#security-review-team-membership">Security Review Team Membership</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="11502-securitypolicy.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11970-decentralized-gc.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#subtests">Subtests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="12166-subtests.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#flags">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#subbenchmarks">Subbenchmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#alternative">Alternative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#subtest-semantics">Subtest semantics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#subbenchmark-semantics">Subbenchmark semantics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#id1">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12166-subtests.html#open-issues">Open issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#parallelism">Parallelism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12166-subtests.html#teardown">Teardown</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12302-release-proposal.html#release-process">Release process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12302-release-proposal.html#tag-format">Tag format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12302-release-proposal.html#who-benefits-from-adopting-this-proposal">Who benefits from adopting this proposal ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12302-release-proposal.html#why-recommend-semver">Why recommend SemVer ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12302-release-proposal.html#why-not-allow-the-v-prefix-to-be-optional">Why not allow the v prefix to be optional ?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12302-release-proposal.html#out-of-scope">Out of scope</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12416-cgo-pointers.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12416-cgo-pointers.html#consequences">Consequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12416-cgo-pointers.html#support">Support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12416-cgo-pointers.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12750-localization.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12750-localization.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#localization-in-go">Localization in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#definitions">Definitions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12750-localization.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#package-golang-org-x-text-message">Package golang.org/x/text/message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#package-golang-org-x-text-template-html-template">Package golang.org/x/text/{template|html/template}</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#package-golang-org-x-text-feature">Package golang.org/x/text/feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#value-formatting">Value formatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#example-currencies">Example: Currencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#example-units">Example: units</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12750-localization.html#details-and-rationale">Details and Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#formatting">Formatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#differences-from-the-fmt-package">Differences from the fmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#currency">Currency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#units">Units</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#features">Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#matching-algorithm">Matching algorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#full-example">Full Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#comparison-to-icu">Comparison to ICU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#comparison-to-os-x">Comparison to OS X</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="12750-localization.html#code-organization">Code organization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#example-statically-linked-package">Example: statically linked package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="12750-localization.html#example-dynamically-loaded-files">Example: dynamically loaded files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12750-localization.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12750-localization.html#implementation-plan">Implementation Plan</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#dense-mark-bitmaps">Dense mark bitmaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#dense-mark-bitmap-performance">Dense mark bitmap performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#sweep-free-allocation">Sweep-free allocation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12800-sweep-free-alloc.html#finalizers">Finalizers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#related-work">Related work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#possible-extensions">Possible extensions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12800-sweep-free-alloc.html#bit-heap-bitmap">1-bit heap bitmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12800-sweep-free-alloc.html#reducing-atomic-access-to-mark-bitmap">Reducing atomic access to mark bitmap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12800-sweep-free-alloc.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#clocks">Clocks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#computer-clocks">Computer clocks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#go-time">Go time</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#design">Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#simplicity">Simplicity</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#implementation">Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#reading-the-clocks">Reading the clocks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#time-representation">Time representation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#unaffected">Unaffected</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-mitchellh-packer-vendor-google-golang-org-appengine-demos-guestbook-guestbook-go-97">github.com/mitchellh/packer/vendor/google.golang.org/appengine/demos/guestbook/guestbook.go:97</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-aws-aws-sdk-go-service-databasemigrationservice-examples-test-go-887">github.com/aws/aws-sdk-go/service/databasemigrationservice/examples_test.go:887</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-influxdata-telegraf-plugins-inputs-mongodb-mongodb-data-test-go-94">github.com/influxdata/telegraf/plugins/inputs/mongodb/mongodb_data_test.go:94</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-spf13-fsync-fsync-test-go-23">github.com/spf13/fsync/fsync_test.go:23</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-flynn-flynn-vendor-github-com-gorilla-handlers-handlers-go-66">github.com/flynn/flynn/vendor/github.com/gorilla/handlers/handlers.go:66</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ncw-rclone-vendor-google-golang-org-grpc-server-go-586">github.com/ncw/rclone/vendor/google.golang.org/grpc/server.go:586</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-github-com-influxdata-influxdb-models-points-go-1316">github.com/openshift/origin/vendor/github.com/influxdata/influxdb/models/points.go:1316</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-zyedidia-micro-cmd-micro-util-go">github.com/zyedidia/micro/cmd/micro/util.go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-gravitational-teleport-lib-auth-init-test-go-59">github.com/gravitational/teleport/lib/auth/init_test.go:59</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-aws-aws-sdk-go-private-model-api-operation-go-420">github.com/aws/aws-sdk-go/private/model/api/operation.go:420</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-influxdata-telegraf-plugins-inputs-mongodb-mongodb-data-test-go-17">github.com/influxdata/telegraf/plugins/inputs/mongodb/mongodb_data_test.go:17</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-aws-aws-sdk-go-service-datapipeline-examples-test-go-36">github.com/aws/aws-sdk-go/service/datapipeline/examples_test.go:36</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-jessevdk-go-flags-man-go-177">github.com/jessevdk/go-flags/man.go:177</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#k8s-io-heapster-events-manager-manager-test-go-28">k8s.io/heapster/events/manager/manager_test.go:28</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#k8s-io-heapster-metrics-storage-podmetrics-reststorage-go-121">k8s.io/heapster/metrics/storage/podmetrics/reststorage.go:121</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-revel-revel-server-go-46">github.com/revel/revel/server.go:46</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-command-agent-agent-go-1426">github.com/hashicorp/consul/command/agent/agent.go:1426</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-drone-drone-server-login-go-143">github.com/drone/drone/server/login.go:143</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-github-com-coreos-etcd-pkg-transport-listener-go-113">github.com/openshift/origin/vendor/github.com/coreos/etcd/pkg/transport/listener.go:113:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ethereum-go-ethereum-swarm-api-http-server-go-189">github.com/ethereum/go-ethereum/swarm/api/http/server.go:189</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-vendor-google-golang-org-grpc-call-go-187">github.com/hashicorp/consul/vendor/google.golang.org/grpc/call.go:187</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-vault-builtin-logical-pki-backend-test-go-396">github.com/hashicorp/vault/builtin/logical/pki/backend_test.go:396</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-plugin-pkg-admission-namespace-lifecycle-admission-test-go-194">github.com/openshift/origin/vendor/k8s.io/kubernetes/plugin/pkg/admission/namespace/lifecycle/admission_test.go:194</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#unaffected-but-uses-time-time-as-wall-time-multiple-times">Unaffected (but uses time.Time as wall time multiple times)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-distribution-registry-storage-driver-inmemory-mfs-go-195">github.com/docker/distribution/registry/storage/driver/inmemory/mfs.go:195</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-minio-minio-cmd-server-startup-msg-test-go-52">github.com/minio/minio/cmd/server-startup-msg_test.go:52</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-pingcap-tidb-expression-builtin-string-test-go-42">github.com/pingcap/tidb/expression/builtin_string_test.go:42</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-docker-vendor-github-com-docker-distribution-registry-client-repository-go-750">github.com/docker/docker/vendor/github.com/docker/distribution/registry/client/repository.go:750</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-pingcap-pd-vendor-vendor-golang-org-x-net-internal-timeseries-timeseries-go-83">github.com/pingcap/pd/_vendor/vendor/golang.org/x/net/internal/timeseries/timeseries.go:83</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-astaxie-beego-logs-logger-test-go-24">github.com/astaxie/beego/logs/logger_test.go:24</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-attic-labs-noms-vendor-github-com-aws-aws-sdk-go-aws-signer-v4-v4-test-go-418">github.com/attic-labs/noms/vendor/github.com/aws/aws-sdk-go/aws/signer/v4/v4_test.go:418</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-zenazn-goji-example-models-go-21">github.com/zenazn/goji/example/models.go:21</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-afex-hystrix-go-hystrix-rolling-rolling-timing-go-77">github.com/afex/hystrix-go/hystrix/rolling/rolling_timing.go:77</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="12914-monotonic.html#fixed">Fixed</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-vault-vendor-golang-org-x-net-http2-transport-go-721">github.com/hashicorp/vault/vendor/golang.org/x/net/http2/transport.go:721</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-docker-vendor-github-com-hashicorp-serf-serf-serf-go-1417">github.com/docker/docker/vendor/github.com/hashicorp/serf/serf/serf.go:1417</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-consul-acl-replication-go-173">github.com/hashicorp/consul/consul/acl_replication.go:173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-flynn-flynn-vendor-gopkg-in-mgo-v2-session-go-3598">github.com/flynn/flynn/vendor/gopkg.in/mgo.v2/session.go:3598</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-huichen-wukong-examples-benchmark-go-173">github.com/huichen/wukong/examples/benchmark.go:173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ncw-rclone-vendor-google-golang-org-grpc-call-go-171">github.com/ncw/rclone/vendor/google.golang.org/grpc/call.go:171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-consul-fsm-go-281">github.com/hashicorp/consul/consul/fsm.go:281</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-libnetwork-vendor-github-com-sirupsen-logrus-text-formatter-go-27">github.com/docker/libnetwork/vendor/github.com/Sirupsen/logrus/text_formatter.go:27</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-flynn-flynn-vendor-golang-org-x-net-http2-go17-go-54">github.com/flynn/flynn/vendor/golang.org/x/net/http2/go17.go:54</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-zyedidia-micro-cmd-micro-eventhandler-go-102">github.com/zyedidia/micro/cmd/micro/eventhandler.go:102</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ethereum-go-ethereum-cmd-geth-chaincmd-go-186">github.com/ethereum/go-ethereum/cmd/geth/chaincmd.go:186</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-drone-drone-shared-oauth2-oauth2-go-176">github.com/drone/drone/shared/oauth2/oauth2.go:176</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-coreos-etcd-auth-simple-token-go-88">github.com/coreos/etcd/auth/simple_token.go:88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-docker-cli-command-node-ps-test-go-105">github.com/docker/docker/cli/command/node/ps_test.go:105</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-docker-integration-cli-docker-api-attach-test-go-130">github.com/docker/docker/integration-cli/docker_api_attach_test.go:130</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-test-e2e-framework-util-go-1696">github.com/openshift/origin/vendor/k8s.io/kubernetes/test/e2e/framework/util.go:1696</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-onsi-gomega-internal-asyncassertion-async-assertion-test-go-318">github.com/onsi/gomega/internal/asyncassertion/async_assertion_test.go:318</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-vault-physical-consul-go-344">github.com/hashicorp/vault/physical/consul.go:344</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hyperledger-fabric-vendor-golang-org-x-net-context-go17-go-62">github.com/hyperledger/fabric/vendor/golang.org/x/net/context/go17.go:62</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-consul-state-tombstone-gc-go-134">github.com/hashicorp/consul/consul/state/tombstone_gc.go:134</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-pkg-storage-etcd-etcd-helper-go-310">github.com/openshift/origin/vendor/k8s.io/kubernetes/pkg/storage/etcd/etcd_helper.go:310</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-pingcap-pd-server-util-go-215">github.com/pingcap/pd/server/util.go:215</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-pkg-kubelet-kuberuntime-instrumented-services-go-235">github.com/openshift/origin/vendor/k8s.io/kubernetes/pkg/kubelet/kuberuntime/instrumented_services.go:235</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-pkg-kubelet-dockertools-instrumented-docker-go-58">github.com/openshift/origin/vendor/k8s.io/kubernetes/pkg/kubelet/dockertools/instrumented_docker.go:58</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-coreos-etcd-tools-functional-tester-etcd-runner-command-global-go-103">github.com/coreos/etcd/tools/functional-tester/etcd-runner/command/global.go:103</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-reducedb-encoding-benchtools-benchtools-go-98">github.com/reducedb/encoding/benchtools/benchtools.go:98</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-swarm-vendor-github-com-hashicorp-consul-api-semaphore-go-200">github.com/docker/swarm/vendor/github.com/hashicorp/consul/api/semaphore.go:200</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-gravitational-teleport-lib-reversetunnel-localsite-go-83">github.com/gravitational/teleport/lib/reversetunnel/localsite.go:83</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-coreos-etcd-tools-benchmark-cmd-watch-go-201">github.com/coreos/etcd/tools/benchmark/cmd/watch.go:201</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-flynn-flynn-vendor-github-com-flynn-oauth2-internal-token-go-191">github.com/flynn/flynn/vendor/github.com/flynn/oauth2/internal/token.go:191</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-consul-fsm-go-266">github.com/hashicorp/consul/consul/fsm.go:266</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-github-com-coreos-etcd-clientv3-lease-go-437">github.com/openshift/origin/vendor/github.com/coreos/etcd/clientv3/lease.go:437</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ebay-fabio-cert-source-test-go-567">github.com/eBay/fabio/cert/source_test.go:567</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-lucas-clemente-quic-go-ackhandler-sent-packet-handler-test-go-524">github.com/lucas-clemente/quic-go/ackhandler/sent_packet_handler_test.go:524</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-codislabs-codis-pkg-proxy-redis-conn-go-140">github.com/CodisLabs/codis/pkg/proxy/redis/conn.go:140</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-docker-docker-vendor-github-com-docker-swarmkit-manager-scheduler-scheduler-go-173">github.com/docker/docker/vendor/github.com/docker/swarmkit/manager/scheduler/scheduler.go:173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#golang-org-x-net-nettest-conntest-go-361">golang.org/x/net/nettest/conntest.go:361</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-minio-minio-vendor-github-com-eapache-go-resiliency-breaker-breaker-go-120">github.com/minio/minio/vendor/github.com/eapache/go-resiliency/breaker/breaker.go:120</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-pingcap-tidb-store-tikv-client-go-65">github.com/pingcap/tidb/store/tikv/client.go:65</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-coreos-etcd-cmd-vendor-golang-org-x-net-context-go17-go-62">github.com/coreos/etcd/cmd/vendor/golang.org/x/net/context/go17.go:62</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-coreos-rkt-rkt-image-common-test-go-161">github.com/coreos/rkt/rkt/image/common_test.go:161</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-lucas-clemente-quic-go-flowcontrol-flow-controller-go-131">github.com/lucas-clemente/quic-go/flowcontrol/flow_controller.go:131</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-serf-serf-snapshot-go-327">github.com/hashicorp/serf/serf/snapshot.go:327</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-junegunn-fzf-src-matcher-go-210">github.com/junegunn/fzf/src/matcher.go:210</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-mitchellh-packer-vendor-google-golang-org-appengine-demos-helloworld-helloworld-go-19">github.com/mitchellh/packer/vendor/google.golang.org/appengine/demos/helloworld/helloworld.go:19</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ncw-rclone-vendor-google-golang-org-appengine-internal-api-go-549">github.com/ncw/rclone/vendor/google.golang.org/appengine/internal/api.go:549</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ethereum-go-ethereum-cmd-geth-chaincmd-go-159">github.com/ethereum/go-ethereum/cmd/geth/chaincmd.go:159</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-nats-io-nats-test-conn-test-go-652">github.com/nats-io/nats/test/conn_test.go:652</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-google-cadvisor-manager-container-go-456">github.com/google/cadvisor/manager/container.go:456</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-google-cadvisor-vendor-golang-org-x-oauth2-token-go-98">github.com/google/cadvisor/vendor/golang.org/x/oauth2/token.go:98</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-consul-consul-fsm-go-109">github.com/hashicorp/consul/consul/fsm.go:109</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-hashicorp-vault-vendor-github-com-hashicorp-yamux-session-go-295">github.com/hashicorp/vault/vendor/github.com/hashicorp/yamux/session.go:295</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-go-kit-kit-examples-shipping-booking-instrumenting-go-31">github.com/go-kit/kit/examples/shipping/booking/instrumenting.go:31</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-cyfdecyf-cow-timeoutset-go-22">github.com/cyfdecyf/cow/timeoutset.go:22</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-prometheus-prometheus-vendor-k8s-io-client-go-1-5-rest-request-go-761">github.com/prometheus/prometheus/vendor/k8s.io/client-go/1.5/rest/request.go:761</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-ethereum-go-ethereum-p2p-discover-udp-go-383">github.com/ethereum/go-ethereum/p2p/discover/udp.go:383</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#k8s-io-heapster-metrics-sinks-manager-go-150">k8s.io/heapster/metrics/sinks/manager.go:150</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-vmware-harbor-src-ui-auth-lock-go-43">github.com/vmware/harbor/src/ui/auth/lock.go:43</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-pkg-kubectl-resource-printer-test-go-1410">github.com/openshift/origin/vendor/k8s.io/kubernetes/pkg/kubectl/resource_printer_test.go:1410</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-pingcap-pd-server-kv-go-194">github.com/pingcap/pd/server/kv.go:194</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-xtaci-kcp-go-sess-go-489">github.com/xtaci/kcp-go/sess.go:489</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-go-xorm-xorm-lru-cacher-go-202">github.com/go-xorm/xorm/lru_cacher.go:202</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-github-com-samuel-go-zookeeper-zk-conn-go-510">github.com/openshift/origin/vendor/github.com/samuel/go-zookeeper/zk/conn.go:510</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-k8s-io-kubernetes-pkg-client-leaderelection-leaderelection-go-236">github.com/openshift/origin/vendor/k8s.io/kubernetes/pkg/client/leaderelection/leaderelection.go:236</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#k8s-io-heapster-events-sinks-manager-go-139">k8s.io/heapster/events/sinks/manager.go:139</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#golang-org-x-net-ipv4-unicast-test-go-64">golang.org/x/net/ipv4/unicast_test.go:64</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-kelseyhightower-confd-vendor-github-com-sirupsen-logrus-text-formatter-go-27">github.com/kelseyhightower/confd/vendor/github.com/Sirupsen/logrus/text_formatter.go:27</a></li>
+<li class="toctree-l3"><a class="reference internal" href="12914-monotonic.html#github-com-openshift-origin-vendor-github-com-coreos-etcd-etcdserver-v3-server-go-693">github.com/openshift/origin/vendor/github.com/coreos/etcd/etcdserver/v3_server.go:693</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#about-the-code-of-conduct">About the Code of Conduct</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="13073-code-of-conduct.html#why-have-a-code-of-conduct">Why have a Code of Conduct?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13073-code-of-conduct.html#where-does-the-code-of-conduct-apply">Where does the Code of Conduct apply?</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#gopher-values">Gopher values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#unwelcome-behavior">Unwelcome behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#moderation">Moderation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#reporting-issues">Reporting issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#summary">Summary</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="13073-code-of-conduct.html#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="13073-code-of-conduct.html#examples-of-coc-issues-and-their-resolutions">Examples of CoC issues and their resolutions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13073-code-of-conduct.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#features-considered">Features considered</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#playback">Playback</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#decoding">Decoding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#remote-streaming">Remote streaming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#synchronization-and-composition">Synchronization and composition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#playlist-features">Playlist features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#goals">Goals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#short-term-goals">Short-term goals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#longer-term-goals">Longer-term goals</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#non-goals">Non-goals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#core-abstractions">Core abstractions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#clip">Clip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#decoders">Decoders</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#clip-sources">Clip sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="13432-mobile-audio.html#players">Players</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#open-issues">Open issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13432-mobile-audio.html#appendix-audio-apps-classification">Appendix: Audio Apps Classification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#class-a">Class A</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#class-b">Class B</a></li>
+<li class="toctree-l3"><a class="reference internal" href="13432-mobile-audio.html#class-c">Class C</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="13504-natural-xml.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13504-natural-xml.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13504-natural-xml.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="13504-natural-xml.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="13504-natural-xml.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13504-natural-xml.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13504-natural-xml.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="14313-benchmark-format.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14313-benchmark-format.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#benchmark-data-formats">Benchmark data formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#benchmark-processors">Benchmark processors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#benchmark-runners">Benchmark runners</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14313-benchmark-format.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#configuration-lines">Configuration Lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#benchmark-results">Benchmark Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#value-units">Value Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#benchmark-name-configuration">Benchmark Name Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14313-benchmark-format.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14313-benchmark-format.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14313-benchmark-format.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14313-benchmark-format.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="14386-zip-package-archives.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14386-zip-package-archives.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="14386-zip-package-archives.html#go-object-files-and-package-archives">Go object files and package archives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14386-zip-package-archives.html#archive-file-formats">Archive file formats</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14386-zip-package-archives.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14386-zip-package-archives.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="14386-zip-package-archives.html#zip-format">Zip format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14386-zip-package-archives.html#file-names">File names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="14386-zip-package-archives.html#compression">Compression</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14386-zip-package-archives.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14386-zip-package-archives.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="14951-soft-heap-limit.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14951-soft-heap-limit.html#problem">Problem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="14951-soft-heap-limit.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14951-soft-heap-limit.html#proposed-solution">Proposed solution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14951-soft-heap-limit.html#evaluation">Evaluation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="14951-soft-heap-limit.html#throughput">Throughput</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="14951-soft-heap-limit.html#alternatives-and-additional-solutions">Alternatives and additional solutions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="15292-generics.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15292-generics.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="15292-generics.html#generic-arguments-in-favor-of-generics">Generic arguments in favor of generics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="15292-generics.html#existing-support-for-generic-programming-in-go">Existing support for generic programming in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="15292-generics.html#specific-arguments-in-favor-of-generics-in-go">Specific arguments in favor of generics in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="15292-generics.html#what-we-want-from-generics-in-go">What we want from generics in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="15292-generics.html#the-downsides-of-generics">The downsides of generics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="15292-generics.html#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="15292-generics.html#examples-of-potential-uses-of-generics-in-go">Examples of potential uses of generics in Go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15292-generics.html#proposal">Proposal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#compatibility-and-impact">Compatibility and impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#discussion">Discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#open-question">Open question</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16085-conversions-ignore-tags.html#alternatives-to-the-language-change">Alternatives to the language change</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#motivation">1. Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#alias-declarations">2. Alias declarations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#notation">3. Notation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#semantics-and-rules">3. Semantics and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#impact-on-other-libraries-and-tools">4. Impact on other libraries and tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#implementation">5. Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#other-use-cases">6. Other use cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#a1-syntax-changes">A1. Syntax changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16339-alias-decls.html#a2-alternatives-to-this-proposal">A2. Alternatives to this proposal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="16410-heap-viewer.html#heap-dump-format">Heap dump format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#implementation">Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="16410-heap-viewer.html#compiler-and-runtime-work">Compiler and Runtime Work</a></li>
+<li class="toctree-l3"><a class="reference internal" href="16410-heap-viewer.html#heap-libraries-and-viewer">Heap libraries and viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="16410-heap-viewer.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16704-cidr-notation-no-proxy.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="17280-profile-labels.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17280-profile-labels.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17280-profile-labels.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17280-profile-labels.html#api">API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17280-profile-labels.html#context-changes"><code class="docutils literal notranslate"><span class="pre">Context</span></code> changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17280-profile-labels.html#runtime-changes">Runtime changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17280-profile-labels.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17280-profile-labels.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#reasoning">Reasoning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#alternative-barrier-approaches">Alternative barrier approaches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#alternative-approaches-to-re-scanning">Alternative approaches to re-scanning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#other-considerations">Other considerations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#channel-operations-and-go-statements">Channel operations and go statements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#racy-programs">Racy programs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#cgo">cgo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#future-directions">Future directions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#write-barrier-omission">Write barrier omission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#low-pause-stack-scans">Low-pause stack scans</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#strictly-bounded-mark-termination">Strictly bounded mark termination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#concurrent-mark-termination">Concurrent mark termination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17503-eliminate-rescan.html#concurrent-sweep-termination">Concurrent sweep termination</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#appendix-mark-completion-race">Appendix: Mark completion race</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#appendix-proof-of-soundness-completeness-and-boundedness">Appendix: Proof of soundness, completeness, and boundedness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17503-eliminate-rescan.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17505-concurrent-rescan.html#transitive-mark-write-barrier">Transitive mark write barrier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17505-concurrent-rescan.html#stack-re-scanning">Stack re-scanning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="17505-concurrent-rescan.html#other-considerations">Other considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="17505-concurrent-rescan.html#alternative-approaches">Alternative approaches</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#acknowledgments">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="17505-concurrent-rescan.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#comparison-of-type-declarations-and-type-aliases">Comparison of type declarations and type aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#type-cycles">Type cycles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#relationship-to-byte-and-rune">Relationship to byte and rune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#effect-on-embedding">Effect on embedding</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#implementation">Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#cmd-compile">cmd/compile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#gccgo">gccgo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#go-ast">go/ast</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#go-doc">go/doc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#go-parser">go/parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#go-printer">go/printer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#go-types">go/types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#go-importer">go/importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#reflect">reflect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#cmd-api">cmd/api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#cmd-doc">cmd/doc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#cmd-gofmt">cmd/gofmt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#cmd-vet">cmd/vet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-cmd-goimports">golang.org/x/tools/cmd/goimports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-cmd-godex">golang.org/x/tools/cmd/godex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-cmd-guru">golang.org/x/tools/cmd/guru</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-go-callgraph-rta">golang.org/x/tools/go/callgraph/rta</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-go-gcexportdata">golang.org/x/tools/go/gcexportdata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-go-internal-gccgoimporter">golang.org/x/tools/go/internal/gccgoimporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-go-pointer">golang.org/x/tools/go/pointer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-go-ssa">golang.org/x/tools/go/ssa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-go-types-typeutil">golang.org/x/tools/go/types/typeutil</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-godoc-analysis">golang.org/x/tools/godoc/analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18130-type-alias.html#golang-org-x-tools-refactor">golang.org/x/tools/refactor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="18130-type-alias.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#counters">Counters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#read-write-locks">Read-write locks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#rpc-clients">RPC clients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#order-independent-accumulators">Order-independent accumulators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#the-proposed-api">The Proposed API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#evaluating-the-use-cases">Evaluating the use-cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#id1">Counters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#id2">Read-write locks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#id3">RPC clients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#id4">Order-independent accumulators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#sketch-of-implementation">Sketch of Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#performance">Performance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#percpu-sharder"><code class="docutils literal notranslate"><span class="pre">percpu.sharder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="18802-percpu-sharded.html#percpu-sharded"><code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#garbage-collection-of-stale-values-in-percpu-sharded">Garbage collection of stale values in <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#why-is-shardinfo-a-struct-and-not-just-an-int">Why is <code class="docutils literal notranslate"><span class="pre">ShardInfo</span></code> a struct and not just an int?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#is-shardinfo-shardindex-returning-an-id-for-the-cpu-or-the-p-executing-the-goroutine">Is <code class="docutils literal notranslate"><span class="pre">ShardInfo.ShardIndex</span></code> returning an id for the CPU, or the <code class="docutils literal notranslate"><span class="pre">P</span></code> executing the goroutine?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#is-it-a-good-idea-for-percpu-sharded-to-behave-differently-during-tests">Is it a good idea for <code class="docutils literal notranslate"><span class="pre">percpu.Sharded</span></code> to behave differently during tests?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#should-we-expose-shardinfo-shardindex-at-all">Should we expose <code class="docutils literal notranslate"><span class="pre">ShardInfo.ShardIndex</span></code> at all?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#should-we-expose-both-of-get-and-getorcreate">Should we expose both of Get and GetOrCreate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#should-we-expose-both-of-do-and-dolocked">Should we expose both of Do and DoLocked?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="18802-percpu-sharded.html#naming">Naming</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="19113-signed-shift-counts.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19113-signed-shift-counts.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19113-signed-shift-counts.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19113-signed-shift-counts.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19113-signed-shift-counts.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19113-signed-shift-counts.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="19308-number-literals.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19308-number-literals.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#binary-integer-literals">Binary Integer Literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#octal-integer-literals">Octal Integer Literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#hexadecimal-floating-point">Hexadecimal Floating-Point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#digit-separators">Digit Separators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="19308-number-literals.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#language-changes">Language Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#library-changes">Library Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#tool-changes">Tool Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="19308-number-literals.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#octal-literals">Octal Literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#arbitrary-bases">Arbitrary Bases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#id1">Library Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="19308-number-literals.html#id2">Digit Separators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="19308-number-literals.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19308-number-literals.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="19348-midstack-inlining.html#changes-to-the-compiler">Changes to the compiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19348-midstack-inlining.html#changes-to-the-object-writer">Changes to the object writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19348-midstack-inlining.html#changes-to-the-linker">Changes to the linker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19348-midstack-inlining.html#changes-to-the-runtime">Changes to the runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19348-midstack-inlining.html#changes-to-the-runtime-public-api">Changes to the runtime public API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="19480-xml-stream.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#source-position-tracking">Source position tracking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#lexical-scopes">Lexical scopes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#enhanced-variable-location-tracking">Enhanced variable location tracking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#compressed-source-positions-updates-during-inlining">Compressed source positions, updates during inlining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#overall-existing-framework-for-debug-generation">Overall existing framework for debug generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#mechanisms-provided-by-the-dwarf-standard-for-representing-inlining-info">Mechanisms provided by the DWARF standard for representing inlining info</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#changes-to-the-inliner">Changes to the inliner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#changes-to-debug-generation">Changes to debug generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="22080-dwarf-inlining.html#changes-to-the-linker">Changes to the linker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="24301-versioned-go.html#semantic-versions-constraints-and-solvers">Semantic versions, constraints, and solvers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24301-versioned-go.html#build-control">Build Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24301-versioned-go.html#ecosystem-fragmentation">Ecosystem Fragmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24301-versioned-go.html#semantic-import-versions">Semantic Import Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24301-versioned-go.html#update-timing-high-fidelity-builds">Update Timing &amp; High-Fidelity Builds</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24301-versioned-go.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#cooperative-loop-preemption">Cooperative loop preemption</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#non-cooperative-preemption">Non-cooperative preemption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#handling-unsafe-points">Handling unsafe-points</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#range-loops">Range loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#runtime-safe-points">Runtime safe-points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#unsafe-standard-library-code">Unsafe standard library code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#ensuring-progress-with-unsafe-points">Ensuring progress with unsafe-points</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#other-considerations">Other considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="24543-non-cooperative-preemption.html#alternatives">Alternatives</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#single-stepping">Single-stepping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#jump-rewriting">Jump rewriting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="24543-non-cooperative-preemption.html#out-of-line-execution">Out-of-line execution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="25530-sumdb.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25530-sumdb.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#module-authentication-with-go-sum">Module Authentication with <code class="docutils literal notranslate"><span class="pre">go.sum</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#transparent-logs">Transparent Logs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="25530-sumdb.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#checksum-database">Checksum Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#proxying-a-checksum-database">Proxying a Checksum Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#go-command-client"><code class="docutils literal notranslate"><span class="pre">go</span></code> command client</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="25530-sumdb.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#security">Security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="25530-sumdb.html#privacy">Privacy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="25530-sumdb.html#private-module-paths">Private Module Paths</a></li>
+<li class="toctree-l4"><a class="reference internal" href="25530-sumdb.html#private-module-sha256s">Private Module SHA256s</a></li>
+<li class="toctree-l4"><a class="reference internal" href="25530-sumdb.html#public-module-usage-information">Public Module Usage Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="25530-sumdb.html#privacy-by-proxy">Privacy by Proxy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="25530-sumdb.html#privacy-by-bulk-download">Privacy by Bulk Download</a></li>
+<li class="toctree-l4"><a class="reference internal" href="25530-sumdb.html#privacy-in-ci-cd-systems">Privacy in CI/CD Systems</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="25530-sumdb.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25530-sumdb.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="25719-go15vendor.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25719-go15vendor.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25719-go15vendor.html#discussion">Discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="25719-go15vendor.html#deployment">Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26160-dns-based-vanity-imports.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26756-rawxml-token.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="26903-simplify-mark-termination.html#replace-mark-2-with-a-race-free-algorithm">Replace mark 2 with a race-free algorithm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="26903-simplify-mark-termination.html#variations-on-the-basic-algorithm">Variations on the basic algorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="26903-simplify-mark-termination.html#consequences">Consequences</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="26903-simplify-mark-termination.html#unify-stw-gc-and-checkmark-mode-with-concurrent-marking">Unify STW GC and checkmark mode with concurrent marking</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="26903-simplify-mark-termination.html#id1">Consequences</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="26903-simplify-mark-termination.html#flush-mcaches-after-mark-termination">Flush mcaches after mark termination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="26903-simplify-mark-termination.html#allow-safe-points-without-preemption-in-dedicated-workers">Allow safe-points without preemption in dedicated workers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#proof-of-termination-detection-algorithm">Proof of termination detection algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="26903-simplify-mark-termination.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="27539-internal-abi.html#implicit-vs-explicit">Implicit vs explicit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27539-internal-abi.html#wrappers-vs-single-implementation">Wrappers vs single implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27539-internal-abi.html#when-to-generate-wrappers">When to generate wrappers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#compatibility">Compatibility</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="27539-internal-abi.html#calling-runtime-panic-from-assembly">Calling runtime.panic* from assembly</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27539-internal-abi.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="2775-binary-only-packages.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2775-binary-only-packages.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2775-binary-only-packages.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2775-binary-only-packages.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2775-binary-only-packages.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2775-binary-only-packages.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="27935-unbounded-queue-package.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27935-unbounded-queue-package.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27935-unbounded-queue-package.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#reasoning">Reasoning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="27935-unbounded-queue-package.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#research">Research</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#benchmark-results">Benchmark Results</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="27935-unbounded-queue-package.html#impl7-design-and-implementation">Impl7 Design and Implementation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="27935-unbounded-queue-package.html#design-considerations">Design Considerations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="27935-unbounded-queue-package.html#impl7-benchmark-results">Impl7 Benchmark Results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#internal-slice-size">Internal Slice Size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#api">API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#range-support">Range Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#data-type">Data Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#safe-for-concurrent-use">Safe for Concurrent Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="27935-unbounded-queue-package.html#drawbacks">Drawbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="27935-unbounded-queue-package.html#open-questions-issues">Open Questions/Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="27935-unbounded-queue-package.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="28221-go2-transitions.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="28221-go2-transitions.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#c">C</a></li>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#id1">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#java">Java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#python">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#perl">Perl</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="28221-go2-transitions.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#language-changes">Language changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#language-additions">Language additions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#language-removals">Language removals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#minimum-language-version">Minimum language version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#language-redefinitions">Language redefinitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#build-tags">Build tags</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#import-go2">import “go2”</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="28221-go2-transitions.html#standard-library-changes">Standard library changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#core-standard-library">Core standard library</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#penumbra-standard-library">Penumbra standard library</a></li>
+<li class="toctree-l4"><a class="reference internal" href="28221-go2-transitions.html#removing-packages-from-the-standard-library">Removing packages from the standard library</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="28221-go2-transitions.html#go-2">Go 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="2981-go-test-json.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2981-go-test-json.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2981-go-test-json.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="2981-go-test-json.html#testing-package"><code class="docutils literal notranslate"><span class="pre">testing</span></code> package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2981-go-test-json.html#example-output">Example output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="2981-go-test-json.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2981-go-test-json.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2981-go-test-json.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="29934-error-values.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="29934-error-values.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="29934-error-values.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="29934-error-values.html#wrapping">Wrapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="29934-error-values.html#stack-frames">Stack Frames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="29934-error-values.html#formatting">Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="29934-error-values.html#changes-to-fmt-errorf">Changes to <code class="docutils literal notranslate"><span class="pre">fmt.Errorf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="29934-error-values.html#changes-to-the-os-package">Changes to the <code class="docutils literal notranslate"><span class="pre">os</span></code> package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="29934-error-values.html#transition">Transition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="29934-error-values.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="29934-error-values.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="29934-error-values.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#motivation-purpose">Motivation &amp; Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#scavenging">Scavenging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#go-1-11">Go 1.11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#go-1-12">Go 1.12</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="30333-smarter-scavenging.html#note-on-span-coalescing-rules">Note on Span Coalescing Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#prior-art">Prior Art</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#how-much-memory-should-we-retain">How much memory should we retain?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#at-what-rate-is-memory-scavenged">At what rate is memory scavenged?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="30333-smarter-scavenging.html#which-memory-should-we-scavenge">Which memory should we scavenge?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#other-considerations">Other Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#appendix-implementing-a-first-fit-data-structure">Appendix: Implementing a First-fit Data Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30333-smarter-scavenging.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="30411-env.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30411-env.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30411-env.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30411-env.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30411-env.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="30411-env.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#the-try-built-in">The <code class="docutils literal notranslate"><span class="pre">try</span></code> built-in</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#proposal">Proposal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#testing-and-try">Testing and <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#handling-errors">Handling errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#efficiency-of-defer">Efficiency of <code class="docutils literal notranslate"><span class="pre">defer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#special-cases-go-try-f-and-defer-try-f">Special cases: <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">try(f)</span></code> and <code class="docutils literal notranslate"><span class="pre">defer</span> <span class="pre">try(f)</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#discussion">Discussion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#design-iterations">Design iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="32437-try-builtin.html#properties-of-the-proposed-design">Properties of the proposed design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#conclusions">Conclusions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="32437-try-builtin.html#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#panic-processing">Panic processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="34481-opencoded-defers.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="35112-scaling-the-page-allocator.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="35112-scaling-the-page-allocator.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="35112-scaling-the-page-allocator.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="35112-scaling-the-page-allocator.html#tracking-free-memory-with-bitmaps">Tracking free memory with bitmaps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="35112-scaling-the-page-allocator.html#implementation-details">Implementation details</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="35112-scaling-the-page-allocator.html#allow-a-p-to-cache-bits-from-the-bitmap">Allow a P to cache bits from the bitmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="35112-scaling-the-page-allocator.html#scavenging">Scavenging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="35112-scaling-the-page-allocator.html#huge-page-awareness">Huge-page Awareness</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="35112-scaling-the-page-allocator.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="35112-scaling-the-page-allocator.html#fragmentation-concerns">Fragmentation Concerns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="35112-scaling-the-page-allocator.html#prior-art">Prior Art</a></li>
+<li class="toctree-l3"><a class="reference internal" href="35112-scaling-the-page-allocator.html#considered-alternatives">Considered Alternatives</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="35112-scaling-the-page-allocator.html#cache-spans-in-a-p">Cache spans in a P</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="35112-scaling-the-page-allocator.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="35112-scaling-the-page-allocator.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#properties">Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#invariants">Invariants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#module-loading-procedure">Module loading procedure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#the-all-pattern-and-mod-subcommands">The <code class="docutils literal notranslate"><span class="pre">all</span></code> pattern and <code class="docutils literal notranslate"><span class="pre">mod</span></code> subcommands</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="36460-lazy-module-loading.html#in-go-1-111-14">In Go 1.11–1.14</a></li>
+<li class="toctree-l4"><a class="reference internal" href="36460-lazy-module-loading.html#the-all-package-pattern-and-go-mod-tidy">The <code class="docutils literal notranslate"><span class="pre">all</span></code> package pattern and <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">mod</span> <span class="pre">tidy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="36460-lazy-module-loading.html#the-all-and-module-patterns-and-go-mod-download">The <code class="docutils literal notranslate"><span class="pre">all</span></code> and <code class="docutils literal notranslate"><span class="pre">...</span></code> module patterns and <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">mod</span> <span class="pre">download</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#effect-on-go-mod-size">Effect on <code class="docutils literal notranslate"><span class="pre">go.mod</span></code> size</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#open-issues">Open issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36460-lazy-module-loading.html#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#importing-a-new-package-from-an-existing-module-dependency">Importing a new package from an existing module dependency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#testing-an-imported-package-found-in-another-module">Testing an imported package found in another module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#testing-an-unimported-package-found-in-an-existing-module-dependency">Testing an unimported package found in an existing module dependency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36460-lazy-module-loading.html#testing-a-package-imported-from-a-go-1-14-dependency">Testing a package imported from a <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">1.14</span></code> dependency</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="36606-64-bit-field-alignment.html#alignment-changes">Alignment changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36606-64-bit-field-alignment.html#addition-of-a-go-packed-directive">Addition of a <code class="docutils literal notranslate"><span class="pre">//go:packed</span></code> directive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36606-64-bit-field-alignment.html#addition-of-a-go-align-directive">Addition of a <code class="docutils literal notranslate"><span class="pre">//go:align</span></code> directive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="36606-64-bit-field-alignment.html#vet-and-compiler-checks">Vet and compiler checks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#alternate-proposals">Alternate proposals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#alternate-syntax">Alternate syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="36606-64-bit-field-alignment.html#open-issues">Open Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#background-motivation">Background &amp; Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="37112-unstable-runtime-metrics.html#representation-of-metrics">Representation of metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="37112-unstable-runtime-metrics.html#discoverability">Discoverability</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="37112-unstable-runtime-metrics.html#metric-naming">Metric naming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="37112-unstable-runtime-metrics.html#metric-descriptions">Metric Descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="37112-unstable-runtime-metrics.html#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="37112-unstable-runtime-metrics.html#time-series-metrics">Time series metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#draft-api-specification">Draft API Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#proposed-initial-list-of-metrics">Proposed initial list of metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="37112-unstable-runtime-metrics.html#existing-metrics">Existing metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#new-gc-metrics">New GC metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#scheduler-metrics">Scheduler metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37112-unstable-runtime-metrics.html#backwards-compatibility">Backwards Compatibility</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="37720-gopls-workspaces.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="4899-testing-helper.html#ignore-the-problem-making-it-harder-to-debug-test-failures">1. Ignore the problem, making it harder to debug test failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4899-testing-helper.html#pass-around-more-context-to-be-printed-as-part-of-the-error-message">2. Pass around more context to be printed as part of the error message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4899-testing-helper.html#use-the-r-workaround">3. Use the \r workaround</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="4899-testing-helper.html#alternative-1-allow-the-user-to-specify-how-many-stack-frames-to-skip">Alternative 1: allow the user to specify how many stack frames to skip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="4899-testing-helper.html#alternative-2-use-a-special-logf-errorf-fatalf-sentinel">Alternative 2: use a special Logf/Errorf/Fatalf sentinel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="4899-testing-helper.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#nomenclature">Nomenclature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#previous-discussions">Previous discussions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#about-this-proposal">About this proposal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#other-related-threads">Other related threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#language-workarounds">Language Workarounds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#slice-of-slices">1. Slice of slices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#single-slice">2. Single slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#struct-type">3. Struct type</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#performance">Performance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#slice-of-slice">1. Slice of slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#id1">2. Single slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#id2">3. Struct type</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#recap">Recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#syntax">Syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#allocation">Allocation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#making-a-multi-dimensional-slice">Making a multi-dimensional slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#slice-literals">Slice literals</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#slicing">Slicing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#indexing">Indexing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#assignment">Assignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#reshaping">Reshaping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#unpack">Unpack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#length-capacity">Length / Capacity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#copy">Copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#range">Range</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="6282-table-data.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#reflect">Reflect</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#discussion">Discussion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#data-layout">Data Layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#discussion-reshape">Discussion – Reshape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#discussion-unpack">Discussion – Unpack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#id3">Indexing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#use-of-n-int-for-predefined-functions">Use of [N]int for Predefined Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#id4">Range</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#implementation-schedule">Implementation Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#non-goals">Non-goals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#append">Append</a></li>
+<li class="toctree-l3"><a class="reference internal" href="6282-table-data.html#arithmetic-operators">Arithmetic Operators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#conclusion">Conclusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6282-table-data.html#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#discussion">Discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="6977-overlapping-interfaces.html#apendix-a-typical-example">Apendix: A typical example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TEMPLATE.html#open-issues-if-applicable">Open issues (if applicable)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-contracts.html#superseded">Superseded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-contracts.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-contracts.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-contracts.html#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#type-parameters">Type parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#type-contracts">Type contracts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#contract-introduction">Contract introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#using-a-contract-to-verify-type-arguments">Using a contract to verify type arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#the-party-of-the-second-part">The party of the second part</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#using-a-contract">Using a contract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#multiple-type-parameters">Multiple type parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#parameterized-types">Parameterized types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#parameterized-type-aliases">Parameterized type aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#methods-may-not-take-additional-type-arguments">Methods may not take additional type arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#contract-embedding">Contract embedding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#using-types-that-refer-to-themselves-in-contracts">Using types that refer to themselves in contracts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#mutually-referencing-type-parameters">Mutually referencing type parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#passing-parameters-to-a-contract">Passing parameters to a contract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#contract-syntactic-details">Contract syntactic details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#values-of-type-parameters-are-not-boxed">Values of type parameters are not boxed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#function-argument-type-inference">Function argument type inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#instantiating-a-function">Instantiating a function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#type-assertions-and-switches">Type assertions and switches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#instantiating-types-in-type-literals">Instantiating types in type literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#using-parameterized-types-as-unnamed-function-parameter-types">Using parameterized types as unnamed function parameter types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#embedding-a-parameterized-type-in-a-struct">Embedding a parameterized type in a struct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#embedding-a-parameterized-interface-type-in-an-interface">Embedding a parameterized interface type in an interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#reflection">Reflection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#contracts-details">Contracts details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#methods">Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#pointer-methods">Pointer methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#pointer-or-value-methods">Pointer or value methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#operators">Operators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#types-in-contracts">Types in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#conjunction-and-disjunction-in-contracts">Conjunction and disjunction in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#both-types-and-methods-in-contracts">Both types and methods in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#aggregate-types-in-contracts">Aggregate types in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#aggregates-of-type-parameters-in-contracts">Aggregates of type parameters in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#comparable-types-in-contracts">Comparable types in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#observations-on-types-in-contracts">Observations on types in contracts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#type-conversions">Type conversions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#untyped-constants">Untyped constants</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#implementation">Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#summary">Summary</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#complexity">Complexity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#pervasiveness">Pervasiveness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#efficiency">Efficiency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#omissions">Omissions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#issues">Issues</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#the-zero-value">The zero value</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#lots-of-irritating-silly-parentheses">Lots of irritating silly parentheses</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#pointer-vs-value-methods-in-contracts">Pointer vs. value methods in contracts</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#defined-aggregate-types">Defined aggregate types</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#identifying-the-matched-predeclared-type">Identifying the matched predeclared type</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#discarded-ideas">Discarded ideas</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-use-interfaces-instead-of-contracts">Why not use interfaces instead of contracts?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-permit-contracts-to-describe-a-type">Why not permit contracts to describe a type?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-put-type-parameters-on-packages">Why not put type parameters on packages?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-use-the-syntax-f-t-like-c-and-java">Why not use the syntax <code class="docutils literal notranslate"><span class="pre">F&lt;T&gt;</span></code> like C++ and Java?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-use-the-syntax-f-t">Why not use the syntax <code class="docutils literal notranslate"><span class="pre">F[T]</span></code>?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-use-ft">Why not use <code class="docutils literal notranslate"><span class="pre">F«T»</span></code>?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-contracts.html#why-not-define-contracts-in-a-standard-package">Why not define contracts in a standard package?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#comparison-with-java">Comparison with Java</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#comparison-with-c">Comparison with C++</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-contracts.html#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#sort">Sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#map-keys">Map keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#map-reduce-filter">Map/Reduce/Filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#sets">Sets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#channels">Channels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#containers">Containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#append">Append</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#metrics">Metrics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#list-transform">List transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#context">Context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#dot-product">Dot product</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-contracts.html#absolute-difference">Absolute difference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#checks">Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#handlers">Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#default-handler">Default handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#stack-frame-preservation">Stack frame preservation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#variable-shadowing">Variable shadowing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#draft-spec">Draft spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#discussion">Discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#other-considerations">Other considerations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#keyword-try-versus-check">Keyword: try versus check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#keyword-handle-versus-catch">Keyword: handle versus catch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#checking-error-returns-from-deferred-calls">Checking error returns from deferred calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#a-check-else-statement">A check-else statement</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#considered-ideas">Considered Ideas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#using-a-operator-instead-of-check">Using a ? operator instead of check</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#midori">Midori</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#c-proposal">C++ proposal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#rust">Rust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-handling.html#swift">Swift</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#draft-design">Draft Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#discussion-and-open-questions">Discussion and Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#designs-in-other-languages">Designs in Other Languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#rust">Rust</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-handling-overview.html#swift">Swift</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-inspection.html#the-unwrap-method">The Unwrap Method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-inspection.html#the-is-and-as-functions">The Is and As Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#discussion">Discussion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#alternative-design-choices">Alternative Design Choices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-inspection.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-printing.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-printing.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-printing.html#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#error-detail">Error detail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#printing-api">Printing API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#format">Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#formatting-verbs">Formatting verbs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#interaction-with-source-line-information">Interaction with source line information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#localized-errors">Localized errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-printing.html#error-trees">Error trees</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-printing.html#alternate-designs">Alternate designs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-printing.html#migration">Migration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-printing.html#disadvantages">Disadvantages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#draft-design">Draft Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#error-inspection">Error inspection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#error-formatting">Error formatting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#discussion-and-open-questions">Discussion and Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#other-go-designs">Other Go Designs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#prehistoric-go">Prehistoric Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#github-com-spacemonkeygo-errors">github.com/spacemonkeygo/errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#github-com-juju-errgo">github.com/juju/errgo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#gopkg-in-errgo-v1-and-gopkg-in-errgo-v2">gopkg.in/errgo.v1 and gopkg.in/errgo.v2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#github-com-hashicorp-errwrap">github.com/hashicorp/errwrap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#github-com-pkg-errors">github.com/pkg/errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-error-values-overview.html#upspin-io-error">upspin.io/error</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-error-values-overview.html#designs-in-other-languages">Designs in Other Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#draft-design">Draft Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#discussion-and-open-questions">Discussion and Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#designs-in-other-languages">Designs in Other Languages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#ml-1975">ML, 1975</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#clu-1977">CLU, 1977</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#ada-1983">Ada, 1983</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#c-1991">C++, 1991</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#java-1997-2004">Java, 1997-2004</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#c-1999-2005">C#, 1999-2005</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#d-2002">D, 2002</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#rust-2012">Rust, 2012</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#swift-2017">Swift, 2017</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-generics-overview.html#earlier-go-designs">Earlier Go Designs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#type-functions-june-2010">Type Functions, June 2010</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#generalized-types-march-2011">Generalized Types, March 2011</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#generalized-types-ii-october-2013">Generalized Types II, October 2013</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-generics-overview.html#type-parameters-december-2013">Type Parameters, December 2013</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#how-to-read-this-design-draft">How to read this design draft</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#very-high-level-overview">Very high level overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#design">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#type-parameters">Type parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#constraints">Constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#operations-permitted-for-any-type">Operations permitted for any type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#defining-constraints">Defining constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#using-a-constraint">Using a constraint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#multiple-type-parameters">Multiple type parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#generic-types">Generic types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#methods-may-not-take-additional-type-arguments">Methods may not take additional type arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#operators">Operators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#type-lists-in-constraints">Type lists in constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#comparable-types-in-constraints">Comparable types in constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#type-lists-in-interface-types">Type lists in interface types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#function-argument-type-inference">Function argument type inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#using-types-that-refer-to-themselves-in-constraints">Using types that refer to themselves in constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#mutually-referencing-type-parameters">Mutually referencing type parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#pointer-methods">Pointer methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#using-generic-types-as-unnamed-function-parameter-types">Using generic types as unnamed function parameter types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#values-of-type-parameters-are-not-boxed">Values of type parameters are not boxed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#more-on-type-lists">More on type lists</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#both-type-lists-and-methods-in-constraints">Both type lists and methods in constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#composite-types-in-constraints">Composite types in constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#type-parameters-in-type-lists">Type parameters in type lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#type-conversions">Type conversions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#untyped-constants">Untyped constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#notes-on-composite-types-in-type-lists">Notes on composite types in type lists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#type-lists-in-embedded-constraints">Type lists in embedded constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#general-notes-on-type-lists">General notes on type lists</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#reflection">Reflection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#implementation">Implementation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#summary">Summary</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#complexity">Complexity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#pervasiveness">Pervasiveness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#efficiency">Efficiency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#omissions">Omissions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#issues">Issues</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#the-zero-value">The zero value</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#lots-of-irritating-silly-parentheses">Lots of Irritating Silly Parentheses</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#defined-composite-types">Defined composite types</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#identifying-the-matched-predeclared-type">Identifying the matched predeclared type</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#no-way-to-express-convertibility">No way to express convertibility</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#discarded-ideas">Discarded ideas</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#what-happened-to-contracts">What happened to contracts?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-use-methods-instead-of-type-lists">Why not use methods instead of type lists?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-put-type-parameters-on-packages">Why not put type parameters on packages?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-use-the-syntax-f-t-like-c-and-java">Why not use the syntax <code class="docutils literal notranslate"><span class="pre">F&lt;T&gt;</span></code> like C++ and Java?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-use-the-syntax-f-t">Why not use the syntax <code class="docutils literal notranslate"><span class="pre">F[T]</span></code>?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-use-ft">Why not use <code class="docutils literal notranslate"><span class="pre">F«T»</span></code>?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-define-constraints-in-a-builtin-package">Why not define constraints in a builtin package?</a></li>
+<li class="toctree-l5"><a class="reference internal" href="go2draft-type-parameters.html#why-not-permit-type-assertions-on-values-whose-type-is-a-type-parameter">Why not permit type assertions on values whose type is a type parameter?</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#comparison-with-java">Comparison with Java</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#comparison-with-c">Comparison with C++</a></li>
+<li class="toctree-l4"><a class="reference internal" href="go2draft-type-parameters.html#comparison-with-rust">Comparison with Rust</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#map-reduce-filter">Map/Reduce/Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#map-keys">Map keys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#sets">Sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#sort">Sort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#channels">Channels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#containers">Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#append">Append</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#metrics">Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#list-transform">List transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#dot-product">Dot product</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#absolute-difference">Absolute difference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="go2draft-type-parameters.html#appendix">Appendix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#generic-type-aliases">Generic type aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#instantiating-a-function">Instantiating a function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#embedded-type-parameter">Embedded type parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#inline-constraints">Inline constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#type-inference-for-composite-literals">Type inference for composite literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#type-inference-for-generic-function-arguments">Type inference for generic function arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#reflection-on-type-arguments">Reflection on type arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#instantiating-types-in-type-literals">Instantiating types in type literals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="go2draft-type-parameters.html#embedding-an-instantiated-interface-type">Embedding an instantiated interface type</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="11502-securitypolicy.html" class="btn btn-neutral float-right" title="Proposal: Security Policy for Go" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

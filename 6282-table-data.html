@@ -1,0 +1,1767 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Multi-dimensional slices &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Permit embedding of interfaces with overlapping method sets" href="6977-overlapping-interfaces.html" />
+    <link rel="prev" title="Proposal: testing: better support test helper functions with TB.Helper" href="4899-testing-helper.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Multi-dimensional slices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nomenclature">Nomenclature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#previous-discussions">Previous discussions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#about-this-proposal">About this proposal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-related-threads">Other related threads</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#language-workarounds">Language Workarounds</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#slice-of-slices">1. Slice of slices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single-slice">2. Single slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#struct-type">3. Struct type</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#performance">Performance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#slice-of-slice">1. Slice of slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">2. Single slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">3. Struct type</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#recap">Recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#syntax">Syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allocation">Allocation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#making-a-multi-dimensional-slice">Making a multi-dimensional slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#slice-literals">Slice literals</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#slicing">Slicing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#indexing">Indexing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#assignment">Assignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reshaping">Reshaping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unpack">Unpack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#length-capacity">Length / Capacity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#copy">Copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#range">Range</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#reflect">Reflect</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#discussion">Discussion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-layout">Data Layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discussion-reshape">Discussion – Reshape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discussion-unpack">Discussion – Unpack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Indexing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-of-n-int-for-predefined-functions">Use of [N]int for Predefined Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Range</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation-schedule">Implementation Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#non-goals">Non-goals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#append">Append</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#arithmetic-operators">Arithmetic Operators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-issues">Open issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Multi-dimensional slices</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/6282-table-data.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-multi-dimensional-slices">
+<h1>Proposal: Multi-dimensional slices<a class="headerlink" href="#proposal-multi-dimensional-slices" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Brendan Tracey, with input from the gonum team</p>
+<p>Last updated: November 17th, 2016</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This document proposes a generalization of Go slices from one to multiple
+dimensions.
+This language change makes slices more naturally suitable for applications such
+as image processing, matrix computations, gaming, etc.</p>
+<p>Arrays-of-arrays(-of-arrays-of…) are continuous in memory and rectangular but
+are not dynamically sized.
+Slice-of-slice(-of-slice-of…) are dynamically sized but are not
+continuous in memory and do not have a uniform length in each dimension.
+The generalized slice described here is an N-dimensional rectangular data
+structure with continuous storage and a dynamically sized length and capacity
+in each dimension.</p>
+<p>This proposal defines slicing, indexing, and assignment, and provides extended
+definitions for <code class="docutils literal notranslate"><span class="pre">make</span></code>, <code class="docutils literal notranslate"><span class="pre">len</span></code>, <code class="docutils literal notranslate"><span class="pre">cap</span></code>, <code class="docutils literal notranslate"><span class="pre">copy</span></code> and <code class="docutils literal notranslate"><span class="pre">range</span></code>.</p>
+</div>
+<div class="section" id="nomenclature">
+<h2>Nomenclature<a class="headerlink" href="#nomenclature" title="Permalink to this headline">¶</a></h2>
+<p>This document extends the notion of a slice to include rectangular data.
+As such, a multi-dimensional slice is properly referred to as simply a “slice”.
+When necessary, this document uses 1d-slice to refer to Go slices as they are
+today, and nd-slice to refer to a slice in more than one dimension.</p>
+</div>
+<div class="section" id="previous-discussions">
+<h2>Previous discussions<a class="headerlink" href="#previous-discussions" title="Permalink to this headline">¶</a></h2>
+<p>This document is self-contained, and prior discussions are not necessary for
+understanding the proposal.
+They are referenced here solely to provide a history of discussion on the subject.
+Note that in a previous iteration of this document, an nd-slice was referred to as
+a “table”, and that many changes have been made since these earlier discussions.</p>
+<div class="section" id="about-this-proposal">
+<h3>About this proposal<a class="headerlink" href="#about-this-proposal" title="Permalink to this headline">¶</a></h3>
+<ol class="simple">
+<li><p><a class="reference external" href="https://golang.org/issue/6282">Issue 6282 – proposal: spec: multidimensional slices</a></p></li>
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21topic/gonum-dev/NW92HV_W_lY%5B1-25%5D">gonum-dev thread:</a></p></li>
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21topic/golang-nuts/osTLUEmB5Gk%5B1-25%5D">golang-nuts thread: Proposal to add tables (two-dimensional slices) to go</a></p></li>
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21topic/golang-dev/ec0gPTfz7Ek">golang-dev thread: Table proposal (2-D slices) on go-nuts</a></p></li>
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21searchin/golang-dev/proposal%2420to%2420add%2420tables/golang-dev/T2oH4MK5kj8/kOMHPR5YpFEJ">golang-dev thread: Table proposal next steps</a></p></li>
+<li><p><a class="reference external" href="https://go-review.googlesource.com/#/c/24271/">Robert Griesemer proposal review:</a> which suggested name change from “tables” to just “slices”, and suggested referring to down-slicing as simply indexing.</p></li>
+</ol>
+</div>
+<div class="section" id="other-related-threads">
+<h3>Other related threads<a class="headerlink" href="#other-related-threads" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21topic/golang-nuts/Q7lwBDPmQh4%5B1-25%5D">golang-nuts thread – Multi-dimensional arrays for Go. It’s time</a></p></li>
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21topic/golang-nuts/WwQOuYJm_-s">golang-nuts thread – Multidimensional slices for Go: a proposal</a></p></li>
+<li><p><a class="reference external" href="https://groups.google.com/forum/#%21topic/golang-nuts/ScFRRxqHTkY">golang-nuts thread – Optimizing a classical computation in Go</a></p></li>
+<li><p><a class="reference external" href="https://github.com/golang/go/issues/13253">Issue 13253 – proposal: spec: strided slices</a> Alternate proposal relating to multi-dimensional slices (closed)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Go presently lacks multi-dimensional slices.
+Multi-dimensional arrays can be constructed, but they have fixed dimensions: a
+function that takes a multi-dimensional array of size 3x3 is unable to handle an
+array of size 4x4.
+Go currently provides slices to allow code to be written for lists of unknown
+length, but similar functionality does not exist for multiple dimensions;
+slices only work in a single dimension.</p>
+<p>One very important concept with this layout is a Matrix.
+Matrices are hugely important in many sections of computing.
+Several popular languages have been designed with the goal of making matrices
+easy (MATLAB, Julia, and to some extent Fortran) and significant effort has been
+spent in other languages to make matrix operations fast (Lapack, Intel
+MKL, ATLAS, Eigpack, numpy).
+Go was designed with speed and concurrency in mind, and so Go should be a great
+language for numeric applications, and indeed, scientific programmers are using Go
+despite the lack of support from the standard library for scientific computing.
+While the gonum project has a <a class="reference external" href="https://github.com/gonum/matrix">matrix library</a>
+that provides a significant amount of functionality, the results are problematic
+for reasons discussed below.
+As both a developer and a user of the gonum matrix library, I can confidently
+say that not only would implementation and maintenance be much easier with this
+extension to slices, but also that using matrices would change from being
+somewhat of a pain to being enjoyable to use.</p>
+<p>The desire for good matrix support is a motivation for this proposal, but
+matrices are not synonymous with 2d-slices.
+A matrix is composed of real or complex numbers and has well-defined operations
+(multiplication, determinant, Cholesky decomposition).
+2d-slices, on the other hand, are merely a rectangular data container. Slices can
+be of any dimension, hold any data type and do not have any of the additional
+semantics of a matrix.
+A matrix can be constructed on top of a 2d-slice in an external package.</p>
+<p>A rectangular data container can find use throughout the Go ecosystem.
+A partial list is</p>
+<ol class="simple">
+<li><p>Image processing: An image canvas can be represented as a rectangle of colors.
+Here the ability to efficiently slice in multiple dimensions is important.</p></li>
+<li><p>Machine learning: Typically feature vectors are represented as a row of a
+matrix. Each feature vector has the same length, and so the additional safety of
+a full rectangular data structure is useful.
+Additionally, many fitting algorithms (such as linear regression) give this
+rectangular data the additional semantics of a matrix, so easy interoperability
+is very useful.</p></li>
+<li><p>Game development: Go is becoming increasingly popular for the development
+of games.
+A player-specific section of a two or three dimensional space can be well
+represented by an n-dimensional array or a slice of an nd-slice.
+Two-dimensional slices are especially well suited for representing the game board
+of tile-based games.</p></li>
+</ol>
+<p>Go is a great general-purpose language, and allowing users to slice a
+multi-dimensional array will increase the sphere of projects for which Go is ideal.</p>
+<div class="section" id="language-workarounds">
+<h3>Language Workarounds<a class="headerlink" href="#language-workarounds" title="Permalink to this headline">¶</a></h3>
+<p>There are several possible ways to emulate a rectangular data structure, each
+with its own downsides.
+This section discusses data in two dimensions, but similar problems exist for
+higher dimensional data.</p>
+<div class="section" id="slice-of-slices">
+<h4>1. Slice of slices<a class="headerlink" href="#slice-of-slices" title="Permalink to this headline">¶</a></h4>
+<p>Perhaps the most natural way to express a two-dimensional slice in Go is to use
+a slice of slices (for example <code class="docutils literal notranslate"><span class="pre">[][]float64</span></code>).
+This construction allows convenient accessing and assignment using the
+traditional slice access</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+<span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+</pre></div>
+</div>
+<p>This representation has two major problems.
+First, a slice of slices, on its own, has no guarantees about the size of the
+slices in the minor dimension.
+Routines must either check that the lengths of the inner slices are all equal,
+or assume that the dimensions are equal (and accept possible bounds errors).
+This approach is error-prone for the user and unnecessarily burdensome for the
+implementer.
+In short, a slice of slices represents exactly that; a slice of arbitrary length
+slices.
+It does not represent data where all of the minor dimension slices are of
+equal length.
+Secondly, a slice of slices has a significant amount of computational overhead
+because accessing an element of a sub-slice means indirecting through a pointer
+(the pointer to the slice’s underlying array).
+Many programs in numerical computing are dominated by the cost of matrix
+operations (linear solve, singular value decomposition), and optimizing these
+operations is the best way to improve performance.
+Likewise, any unnecessary cost is a direct unnecessary slowdown.
+On modern machines, pointer-chasing is one of the slowest operations.
+At best, the pointer might be in the L1 cache.
+Even so, keeping that pointer in the cache increases L1 cache pressure, slowing
+down other code.
+If the pointer is not in the L1 cache, its retrieval is considerably slower than
+address arithmetic; at worst, it might be in main memory, which has a latency on
+the order of a hundred times slower than address arithmetic.
+Additionally, what would be redundant bounds checks in a true 2d-slice are
+necessary in a slice of slice as each slice could have a different length, and
+some common operations like 2-d slicing are expensive on a slice of slices but
+are cheap in other representations.</p>
+</div>
+<div class="section" id="single-slice">
+<h4>2. Single slice<a class="headerlink" href="#single-slice" title="Permalink to this headline">¶</a></h4>
+<p>A second representation option is to contain the data in a single slice, and
+maintain auxiliary variables for the size of the 2d-slice.
+The main benefit of this approach is speed.
+A single slice avoids some of the cache and index bounds concerns listed above.
+However, this approach has several major downfalls.
+The auxiliary size variables must be managed by hand and passed between
+different routines.
+Every access requires hand-writing the data access multiplication as well as hand
+-written bounds checking (Go ensures that data is not accessed beyond the slice,
+but not that the row and column bounds are respected).
+Furthermore, it is not clear from the data representation whether the 2d-slice
+is to be accessed in “row major” or “column major” format</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">:=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">stride</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span>     <span class="o">//</span> <span class="n">Row</span> <span class="n">major</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">stride</span><span class="p">]</span>     <span class="o">//</span> <span class="n">Column</span> <span class="n">major</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In order to correctly and safely represent a slice-backed rectangular structure,
+one needs four auxiliary variables: the number of rows, number of columns, the
+stride, and also the ordering of the data since there is currently no “standard”
+choice for data ordering.
+A community accepted ordering for this data structure would significantly ease
+package writing and improve package inter-operation, but relying on library
+writers to follow unenforced convention is a recipe for confusion and incorrect
+code.</p>
+</div>
+<div class="section" id="struct-type">
+<h4>3. Struct type<a class="headerlink" href="#struct-type" title="Permalink to this headline">¶</a></h4>
+<p>A third approach is to create a struct data type containing a data slice and all
+of the data access information.
+The data is then accessed through method calls.
+This is the approach used by <a class="reference external" href="https://github.com/skelterjohn/go.matrix">go.matrix</a>
+and gonum/matrix.</p>
+<p>The struct representation contains the information required for single-slice
+based access, but disallows direct access to the data slice.
+Instead, method calls are used to access and assign values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Dense</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">stride</span> <span class="nb">int</span>
+	<span class="n">rows</span>   <span class="nb">int</span>
+	<span class="n">cols</span>   <span class="nb">int</span>
+	<span class="n">data</span>   <span class="p">[]</span><span class="n">float64</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span><span class="n">Dense</span><span class="p">)</span> <span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="nb">int</span><span class="p">)</span> <span class="n">float64</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">uint</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">uint</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;rows out of bounds&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="n">uint</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">uint</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;cols out of bounds&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">d</span><span class="o">.</span><span class="n">stride</span><span class="o">+</span><span class="n">j</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span><span class="n">Dense</span><span class="p">)</span> <span class="n">Set</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="nb">int</span><span class="p">,</span> <span class="n">v</span> <span class="n">float64</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">uint</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">uint</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;rows out of bounds&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="n">uint</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">uint</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;cols out of bounds&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">d</span><span class="o">.</span><span class="n">stride</span><span class="o">+</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>From the user’s perspective:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">:=</span> <span class="n">m</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The major benefits to this approach are that the data are encapsulated correctly
+– the data are presented as a rectangle, and panics occur when either dimension
+is accessed out of bounds – and that the defining package can efficiently implement
+common operations (multiplication, linear solve, etc.) since it can access the
+data directly.</p>
+<p>This representation, however, suffers from legibility issues.
+The At and Set methods when used in simple expressions are not too bad; they are
+a couple of extra characters, but the behavior is still clear.
+Legibility starts to erode, however, when used in more complicated expressions</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Set</span> <span class="n">the</span> <span class="n">third</span> <span class="n">column</span> <span class="n">of</span> <span class="n">a</span> <span class="n">matrix</span> <span class="n">to</span> <span class="n">have</span> <span class="n">a</span> <span class="n">uniform</span> <span class="n">random</span> <span class="n">value</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nCols</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="n">m</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="n">rand</span><span class="o">.</span><span class="n">Float64</span><span class="p">()</span> <span class="o">+</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">}</span>
+<span class="o">//</span> <span class="n">Perform</span> <span class="n">a</span> <span class="n">matrix</span> <span class="n">add</span><span class="o">-</span><span class="n">multiply</span><span class="p">,</span> <span class="n">c</span> <span class="o">+=</span> <span class="n">a</span> <span class="o">.*</span> <span class="n">b</span>  <span class="p">(</span><span class="o">.*</span> <span class="n">representing</span> <span class="n">element</span><span class="o">-</span>
+<span class="o">//</span> <span class="n">wise</span> <span class="n">multiplication</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nRows</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nCols</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">{</span>
+		<span class="n">c</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The above code segments are much clearer when written as an expression and
+assignment</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Set</span> <span class="n">the</span> <span class="n">third</span> <span class="n">column</span> <span class="n">of</span> <span class="n">a</span> <span class="n">matrix</span> <span class="n">to</span> <span class="n">have</span> <span class="n">a</span> <span class="n">uniform</span> <span class="n">random</span> <span class="n">value</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nRows</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">rand</span><span class="o">.</span><span class="n">Float64</span><span class="p">()</span> <span class="o">+</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="o">//</span> <span class="n">Perform</span> <span class="n">a</span> <span class="n">matrix</span> <span class="n">add</span><span class="o">-</span><span class="n">multiply</span><span class="p">,</span> <span class="n">c</span> <span class="o">+=</span> <span class="n">a</span> <span class="o">.*</span> <span class="n">b</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nRows</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nCols</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">{</span>
+		<span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As will be discussed below, this representation also requires a significant API
+surface to enable performance for code outside the defining package.</p>
+</div>
+</div>
+<div class="section" id="performance">
+<h3>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h3>
+<p>This section discusses the relative performance of the approaches.</p>
+<div class="section" id="slice-of-slice">
+<h4>1. Slice of slice<a class="headerlink" href="#slice-of-slice" title="Permalink to this headline">¶</a></h4>
+<p>The slice of slices approach, as discussed above, has fundamental performance
+limitations due to data non-locality.
+It requires <code class="docutils literal notranslate"><span class="pre">n</span></code> pointer indirections to get to an element of an <code class="docutils literal notranslate"><span class="pre">n</span></code>-dimensional
+slice, while in a multi-dimensional slice it only requires one.</p>
+</div>
+<div class="section" id="id1">
+<h4>2. Single slice<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>The single-slice implementation, in theory, has performance identical to
+generalized slices.
+In practice, the details depend on the specifics of the implementation.
+Bounds checking can be a significant portion of runtime for index-heavy code,
+and a lot of effort has gone to removing redundant bounds checks in the SSA
+compiler.
+These checks can be proved redundant for both nd-slices and the single slice
+representation, and there is no fundamental performance difference in theory.
+In practice, for the single slice representation the compiler needs to prove that
+the combination <code class="docutils literal notranslate"><span class="pre">i*stride</span> <span class="pre">+</span> <span class="pre">j</span></code> is in bounds, while for an nd-slice the compiler
+just needs to prove that <code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code> are individually within bounds (since the
+compiler knows it maintains the correct stride).
+Both are feasible, but the latter is simpler, especially with the proposed
+extensions to range.</p>
+</div>
+<div class="section" id="id2">
+<h4>3. Struct type<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>The performance story for the struct type is more complicated.
+Code within the implementing package can access the slice directly, and so the
+discussion is identical to the above.
+A user-implemented multi-dimensional slice based on a struct can be made as
+efficient as the single slice representation, but it requires more than the
+simple methods suggested above.
+The code for the benchmarks can be found <a class="reference external" href="https://play.golang.org/p/yx6ODaIqPl">here</a>.
+The “(BenchmarkXxx)” parenthetical below refer to these benchmarks.
+All benchmarks were performed using Go 1.7.3.
+A table at the end summarizes the results.
+The example for performance comparison will be the function <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">+=</span> <span class="pre">A*B^T</span></code>.
+This is a simpler version of the “General Matrix Multiply” at the core of many
+numerical routines.</p>
+<p>First consider a single-slice implementation (BenchmarkNaiveSlices), which
+will be similar to the optimal performance.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Compute C += A*B^T, where C is an m×n matrix, A is an m×k matrix, and B
+// is an n×k matrix
+func MulTrans(m, n, k int, a, b, c []float64, lda, ldb, ldc int){
+	for i := 0; i &lt; m; i++ {
+		for j := 0; j &lt; n; j++ {
+			var t float64
+			for l := 0; l &lt; k; l++ {
+				t += a[i*lda+l] * b[j*lda+l]
+			}
+			c[i*ldc+j] += t
+		}
+	}
+}
+</pre></div>
+</div>
+<p>We can add an “AddSet” method (BenchmarkAddSet), and translate the above code
+into the struct representation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Compute C += A*B^T, where C is an m×n matrix, A is an m×k matrix, and B
+// is an n×k matrix
+func MulTrans(A, B, C Dense) {
+	for i := 0; i &lt; m; i++ {
+		for j := 0; j &lt; n; j++ {
+			var t float64
+			for l := 0; l &lt; k; l++ {
+				t += A.At(i, l) * B.At(j, l)
+			}
+			C.AddSet(i, j, t)
+		}
+	}
+}
+</pre></div>
+</div>
+<p>This translation is 500% slower, a very significant cost.</p>
+<p>The reason for this significant penalty is that the Go compiler does not
+currently inline methods that can panic, and the accessors contain panic calls
+as part of the manual index bounds checks.
+The next benchmark simulates a compiler with this restriction removed (BenchmarkAddSetNP)
+by replacing the <code class="docutils literal notranslate"><span class="pre">panic</span></code> calls in the accessor methods with setting the first
+data element to NaN (this is not good code, but it means the current Go compiler
+can inline the method calls and the bounds checks still affect program execution
+and so cannot be trivially removed).
+This significantly decreases the running time, reducing the gap from 500% to only 35%.</p>
+<p>The final cause of the performance gap is bounds checking.
+The benchmark is modified so the bounds checks are removed, simulating a compiler
+with better proving capability than the current compiler.
+Further, the benchmark is run with <code class="docutils literal notranslate"><span class="pre">-gcflags=-B</span></code> (BenchmarkAddSetNB).
+This closes the performance gap entirely (and also improves the single slice
+implementation by 15%).</p>
+<p>However, the initial single slice implementation can be significantly improved
+as follows (BenchmarkSliceOpt).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="k">as</span> <span class="o">:=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">lda</span> <span class="p">:</span> <span class="n">i</span><span class="o">*</span><span class="n">lda</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
+	<span class="n">cs</span> <span class="o">:=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">ldc</span> <span class="p">:</span> <span class="n">i</span><span class="o">*</span><span class="n">ldc</span><span class="o">+</span><span class="n">n</span><span class="p">]</span>
+	<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">bs</span> <span class="o">:=</span> <span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="n">lda</span> <span class="p">:</span> <span class="n">j</span><span class="o">*</span><span class="n">lda</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
+		<span class="n">var</span> <span class="n">t</span> <span class="n">float64</span>
+		<span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="k">as</span> <span class="p">{</span>
+			<span class="n">t</span> <span class="o">+=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">bs</span><span class="p">[</span><span class="n">l</span><span class="p">]</span>
+		<span class="p">}</span>
+		<span class="n">cs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">t</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This reduces the cost by another 40% on top of the bounds check removal.</p>
+<p>Similar performance using a struct representation can be achieved with a
+“RowView” method (BenchmarkDenseOpt)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span><span class="n">Dense</span><span class="p">)</span> <span class="n">RowView</span><span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="p">[]</span><span class="n">float64</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">uint</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">uint</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;rows out of bounds&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">d</span><span class="o">.</span><span class="n">stride</span> <span class="p">:</span> <span class="n">i</span><span class="o">*</span><span class="n">d</span><span class="o">.</span><span class="n">stride</span><span class="o">+</span><span class="n">d</span><span class="o">.</span><span class="n">cols</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This again closes the gap with the single slice representation.</p>
+<p>The conclusion is that the struct representation can eventually be as efficient
+as the single slice representation.
+Bridging the gap requires a compiler with better inlining ability and superior
+bounds checking elimination.
+On top of a better compiler, a suite of methods are needed on Dense to support
+efficient operations.
+The RowView method let range be used, and the “operator methods” (AddSet, AtSet
+SubSet, MulSet, etc.) reduce the number of accesses.</p>
+<p>Compare the final implementation using a struct</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="k">as</span> <span class="o">:=</span> <span class="n">A</span><span class="o">.</span><span class="n">RowView</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+	<span class="n">cs</span> <span class="o">:=</span> <span class="n">C</span><span class="o">.</span><span class="n">RowView</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">bs</span> <span class="o">:=</span> <span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="n">lda</span><span class="p">:]</span>
+		<span class="n">var</span> <span class="n">t</span> <span class="n">float64</span>
+		<span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="k">as</span> <span class="p">{</span>
+			<span class="n">t</span> <span class="o">+=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">bs</span><span class="p">[</span><span class="n">l</span><span class="p">]</span>
+		<span class="p">}</span>
+		<span class="n">cs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">t</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>with that of the nd-slice implementation using the syntax proposed here</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="k">as</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+	<span class="n">cs</span> <span class="o">:=</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+	<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">bs</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">b</span> <span class="p">{</span>
+		<span class="n">var</span> <span class="n">t</span> <span class="n">float64</span>
+		<span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="k">as</span> <span class="p">{</span>
+			<span class="n">t</span> <span class="o">+=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">bs</span><span class="p">[</span><span class="n">l</span><span class="p">]</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="n">cs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">t</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The indexing performed by RowView happens safely and automatically using range.
+There is no need for the “OpSet” methods since they are automatic with slices.
+Compiler optimizations are less necessary as the operations are already inlined,
+and range eliminated most of the bounds checks.
+Perhaps most importantly, the code snippet above is the most natural way to code
+the function using nd-slices, and it is also the most efficient way to code it.
+Efficient code is a consequence of good code when nd-slices are available.</p>
+<p>| Benchmark                  | MulTrans (ms) |
+| ————————– | :———–: |
+| Naive slice                |  41.0         |
+| Struct + AddSet            | 207           |
+| Struct + Inline            |  56.0         |
+| Slice + No Bounds (NB)     |  34.9         |
+| Struct + Inline + NB       |  34.1         |
+| Slice + NB + Subslice (SS) |  21.6         |
+| Struct + Inilne + NB + SS  |  20.6         |</p>
+</div>
+</div>
+<div class="section" id="recap">
+<h3>Recap<a class="headerlink" href="#recap" title="Permalink to this headline">¶</a></h3>
+<p>The following table summarizes the current state of affairs with 2d data in go</p>
+<p>|                | Correct Representation | Access/Assignment Convenience | Speed |
+| ————-: | :——————–: | :—————————: | :—: |
+| Slice of slice | X                      | ✓                             | X     |
+| Single slice   | X                      | X                             | ✓     |
+| Struct type    | ✓                      | X                             | X     |</p>
+<p>In general, we would like our codes to be</p>
+<ol class="simple">
+<li><p>Easy to use</p></li>
+<li><p>Not error-prone</p></li>
+<li><p>Performant</p></li>
+</ol>
+<p>At present, an author of numerical code must choose <em>one</em>.
+The relative importance of these priorities will be application-specific, which
+will make it hard to establish one common representation.
+This lack of consistency will make it hard for packages to inter-operate.
+Improvements to the compiler will reduce the performance penalty for using the
+correct representation, but even then many methods are required to achieve optimal
+performance.
+A language built-in meets all three goals, enabling code that is
+simultaneously clearer and more efficient.
+Generalized slices allow gophers to write simple, fast, and correct numerical
+and graphics code.</p>
+</div>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>The proposed changes are described first here in the Proposal section.
+The rationale for the specific design choices is discussed afterward in the
+Discussion section.</p>
+<div class="section" id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
+<p>Just as <code class="docutils literal notranslate"><span class="pre">[]T</span></code> is shorthand for a slice, <code class="docutils literal notranslate"><span class="pre">[,]T</span></code> is shorthand for a two-dimensional
+slice, <code class="docutils literal notranslate"><span class="pre">[,,]T</span></code> a three-dimensional slice, etc.</p>
+</div>
+<div class="section" id="allocation">
+<h3>Allocation<a class="headerlink" href="#allocation" title="Permalink to this headline">¶</a></h3>
+<p>A slice may be constructed either using the make built-in or via a literal.
+The elements are guaranteed to be stored in a continuous slice, and are
+guaranteed to be stored in “row-major” order.
+Specifically, for a 2d-slice, the underlying data slice first contains all
+elements in the first row, followed by all elements in the second row, etc.
+Thus, the 5x3 table</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00</span> <span class="mi">01</span> <span class="mi">02</span> <span class="mi">03</span> <span class="mi">04</span>
+<span class="mi">10</span> <span class="mi">11</span> <span class="mi">12</span> <span class="mi">13</span> <span class="mi">14</span>
+<span class="mi">20</span> <span class="mi">21</span> <span class="mi">22</span> <span class="mi">23</span> <span class="mi">24</span>
+</pre></div>
+</div>
+<p>is stored as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">00</span><span class="p">,</span> <span class="mi">01</span><span class="p">,</span> <span class="mi">02</span><span class="p">,</span> <span class="mi">03</span><span class="p">,</span> <span class="mi">04</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Similarly, for a 3d-slice with lengths m, n, and p, the data is arranged as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">t111</span><span class="p">,</span> <span class="n">t112</span><span class="p">,</span> <span class="o">...</span> <span class="n">t11p</span><span class="p">,</span> <span class="n">t121</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">t12n</span><span class="p">,</span> <span class="o">...</span> <span class="n">t211</span> <span class="o">...</span> <span class="p">,</span> <span class="n">t2np</span><span class="p">,</span> <span class="o">...</span> <span class="n">tmnp</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="making-a-multi-dimensional-slice">
+<h4>Making a multi-dimensional slice<a class="headerlink" href="#making-a-multi-dimensional-slice" title="Permalink to this headline">¶</a></h4>
+<p>A new N-dimensional slice (of generic type) may be allocated by using the make
+command with a mandatory argument of a [N]int specifying the length in each
+dimension, followed by an optional [N]int specifying the capacity in each
+dimension.
+If the capacity argument is not present, each capacity is defaulted to its
+respective length argument.
+These act like the length and capacity for slices, but on a per-dimension basis.
+The slice will be filled with the zero value of the type</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">},</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">maxm</span><span class="p">,</span> <span class="n">maxn</span><span class="p">})</span>
+<span class="n">t</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">})</span>
+<span class="n">s2</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,,]</span><span class="n">T</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">},</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">maxm</span><span class="p">,</span> <span class="n">maxn</span><span class="p">,</span> <span class="n">maxp</span><span class="p">})</span>
+<span class="n">t2</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,,]</span><span class="n">T</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Calling make with a zero length or capacity is allowed, and is equivalent to
+creating an equivalently sized multi-dimensional array and slicing it
+(described fully below).
+In the following code</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,,,]</span><span class="n">float32</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">][</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="n">float32</span><span class="p">{}</span>
+<span class="n">w</span> <span class="o">:=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>u and w both have lengths and capacities of [4]int{0, 6, 4, 0), and the
+underlying data slice has 0 elements.</p>
+</div>
+<div class="section" id="slice-literals">
+<h4>Slice literals<a class="headerlink" href="#slice-literals" title="Permalink to this headline">¶</a></h4>
+<p>A slice literal can be constructed using nested braces</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u</span> <span class="o">:=</span> <span class="p">[,]</span><span class="n">T</span><span class="p">{{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">},</span> <span class="p">{</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">}}</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="p">[,,]</span><span class="n">T</span><span class="p">{{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">},</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">}},</span> <span class="p">{{</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">},</span> <span class="p">{</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">}}}</span>
+</pre></div>
+</div>
+<p>The size of the slice will depend on the size of the brace sets, outside in.
+For example, in a 2d-slice the number of rows is equal to the number of sets of
+braces, and the number of columns is equal to the number of elements within
+each set of braces.
+In a 3d-slice, the length of the first dimension is the number of sets of brace
+sets, etc.
+Above, u has length [2, 3], and v has length [2, 2, 4].
+It is a compile-time error if each element in a brace layer does not contain the
+same number of elements.
+Like normal slices and arrays, key-element literal construction is allowed.
+For example, the two following constructions yield the same result</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[,]</span><span class="nb">int</span><span class="p">{{</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">0</span><span class="p">},{</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span><span class="mi">1</span><span class="p">}}</span>
+<span class="p">[,]</span><span class="nb">int</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">}}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="slicing">
+<h3>Slicing<a class="headerlink" href="#slicing" title="Permalink to this headline">¶</a></h3>
+<p>Slicing occurs by using the normal 2 or 3 index slicing rules in each dimension,
+<code class="docutils literal notranslate"><span class="pre">i:j</span></code> or <code class="docutils literal notranslate"><span class="pre">i:j:k</span></code>.
+The same panic rules as 1d-slices apply (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;=</span> <span class="pre">j</span> <span class="pre">&lt;=</span> <span class="pre">k</span> <span class="pre">&lt;=</span> <span class="pre">capacity</span> <span class="pre">in</span> <span class="pre">that</span> <span class="pre">dim</span></code>).
+Like slices, this updates the length and capacity in the respective dimensions</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">},</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">})</span>
+<span class="n">b</span> <span class="o">:=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>A multi-dimensional array may be sliced to create an nd-slice.
+In</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">array</span> <span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span><span class="nb">int</span>
+<span class="n">b</span> <span class="o">:=</span> <span class="n">array</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">b</span></code> is a slice with lengths 4 and 2, capacities 6 and 2, and a stride of 5.</p>
+<p>Represented graphically, the original <code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">a</span> <span class="pre">[8][5]int</span></code> is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00</span> <span class="mi">01</span> <span class="mi">02</span> <span class="mi">03</span> <span class="mi">04</span>
+<span class="mi">10</span> <span class="mi">11</span> <span class="mi">12</span> <span class="mi">13</span> <span class="mi">14</span>
+<span class="mi">20</span> <span class="mi">21</span> <span class="mi">22</span> <span class="mi">23</span> <span class="mi">24</span>
+<span class="mi">30</span> <span class="mi">31</span> <span class="mi">32</span> <span class="mi">33</span> <span class="mi">34</span>
+<span class="mi">40</span> <span class="mi">41</span> <span class="mi">42</span> <span class="mi">43</span> <span class="mi">44</span>
+<span class="mi">50</span> <span class="mi">51</span> <span class="mi">52</span> <span class="mi">53</span> <span class="mi">54</span>
+<span class="mi">60</span> <span class="mi">61</span> <span class="mi">62</span> <span class="mi">63</span> <span class="mi">64</span>
+<span class="mi">70</span> <span class="mi">71</span> <span class="mi">72</span> <span class="mi">73</span> <span class="mi">74</span>
+</pre></div>
+</div>
+<p>After slicing, with <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">:=</span> <span class="pre">a[2:6,</span> <span class="pre">3:5]</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">23</span> <span class="mi">24</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">33</span> <span class="mi">34</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">43</span> <span class="mi">44</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">53</span> <span class="mi">54</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span>
+<span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span>
+</pre></div>
+</div>
+<p>where the numbered elements are those still visible to the slice.
+The underlying data slice is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">23</span> <span class="mi">24</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">33</span> <span class="mi">34</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">43</span> <span class="mi">44</span> <span class="o">--</span> <span class="o">--</span> <span class="o">--</span> <span class="mi">53</span> <span class="mi">54</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="indexing">
+<h3>Indexing<a class="headerlink" href="#indexing" title="Permalink to this headline">¶</a></h3>
+<p>The simplest form of an index expression specifies a single integer index for
+the left-most (outer-most) dimension of a slice, followed by 3-value (min, max,
+cap) slice expressions for each of the inner dimensions.
+This operation returns a slice with one dimension removed.
+The returned slice shares underlying with the original slice, but with a new
+offset and updated lengths and capacities.
+As a shorthand, multiple indexing expressions may be combined into one.
+That is <code class="docutils literal notranslate"><span class="pre">t[1,2,:]</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">t[1,:,:][2,:]</span></code>, and , <code class="docutils literal notranslate"><span class="pre">t[5,4,1,2:4]</span></code> is equivalent
+to <code class="docutils literal notranslate"><span class="pre">t[5,:,:,:][4,:,:][1,:][2:4]</span></code></p>
+<p>It follows that specifying all of the indices gets a single element of the slice.</p>
+<p>An important consequence of the indexing rules is that the “indexed dimensions”
+must be the leftmost ones, and the “sliced dimensions” must be the rightmost ones.</p>
+<p>Examples:</p>
+<p>Continuing the example above, <code class="docutils literal notranslate"><span class="pre">b[1,:]</span></code> returns the slice []int{33, 34}.</p>
+<p>Other example statements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">,:]</span> <span class="o">//</span> <span class="n">v</span> <span class="n">has</span> <span class="nb">type</span> <span class="p">[]</span><span class="n">T</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>  <span class="o">//</span> <span class="n">v</span> <span class="n">has</span> <span class="nb">type</span> <span class="p">[,]</span><span class="n">T</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">//</span> <span class="n">Compile</span> <span class="n">error</span><span class="p">:</span> <span class="n">specified</span> <span class="n">dimension</span> <span class="n">must</span> <span class="n">be</span> <span class="n">the</span> <span class="n">leftmost</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>  <span class="o">//</span> <span class="n">v</span> <span class="n">has</span> <span class="nb">type</span> <span class="n">T</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">,:,:][</span><span class="mi">2</span><span class="p">,:][</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">v</span> <span class="n">has</span> <span class="nb">type</span> <span class="n">T</span>
+<span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">v</span> <span class="n">has</span> <span class="nb">type</span> <span class="n">T</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="assignment">
+<h3>Assignment<a class="headerlink" href="#assignment" title="Permalink to this headline">¶</a></h3>
+<p>Assignment acts as it does in Go today.
+The statement <code class="docutils literal notranslate"><span class="pre">s[i]</span> <span class="pre">=</span> <span class="pre">x</span></code> puts the value <code class="docutils literal notranslate"><span class="pre">x</span></code> into position <code class="docutils literal notranslate"><span class="pre">i</span></code> of the slice.</p>
+<p>An index operation can be combined with an assignment operation to assign to a
+higher-dimensional slice.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">,:,:][</span><span class="mi">0</span><span class="p">,:][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>For convenience, the slicing and access expressions can be elided.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">//</span> <span class="n">equivalent</span> <span class="n">to</span> <span class="n">the</span> <span class="n">above</span>
+</pre></div>
+</div>
+<p>If any index is negative or if it is greater than or equal to the length
+in that dimension, a runtime panic occurs.
+Other combination operators are valid (assuming the slice is of correct type)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">float64</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">})</span>
+<span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">2</span>   <span class="o">//</span> <span class="n">Now</span> <span class="n">contains</span> <span class="mi">12</span>
+<span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>    <span class="o">//</span> <span class="n">Runtime</span> <span class="n">panic</span><span class="p">,</span> <span class="n">out</span> <span class="n">of</span> <span class="n">bounds</span> <span class="p">(</span><span class="n">possiby</span> <span class="n">a</span> <span class="nb">compile</span><span class="o">-</span><span class="n">time</span> <span class="n">error</span>
+              <span class="o">//</span> <span class="k">if</span> <span class="nb">all</span> <span class="n">indices</span> <span class="n">are</span> <span class="n">constants</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="reshaping">
+<h3>Reshaping<a class="headerlink" href="#reshaping" title="Permalink to this headline">¶</a></h3>
+<p>A new built-in <code class="docutils literal notranslate"><span class="pre">reshape</span></code> allows the data in a 1d slice to be re-interpreted as a
+higher dimensional slice in constant time.
+The pseudo-signature is <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">reshape(s</span> <span class="pre">[]T,</span> <span class="pre">[N]int)</span> <span class="pre">[,...]T</span></code> where <code class="docutils literal notranslate"><span class="pre">N</span></code>
+is an integer greater than one, and [,…]T is a slice of dimension <code class="docutils literal notranslate"><span class="pre">N</span></code>.
+The returned slice shares the same underlying data as the input slice, and is
+interpreted in the layout discussed in the “Allocation” section.
+The product of the elements in the <code class="docutils literal notranslate"><span class="pre">[N]int</span></code> must be less than the length of the
+input slice or a run-time panic will occur.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">:=</span> <span class="p">[]</span><span class="n">float64</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">}</span>
+<span class="n">t</span> <span class="o">:=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="n">prints</span> <span class="mi">4</span>
+<span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+<span class="n">t2</span> <span class="o">:=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t3</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="n">prints</span> <span class="o">-</span><span class="mi">2</span>
+<span class="n">t3</span> <span class="o">:=</span> <span class="n">reshape</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">})</span> <span class="o">//</span> <span class="n">runtime</span> <span class="n">panic</span><span class="p">:</span> <span class="n">reshape</span> <span class="n">length</span> <span class="n">mismatch</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unpack">
+<h3>Unpack<a class="headerlink" href="#unpack" title="Permalink to this headline">¶</a></h3>
+<p>A new built-in <code class="docutils literal notranslate"><span class="pre">unpack</span></code> returns the underlying data slice and strides from a
+higher dimensional slice.
+The pseudo-signature is <code class="docutils literal notranslate"><span class="pre">func</span> <span class="pre">unpack(s</span> <span class="pre">[,...]T)</span> <span class="pre">([]T,</span> <span class="pre">[N-1]int)</span></code>, where
+[,…T] is a slice of dimension <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>.
+The returned array is the strides of the table.
+The returned slice has the same underlying data as the input table.
+The first element of the returned slice is the first accessible element of the
+slice (element 0 in the underlying data), and the last element of the
+returned slice is the last accessible element of the table.
+For example, in a 2d-slice the end of the returned slice is element
+<code class="docutils literal notranslate"><span class="pre">stride*len(s)[0]+len(s)[1]</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">:=</span> <span class="p">[,]</span><span class="n">float64</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">}}</span>
+<span class="n">t2</span> <span class="o">:=</span> <span class="n">t</span><span class="p">[:</span><span class="mi">2</span><span class="p">,:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">s</span><span class="p">,</span> <span class="n">stride</span> <span class="o">:=</span> <span class="n">unpack</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span> <span class="o">//</span> <span class="n">prints</span> <span class="mi">3</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">//</span> <span class="n">prints</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span> <span class="o">//</span> <span class="n">prints</span> <span class="mi">6</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="length-capacity">
+<h3>Length / Capacity<a class="headerlink" href="#length-capacity" title="Permalink to this headline">¶</a></h3>
+<p>Like slices, the <code class="docutils literal notranslate"><span class="pre">len</span></code> and <code class="docutils literal notranslate"><span class="pre">cap</span></code> built-in functions can be used on slices of
+higher dimension.
+Len and cap take in a slice and return a [N]int representing the lengths/
+capacities in the dimensions of the slice.
+If the slice is one-dimensional, an <code class="docutils literal notranslate"><span class="pre">int</span></code> is returned, not a <code class="docutils literal notranslate"><span class="pre">[1]int</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lengths</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>    <span class="o">//</span> <span class="n">lengths</span> <span class="ow">is</span> <span class="n">a</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span>
+<span class="n">nRows</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">nCols</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">maxElems</span> <span class="o">:=</span> <span class="n">cap</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">cap</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="copy">
+<h3>Copy<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h3>
+<p>The built-in <code class="docutils literal notranslate"><span class="pre">copy</span></code> will be changed to allow two slices of equal dimension.
+Copy returns an <code class="docutils literal notranslate"><span class="pre">[N]int</span></code> specifying the number of elements that were copied in each
+dimension.
+For a 1d-slice, an <code class="docutils literal notranslate"><span class="pre">int</span></code> will be returned instead of a <code class="docutils literal notranslate"><span class="pre">[1]int</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">:=</span> <span class="n">copy</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>   <span class="o">//</span> <span class="n">n</span> <span class="ow">is</span> <span class="n">a</span> <span class="p">[</span><span class="n">N</span><span class="p">]</span><span class="nb">int</span>
+</pre></div>
+</div>
+<p>Copy will copy all of the elements in the sub-slice from the first dimension to
+<code class="docutils literal notranslate"><span class="pre">min(len(dst)[0],</span> <span class="pre">len(src)[0])</span></code> the second dimension to
+<code class="docutils literal notranslate"><span class="pre">min(len(dst)[1],</span> <span class="pre">len(src)[1])</span></code>, etc.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">})</span>
+<span class="n">src</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">})</span>
+<span class="n">n</span> <span class="o">:=</span> <span class="n">copy</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span> <span class="o">//</span> <span class="n">n</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">}</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s2">&quot;All destination elements were overwritten:&quot;</span><span class="p">,</span> <span class="n">n</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Indexing can be used to copy data between slices of different dimension.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">:=</span> <span class="p">[]</span><span class="nb">int</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">t</span> <span class="o">:=</span> <span class="p">[,]</span><span class="nb">int</span><span class="p">{{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span> <span class="p">{</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">},</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">}}</span>
+<span class="n">copy</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>    <span class="o">//</span> <span class="n">Copies</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">whole</span> <span class="n">second</span> <span class="n">row</span> <span class="n">of</span> <span class="n">the</span> <span class="nb">slice</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>  <span class="o">//</span> <span class="n">prints</span> <span class="p">[</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">copy</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">,:],</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span> <span class="o">//</span> <span class="n">copies</span> <span class="n">the</span> <span class="n">second</span> <span class="n">row</span> <span class="n">into</span> <span class="n">the</span> <span class="n">third</span> <span class="n">row</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="range">
+<h3>Range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
+<p>A range statement loops over the outermost dimension of a slice.
+The “value” on the left hand side is the <code class="docutils literal notranslate"><span class="pre">n-1</span></code> dimensional slice with the first
+element indexed.
+That is,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">s</span> <span class="p">{</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>is identical to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+	<span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">,:,</span> <span class="o">...</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>for multi-dimensional slices (and i &lt; len(s) for one-dimensional ones).</p>
+<div class="section" id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h4>
+<p>Two-dimensional slices.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Sum</span> <span class="n">the</span> <span class="n">rows</span> <span class="n">of</span> <span class="n">a</span> <span class="mi">2</span><span class="n">d</span><span class="o">-</span><span class="nb">slice</span>
+<span class="n">rowsum</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([]</span><span class="nb">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">range</span> <span class="n">t</span><span class="p">{</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">range</span> <span class="n">s</span><span class="p">{</span>
+		<span class="n">rowsum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Sum</span> <span class="n">the</span> <span class="n">columns</span> <span class="n">of</span> <span class="n">a</span> <span class="mi">2</span><span class="n">d</span><span class="o">-</span><span class="nb">slice</span>
+<span class="n">colsum</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([]</span><span class="nb">int</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">colsum</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]{</span>
+		<span class="n">colsum</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Matrix</span><span class="o">-</span><span class="n">matrix</span> <span class="n">multiply</span> <span class="p">(</span><span class="n">given</span> <span class="n">existing</span> <span class="n">slices</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">float64</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sa</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">a</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">va</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">sa</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">vb</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">,:]</span> <span class="p">{</span>
+			<span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">va</span> <span class="o">*</span> <span class="n">vb</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Higher-dimensional slices</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t3</span> <span class="o">:=</span> <span class="p">[,,]</span><span class="nb">int</span><span class="p">{{{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">},</span> <span class="p">{</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">}},</span> <span class="p">{{</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">},</span> <span class="p">{</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">}}}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t2</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t3</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span> <span class="o">//</span> <span class="n">i</span> <span class="n">ranges</span> <span class="kn">from</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v</span> <span class="ow">is</span> <span class="n">a</span> <span class="p">[,]</span><span class="nb">int</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t3</span><span class="p">[</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">//</span> <span class="n">j</span> <span class="n">ranges</span> <span class="kn">from</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">1</span><span class="p">,</span> <span class="n">s</span> <span class="ow">is</span> <span class="n">a</span> <span class="p">[]</span><span class="nb">int</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">//</span> <span class="n">k</span> <span class="n">ranges</span> <span class="kn">from</span> <span class="mi">0</span> <span class="n">to</span> <span class="mi">3</span><span class="p">,</span> <span class="n">v</span> <span class="ow">is</span> <span class="n">an</span> <span class="nb">int</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Sum</span> <span class="nb">all</span> <span class="n">of</span> <span class="n">the</span> <span class="n">elements</span>
+<span class="n">var</span> <span class="nb">sum</span> <span class="nb">int</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">t2</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t3</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">s</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t2</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">s</span> <span class="p">{</span>
+			<span class="nb">sum</span> <span class="o">+=</span> <span class="n">v</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="reflect">
+<h3>Reflect<a class="headerlink" href="#reflect" title="Permalink to this headline">¶</a></h3>
+<p>Package reflect will have additions to support generalized slices.
+In particular, enough will be added to enable calling C libraries with 2d-slice
+data, as there is a large body of C libraries for numerical and graphics work.
+Eventually, it will probably be desirable for reflect to add functions to
+support multidimensional slices (MakeSliceN, SliceNOf, SliceN, etc.).
+The exact signatures of these methods can be decided upon at a later date.</p>
+</div>
+</div>
+<div class="section" id="discussion">
+<h2>Discussion<a class="headerlink" href="#discussion" title="Permalink to this headline">¶</a></h2>
+<p>This section describes the rationale for the design choices made above, and
+contrasts them with possible alternatives.</p>
+<div class="section" id="data-layout">
+<h3>Data Layout<a class="headerlink" href="#data-layout" title="Permalink to this headline">¶</a></h3>
+<p>Programming languages differ on the choice of row-major or column-major layout.
+In Go, row-major ordering is forced by the existing semantics of arrays-of-arrays.
+Furthermore, having a specific layout is more important than the exact choice so
+that code authors can reason about data layout for optimal performance.</p>
+</div>
+<div class="section" id="discussion-reshape">
+<h3>Discussion – Reshape<a class="headerlink" href="#discussion-reshape" title="Permalink to this headline">¶</a></h3>
+<p>There are several use cases for reshaping, as discussed in the
+<a class="reference external" href="https://github.com/golang/go/issues/13253">strided slices proposal</a>.
+However, reshaping slices of arbitrary dimension (as proposed in the previous link)
+does not compose with slicing (discussed more below).
+This proposal allows for the common use case of transforming between linear and
+multi-dimensional data while still allowing for slicing in the normal way.</p>
+<p>The biggest question is if the input slice to reshape should be exactly as large
+as necessary, or if it only needs to be “long enough”.
+The “long enough” behavior saves a slicing operation, and seems to better match
+the behavior of <code class="docutils literal notranslate"><span class="pre">copy</span></code>.</p>
+<p>Another possible syntax for reshape is discussed in
+<a class="reference external" href="https://github.com/golang/go/issues/395">issue 395</a>.
+Instead of a new built-in, one could use <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">:=</span> <span class="pre">s.([m1,m2,...,mn]T)</span></code>, where s
+is of type <code class="docutils literal notranslate"><span class="pre">[]T</span></code>, and the returned type is <code class="docutils literal notranslate"><span class="pre">[,...]T</span></code> with
+<code class="docutils literal notranslate"><span class="pre">len(t)</span> <span class="pre">==</span> <span class="pre">[n]int{m1,</span> <span class="pre">m2,</span> <span class="pre">...,</span> <span class="pre">mn}</span></code>.
+As discussed in #395, the <code class="docutils literal notranslate"><span class="pre">.()</span></code> syntax is typically reserved for type assertions.
+This isn’t strictly overloaded, since []T is not an interface, but it could be
+confusing to have similar syntax represent similar ideas.
+The difference between s.([,]T) and s.([m,n]T) may be too large for how similar
+the expressions appear – the first asserts that the value stored in the
+interface <code class="docutils literal notranslate"><span class="pre">s</span></code> is a [,]T, while the second reshapes a <code class="docutils literal notranslate"><span class="pre">[]T</span></code> into a <code class="docutils literal notranslate"><span class="pre">[,]T</span></code> with
+lengths equal to <code class="docutils literal notranslate"><span class="pre">m</span></code> and <code class="docutils literal notranslate"><span class="pre">n</span></code>.
+A built-in function avoids these subtleties, and better matches the proposed
+<code class="docutils literal notranslate"><span class="pre">unpack</span></code> built-in.</p>
+</div>
+<div class="section" id="discussion-unpack">
+<h3>Discussion – Unpack<a class="headerlink" href="#discussion-unpack" title="Permalink to this headline">¶</a></h3>
+<p>Like <code class="docutils literal notranslate"><span class="pre">reshape</span></code>, <code class="docutils literal notranslate"><span class="pre">unpack</span></code> is useful for manipulating slices in higher dimensions.
+One major use-case is the allowing copy-free manipulation of data in a slice.
+For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// Strided presents data as a `strided slice`, where elements are not
+// contiguous in memory.
+type Strided struct {
+	data []T
+	len int
+	stride int
+}
+
+func (s Strided) At(i int) T {
+	return data[i*stride]
+}
+
+func GetCol(s [,]T, i int) Strided {
+	data, stride := unpack(s)
+	return Strided {data[i:], stride}
+}
+</pre></div>
+</div>
+<p>See the indexing discussion section for more uses of this type.</p>
+<p>Unpack is also necessary to pass slices to C code (and others) without copying data.
+Using the <code class="docutils literal notranslate"><span class="pre">len</span></code> and <code class="docutils literal notranslate"><span class="pre">unpack</span></code> built-in functions provides enough information to
+make such a call.
+An example function is <code class="docutils literal notranslate"><span class="pre">Dgeqrf</span></code> which computes the QR factorization of a matrix.
+The C signature is (roughly)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dgeqrf</span><span class="p">(</span><span class="nb">int</span> <span class="n">m</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="nb">int</span> <span class="n">lda</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A Go-wrapper to this function could be implemented as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Dgeqrf</span> <span class="n">computes</span> <span class="n">the</span> <span class="n">QR</span> <span class="n">factorization</span> <span class="ow">in</span><span class="o">-</span><span class="n">place</span> <span class="n">using</span> <span class="n">a</span> <span class="n">call</span> <span class="n">through</span> <span class="n">cgo</span> <span class="n">to</span> <span class="n">LAPACK_e</span>
+<span class="n">func</span> <span class="n">Dgeqrf</span><span class="p">(</span><span class="n">d</span> <span class="n">Dense</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">,</span> <span class="n">stride</span> <span class="o">:=</span> <span class="n">unpack</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+	<span class="n">C</span><span class="o">.</span><span class="n">dgeqrf</span><span class="p">((</span><span class="n">C</span><span class="o">.</span><span class="n">int</span><span class="p">)(</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">int</span><span class="p">)(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="o">*</span><span class="n">C</span><span class="o">.</span><span class="n">double</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">int</span><span class="p">)(</span><span class="n">stride</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Such a wrapper is impossible without unpack, as it is otherwise impossible to
+extract the underlying []float64 and strides without using unsafe.</p>
+<p>Finally, <code class="docutils literal notranslate"><span class="pre">unpack</span></code> allows users to reshape higher-dimensional slices between one
+another.
+The user must check that the slice has not been viewed for this operation to
+have the expected behavior.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Reshape23</span> <span class="n">reshapes</span> <span class="n">a</span> <span class="mi">2</span><span class="n">d</span> <span class="nb">slice</span> <span class="n">into</span> <span class="n">a</span> <span class="mi">3</span><span class="n">d</span> <span class="nb">slice</span> <span class="n">of</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">size</span><span class="o">.</span> <span class="n">The</span>
+<span class="o">//</span> <span class="n">major</span> <span class="n">dimension</span> <span class="n">of</span> <span class="n">a</span> <span class="n">must</span> <span class="ow">not</span> <span class="n">have</span> <span class="n">been</span> <span class="n">sliced</span>
+<span class="n">func</span> <span class="n">Reshape23</span><span class="p">(</span><span class="n">a</span> <span class="p">[,]</span><span class="nb">int</span><span class="p">,</span> <span class="n">sz</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="nb">int</span><span class="p">)</span> <span class="p">[,,]</span><span class="nb">int</span> <span class="p">{</span>
+	<span class="n">data</span><span class="p">,</span> <span class="n">stride</span> <span class="o">:=</span> <span class="n">unpack</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">stride</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">]{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;a has been viewed&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sz</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>Indexing<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>A controversial aspect of the proposal is that indexing is asymmetric.
+That is, an index expression has to be the left-most element</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">//</span> <span class="n">allowed</span>
+<span class="n">t</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="ow">not</span> <span class="n">allowed</span>
+</pre></div>
+</div>
+<p>The second expression is disallowed in this proposal so that the rightmost
+(innermost) dimension always has a stride of 1 to match existing 1d-slice
+semantics.
+A proposal that enables symmetric indexing, such as <code class="docutils literal notranslate"><span class="pre">t[0,:,1]</span></code>, requires the
+returned 1d object to contain a stride.
+This is incompatible with Go slices today, but perhaps there could be a better
+proposal nevertheless.
+Let us examine possible alternatives.</p>
+<p>It seems any proposal must address this issue in one of the following ways.</p>
+<ol class="simple">
+<li><p>Accept the asymmetry (this proposal)</p></li>
+<li><p>Do not add a higher-dimensional rectangular structure (Go today)</p></li>
+<li><p>Disallow asymmetry by forbidding indexing</p></li>
+<li><p>Modify the implementation of current Go slices to be strided</p></li>
+<li><p>Add “strided slices” as a distinct type in the language</p></li>
+</ol>
+<p>Option 1: This proposal, of course, feels that a multi-dimensional rectangular
+structure is a good addition to the language (see Background section).
+While multi-dimensional slices add some complexity to the language, this proposal
+is an natural extension to slice semantics.
+There are very few new rules to learn once the basics of slices are understood.
+The generalization of slices decreases the complexity of many specific algorithms,
+and so this proposal believes Go is improved on the whole with this generalization.</p>
+<p>Option 2: One alternative is to keep the generalization of slices
+proposed here, but eliminate asymmetry by disallowing indexing in all
+dimensions, even the leftmost.
+Under this kind of proposal, accessing a specific element of a slice is allowed</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>but not selecting a full sub-slice</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v</span> <span class="o">:=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:]</span>
+</pre></div>
+</div>
+<p>While this is possible, it eliminates two major benefits of the indexing behavior
+proposed here.</p>
+<p>First, indexing allows for copy-free passing of data subsections to algorithms that
+require a lower-dimensional slice.
+For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">mean</span><span class="p">(</span><span class="n">s</span> <span class="p">[]</span><span class="n">float64</span><span class="p">)</span> <span class="n">float64</span> <span class="p">{</span>
+	<span class="n">var</span> <span class="n">m</span> <span class="n">float64</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">s</span> <span class="p">{</span>
+		<span class="n">m</span> <span class="o">+=</span> <span class="n">v</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">m</span> <span class="o">/</span> <span class="n">float64</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="n">func</span> <span class="n">means</span><span class="p">(</span><span class="n">t</span> <span class="p">[,]</span><span class="n">float64</span><span class="p">)</span> <span class="p">[]</span><span class="n">float64</span> <span class="p">{</span>
+	<span class="n">m</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([]</span><span class="n">float64</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="n">syntax</span> <span class="n">discussed</span> <span class="n">below</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">m</span> <span class="p">{</span>
+		<span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">m</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Second, indexing, as specified, provides a very clear definition of <code class="docutils literal notranslate"><span class="pre">range</span></code> on
+slices.
+Without generalized indexing, it is unclear how <code class="docutils literal notranslate"><span class="pre">range</span></code> should behave or what the
+syntax should be.
+These benefits seem sufficient to include indexing in a proposal.</p>
+<p>Option 3: Perhaps instead of generalizing Go slices as they are today, we should
+change the implementation of 1d slices to be strided.
+This would of course have to wait for Go 2, but a multi-dimensinal slice would
+then naturally have <code class="docutils literal notranslate"><span class="pre">N</span></code> strides instead of <code class="docutils literal notranslate"><span class="pre">N-1</span></code>, and indexing can happen along
+any dimension.</p>
+<p>It seems that this change would not be beneficial.
+First of all, there is a lot of code which relies on the assumption that slices
+are contiguous.
+All of this code would need to be re-written if the implementation of slices
+were modified.
+More importantly, it’s not clear that the basic operation of accessing a strided
+slice could be made as efficient as accessing a contiguous slice, since a strided
+slice requires an additional multiplication by the stride.
+Additionally, contiguous data makes optimization such as SIMD much easier.
+Increasing the cost of all Go programs just to allow generalized indexing does
+not seem like a good trade, and even programs that do use indexing may be slower
+overall because of these extra costs.
+It seems that having a linear data structure that is guaranteed to be contiguous
+is very useful for compatibility and efficiency reasons.</p>
+<p>Option 4: The last possibility is to abandon the idea of Go slices as the 1d case,
+and instead build a proposal around a “strided slice” type.
+In such a proposal, a “strided slice” is another 1d data structure in Go, that is
+like a slice, except the data is strided rather than contiguous.
+Here we will refer to such a type as <code class="docutils literal notranslate"><span class="pre">[:]T</span></code>.
+Higher dimensional slices would really be higher dimensional strided slices,
+<code class="docutils literal notranslate"><span class="pre">[::]T</span></code>, <code class="docutils literal notranslate"><span class="pre">[::::]T</span></code>, containing <code class="docutils literal notranslate"><span class="pre">N</span></code> strides rather than <code class="docutils literal notranslate"><span class="pre">N-1</span></code>.
+This allows for indexing in any dimension, for example <code class="docutils literal notranslate"><span class="pre">t[:,1]</span></code> would return a
+<code class="docutils literal notranslate"><span class="pre">[:]T</span></code>.
+The syntactic sugar is clearly nice, but do the benefits outweigh the costs?</p>
+<p>The benefit of such a type is to allow copy-free access to a column.
+However, as stated in the <code class="docutils literal notranslate"><span class="pre">unpack</span></code> discussion section, it is already possible to
+get access along a single column by implementing a Strided-like type.
+Such a type could be (and is) implemented in a matrix library, for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Vector</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">data</span> <span class="p">[]</span><span class="n">float64</span>
+	<span class="nb">len</span> <span class="nb">int</span>
+	<span class="n">stride</span> <span class="nb">int</span>
+<span class="p">}</span>
+
+<span class="nb">type</span> <span class="n">Dense</span> <span class="p">[,]</span><span class="n">float64</span>
+
+<span class="o">//</span> <span class="n">ColView</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">Vector</span> <span class="n">whose</span> <span class="n">elements</span> <span class="n">are</span> <span class="n">the</span> <span class="n">i</span><span class="o">^</span><span class="n">th</span> <span class="n">column</span> <span class="n">of</span> <span class="n">the</span> <span class="n">receiver</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">d</span> <span class="n">Dense</span><span class="p">)</span> <span class="n">ColView</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="n">Vector</span> <span class="p">{</span>
+	<span class="n">s</span><span class="p">,</span> <span class="n">stride</span> <span class="o">:=</span> <span class="n">unpack</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">Vector</span><span class="p">{</span>
+		<span class="n">data</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span>
+		<span class="nb">len</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+		<span class="n">stride</span><span class="p">:</span> <span class="n">stride</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Trace</span> <span class="n">returns</span> <span class="n">a</span> <span class="n">Vector</span> <span class="n">whose</span> <span class="n">elements</span> <span class="n">are</span> <span class="n">the</span> <span class="n">trace</span> <span class="n">of</span> <span class="n">the</span> <span class="n">receiver</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">d</span> <span class="n">Dense</span><span class="p">)</span> <span class="n">Trace</span><span class="p">()</span> <span class="n">Vector</span> <span class="p">{</span>
+	<span class="n">s</span><span class="p">,</span> <span class="n">stride</span> <span class="o">:=</span> <span class="n">unpack</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">Vector</span><span class="p">{</span>
+		<span class="n">data</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span>
+		<span class="nb">len</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+		<span class="n">stride</span><span class="p">:</span> <span class="n">stride</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Vector</span></code> type can be used to construct higher-level functions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Dot</span> <span class="n">computes</span> <span class="n">the</span> <span class="n">dot</span> <span class="n">product</span> <span class="n">of</span> <span class="n">two</span> <span class="n">vectors</span>
+<span class="n">func</span> <span class="n">Dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">Vector</span><span class="p">)</span> <span class="n">float64</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">Len</span><span class="p">()</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">Len</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">panic</span><span class="p">(</span><span class="s2">&quot;vector length mismatch&quot;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="n">dot</span> <span class="o">:=</span> <span class="n">a</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="n">Len</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">dot</span> <span class="o">+=</span> <span class="n">a</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">At</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">dot</span>
+<span class="p">}</span>
+
+<span class="o">//</span> <span class="n">Mul</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">multiplication</span> <span class="n">of</span> <span class="n">matrices</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span>
+<span class="n">func</span> <span class="n">Mul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">Dense</span><span class="p">)</span> <span class="n">Dense</span> <span class="p">{</span>
+	<span class="n">c</span> <span class="o">:=</span> <span class="n">make</span><span class="p">(</span><span class="n">Dense</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)[</span><span class="mi">1</span><span class="p">]})</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">c</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]{</span>
+			<span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">RowView</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">ColView</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="n">c</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Thus, we can see that most of the behavior in strided slices is implementable
+under the current proposal.
+It seems that Vector has costs relative to traditional Go slices: indexing is
+more expensive, and it is not immediately obvious where an API should use
+<code class="docutils literal notranslate"><span class="pre">Vector</span></code> and where an API should use <code class="docutils literal notranslate"><span class="pre">[]float64</span></code>.
+While these costs are real, these costs are also present with strided slices.
+There are remaining benefits to a built-in strided slice type, but they are
+mostly syntax.
+It’s easier to write <code class="docutils literal notranslate"><span class="pre">s[:,0]</span></code> than use a strided type, Go doesn’t have generics
+requiring a separate Strided type for each <code class="docutils literal notranslate"><span class="pre">T</span></code>, and range could not work on a
+Strided type.
+It’s also likely easier to implement bounds checking elimination when the compiler
+fully controls the data.</p>
+<p>These benefits are not insignificant, but there are also costs in adding a <code class="docutils literal notranslate"><span class="pre">[:]T</span></code>
+to the language.
+A major cost is the plain addition of a new generic type.
+Go is built on implementing a small set of orthogonal features that compose together
+cleanly.
+Strided slices are far from orthogonal with Go slices; they have almost exactly
+the same function in the language.
+Beyond that, the benefits to slices seem to be tempered by other consequences
+of their implementation.
+One argument for strided slices is to eliminate the cognitive dissonance in being
+able to slice in one dimension but not another.
+But, we also have to consider the cognitive complexity of additional language
+features, and their interactions with built-in types.
+Strided slices are almost identical to Go slices, but with small incompatibilites.
+A user would have to learn the interactions between <code class="docutils literal notranslate"><span class="pre">[]T</span></code> and <code class="docutils literal notranslate"><span class="pre">[:]T</span></code> in terms of
+assignability and/or conversions, the behavior of <code class="docutils literal notranslate"><span class="pre">copy</span></code>, <code class="docutils literal notranslate"><span class="pre">append</span></code>, etc.
+Learning all of these rules is likely more difficult than learning that indexing
+is asymmetric.
+Finally, while strided slices arguably reduce the costs to column viewing, they
+increase the costs in other areas like C interoperability.
+Tools like LAPACK only allow matrices with an inner stride of 1, so strided slice
+data would need extra allocation and copying before calls to Lapack, potentially
+limiting some of the savings.
+It seems the costs of a strided-slice built-in type outweigh their benefits,
+especially in the presence of relatively easy language workarounds under the
+current proposal.</p>
+<p>It thus seems that even if we were designing Go from scratch today, we would still
+want the proposed behavior here, where we accept the limitations of asymmetric
+indexing to keep a smaller, more orthogonal language.</p>
+</div>
+<div class="section" id="use-of-n-int-for-predefined-functions">
+<h3>Use of [N]int for Predefined Functions<a class="headerlink" href="#use-of-n-int-for-predefined-functions" title="Permalink to this headline">¶</a></h3>
+<p>This document proposes that <code class="docutils literal notranslate"><span class="pre">make</span></code>, <code class="docutils literal notranslate"><span class="pre">len</span></code>, <code class="docutils literal notranslate"><span class="pre">copy</span></code>, etc. accept and return <code class="docutils literal notranslate"><span class="pre">[N]int</span></code>.
+This section describes possible alternatives, and defends this choice.</p>
+<p>For the <code class="docutils literal notranslate"><span class="pre">len</span></code> built-in, it seems like there are four possible choices.</p>
+<ol class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lengths</span> <span class="pre">:=</span> <span class="pre">len(t)</span>&#160;&#160;&#160;&#160; <span class="pre">//</span> <span class="pre">returns</span> <span class="pre">[N]int</span></code> (this proposal)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">length</span> <span class="pre">:=</span> <span class="pre">len(t,</span> <span class="pre">0)</span>&#160;&#160; <span class="pre">//</span> <span class="pre">returns</span> <span class="pre">the</span> <span class="pre">length</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">slice</span> <span class="pre">along</span> <span class="pre">the</span> <span class="pre">first</span> <span class="pre">dimension</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">len(t[0,:])</span> <span class="pre">or</span> <span class="pre">len(t[</span> <span class="pre">,:])</span> <span class="pre">//</span> <span class="pre">returns</span> <span class="pre">the</span> <span class="pre">length</span> <span class="pre">along</span> <span class="pre">the</span> <span class="pre">second</span> <span class="pre">dimension</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">m,</span> <span class="pre">n,</span> <span class="pre">p,</span> <span class="pre">...</span> <span class="pre">:=</span> <span class="pre">len(t)</span></code></p></li>
+</ol>
+<p>The main uses of <code class="docutils literal notranslate"><span class="pre">len</span></code> either require a specific length from a slice (as in a
+for statement), or getting all of the lengths of a slice (size comparison).
+We would thus like to make both operations easy.</p>
+<p>Option 3 can be ruled out immediately, as it require special parsing syntax to
+account for zero-length dimensions.
+For example, the expression <code class="docutils literal notranslate"><span class="pre">len(t[0,:])</span></code> blows up if the table has length 0
+in the first dimension (and how else would you know the length except with <code class="docutils literal notranslate"><span class="pre">len</span></code>?.</p>
+<p>Option 2 seems strictly inferior to option 1.
+Getting an individual length is almost exactly the same in both cases, compare
+<code class="docutils literal notranslate"><span class="pre">len(t)[1]</span></code> and <code class="docutils literal notranslate"><span class="pre">len(t,1)</span></code>, except getting all of the sizes is much harder in
+option 1.</p>
+<p>This leaves options 1 and 4.
+They both return all lengths, and it is easy to use a specific length.
+However, option 1 seems easier to work with in several ways.
+The full lengths of slices are much easier to compare:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">){</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>vs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ms</span><span class="p">,</span> <span class="n">ns</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">mt</span><span class="p">,</span> <span class="n">nt</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ms</span> <span class="o">!=</span> <span class="n">mt</span> <span class="o">||</span> <span class="n">ns</span> <span class="o">!=</span> <span class="n">nt</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>It is also easier to compare a specific dimension</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">0</span><span class="p">]{</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>vs</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ms</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">mt</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ms</span> <span class="o">!=</span> <span class="n">mt</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Option 1 is also easier in a for loop</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span> <span class="n">j</span><span class="o">++</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>vs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">j</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>All of the examples above are in two-dimensions, which is arguably the best case
+scenario for option 4.
+Option 1 scales as the dimensions get higher, while option 4 does not.
+Comparing a single length for a [,,,]T we see</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>vs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ns</span> <span class="o">!=</span> <span class="n">nt</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Comparing all lengths is much worse.</p>
+<p>Based on <code class="docutils literal notranslate"><span class="pre">len</span></code> alone, it seems that option 1 is much worse.
+Let us look at the interactions with the other predeclared functions.</p>
+<p>First of all, it seems clear that the predeclared functions should all use
+similar syntax, if possible.
+If option 1 is used, then <code class="docutils literal notranslate"><span class="pre">make</span></code> should accept <code class="docutils literal notranslate"><span class="pre">[N]int</span></code>, and copy should return
+an <code class="docutils literal notranslate"><span class="pre">[N]int</span></code>, while if option 4 is used <code class="docutils literal notranslate"><span class="pre">make</span></code> should accept individual arguments
+as in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">len1</span><span class="p">,</span> <span class="n">len2</span><span class="p">,</span> <span class="n">cap1</span><span class="p">,</span> <span class="n">cap2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and <code class="docutils literal notranslate"><span class="pre">copy</span></code> should return individual arguments</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span><span class="n">n</span> <span class="o">:=</span> <span class="n">copy</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The simplest case of using <code class="docutils literal notranslate"><span class="pre">make</span></code> with known dimensions seems slightly better
+for option 4.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is nicer than</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>However, this seems like the only case where it is nicer.
+If <code class="docutils literal notranslate"><span class="pre">m</span></code> and <code class="docutils literal notranslate"><span class="pre">n</span></code> are coming as arguments in a function, it may frequently be easier
+to pass a <code class="docutils literal notranslate"><span class="pre">[2]int</span></code>, at which point option 4 forces</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">lens</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lens</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>It is debatable in two dimensions, but in higher dimensions it seems clear that
+passing a <code class="docutils literal notranslate"><span class="pre">[5]int</span></code> is easier than 5 individual dimensions, at which point</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,,,,]</span><span class="n">T</span><span class="p">,</span> <span class="n">lens</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is much easier than</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,,,,]</span><span class="n">T</span><span class="p">,</span> <span class="n">lens</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lens</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lens</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">lens</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">lens</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>There are other common operations we should consider.
+Making the same size slice is much easier under option 1</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>vs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or consider making the receiver for a matrix multiplication</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">:=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="nb">int</span><span class="p">{</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)[</span><span class="mi">1</span><span class="p">]}</span>
+<span class="n">c</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>vs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, compare a grow-like operation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="n">b</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>vs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="n">n</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="n">c</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The only example where option 4 is significantly better than option 1 is using
+<code class="docutils literal notranslate"><span class="pre">make</span></code> with variables that already exist individually.
+In all other cases, option 1 is at least as good as option 4, and in many cases
+option 1 is significantly nicer.
+It seems option 1 is preferable overall.</p>
+</div>
+<div class="section" id="id4">
+<h3>Range<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>This behavior is a natural extension to the idea of range as looping over a
+linear index.</p>
+<p>Other ideas were considered, but all are significantly more complicated.
+For instance, in a previous iteration of this draft, new syntax was introduced
+for range clauses.
+An alternate possibility is that range should loop over all elements of the slice,
+not just the major dimension.
+First of all, it not clear what the “index” portion of the clause should be.
+If an <code class="docutils literal notranslate"><span class="pre">[N]int</span></code> is returned, as for the predeclared functions, it seems annoying
+to use.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Apply</span> <span class="n">a</span> <span class="n">linear</span> <span class="n">transformation</span> <span class="n">to</span> <span class="n">each</span> <span class="n">element</span><span class="o">.</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t</span> <span class="p">{</span>
+	<span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">v</span> <span class="o">+</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Perhaps each index should be individually returned, as in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="nb">range</span> <span class="n">t</span> <span class="p">{</span>
+	<span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">v</span> <span class="o">+</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>which seems okay, but it could be hard to tell if the final value is an index or
+an element.
+The bigger problem is that this definition of range means that it is required
+to write a for-loop to index over the major dimension, an extremely common
+operation.
+The proposed range syntax enables ranging over all elements (using multiple range
+statements), and makes ranging over the major dimension easy.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This change is fully backward compatible with the Go1 spec.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>A slice can be implemented in Go with the following data structure</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">Slice</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">Data</span>       <span class="n">uintptr</span>
+	<span class="n">Len</span>        <span class="p">[</span><span class="n">N</span><span class="p">]</span><span class="nb">int</span>
+	<span class="n">Cap</span>        <span class="p">[</span><span class="n">N</span><span class="p">]</span><span class="nb">int</span>
+	<span class="n">Stride</span>     <span class="p">[</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="nb">int</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As special cases, the 1d-slice representation would be as now, and a 2d-slice
+would have the <code class="docutils literal notranslate"><span class="pre">Stride</span></code> field as an <code class="docutils literal notranslate"><span class="pre">int</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">[1]int</span></code>.</p>
+<p>Access and assignment can be performed using the strides.
+For a two-dimensional slice, <code class="docutils literal notranslate"><span class="pre">t[i,j]</span></code> gets the element at <code class="docutils literal notranslate"><span class="pre">i*stride</span> <span class="pre">+</span> <span class="pre">j</span></code> in the
+array pointed to by the Data uintptr.
+More generally, <code class="docutils literal notranslate"><span class="pre">t[i0,i1,...,iN-2,iN-1]</span></code> gets the element at</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">i0</span> <span class="o">*</span> <span class="n">stride</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">i1</span> <span class="o">*</span> <span class="n">stride</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="o">...</span> <span class="o">+</span> <span class="n">iN</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">stride</span><span class="p">[</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">iN</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>When a new slice is allocated, <code class="docutils literal notranslate"><span class="pre">Stride</span></code> is set to <code class="docutils literal notranslate"><span class="pre">Cap[N-1]</span></code>.</p>
+<p>Slicing is as simple as updating the pointer, lengths, and capacities.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">t</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">j0</span><span class="p">:</span><span class="n">k0</span><span class="p">,</span> <span class="n">i1</span><span class="p">:</span><span class="n">j1</span><span class="p">:</span><span class="n">k1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">iN</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">jN</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">kN</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>causes <code class="docutils literal notranslate"><span class="pre">Data</span></code> to update to the element indexed by <code class="docutils literal notranslate"><span class="pre">[i0,i1,...,iN-1]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Len[d]</span> <span class="pre">=</span> <span class="pre">jd</span> <span class="pre">-</span> <span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">Cap[d]</span> <span class="pre">=</span> <span class="pre">kd</span> <span class="pre">-</span> <span class="pre">id</span></code>, and Stride is unchanged.</p>
+</div>
+<div class="section" id="implementation-schedule">
+<h2>Implementation Schedule<a class="headerlink" href="#implementation-schedule" title="Permalink to this headline">¶</a></h2>
+<p>Help is needed to determine the when and who for the implementation of this
+proposal.
+The gonum team would translate the code in gonum/matrix, gonum/blas,
+and gonum/lapack to assist with testing the implementation.</p>
+</div>
+<div class="section" id="non-goals">
+<h2>Non-goals<a class="headerlink" href="#non-goals" title="Permalink to this headline">¶</a></h2>
+<p>This proposal intentionally omits several suggested behaviors.
+This is not to say those proposals can’t ever be added (nor does it imply that
+they will be added), but that they provide additional complications and can be
+part of a separate proposal.</p>
+<div class="section" id="append">
+<h3>Append<a class="headerlink" href="#append" title="Permalink to this headline">¶</a></h3>
+<p>This proposal does not allow append to be used with higher-dimensional slices.
+It seems natural that one could, say, append a [,]T to the “end” of a [,,]T,
+but the interaction with slicing is tricky.
+If a new slice is allocated, does it fill in the gaps with zero values?</p>
+</div>
+<div class="section" id="arithmetic-operators">
+<h3>Arithmetic Operators<a class="headerlink" href="#arithmetic-operators" title="Permalink to this headline">¶</a></h3>
+<p>Some have called for slices to support arithmetic operators (+, -, *) to also
+work on <code class="docutils literal notranslate"><span class="pre">[,]Numeric</span></code> (<code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float64</span></code>, etc.), for example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">float64</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">:=</span> <span class="n">make</span><span class="p">([,]</span><span class="n">float64</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">:=</span> <span class="n">a</span><span class="o">*</span><span class="n">b</span>
+</pre></div>
+</div>
+<p>While operators can allow for very succinct code, they do not seem to fit in Go.
+Go’s arithmetic operators only work on numeric types, they don’t work on slices.
+Secondly, arithmetic operators in Go are all fast, whereas the operation above
+is many orders of magnitude more expensive than a floating point multiply.
+Finally, multiplication could either mean element-wise multiplication, or
+standard matrix multiplication.
+Both operations are needed in numerical work, so such a proposal would require
+additional operators to be added (such as <code class="docutils literal notranslate"><span class="pre">.*</span></code>).
+Especially in terms of clock cycles per character, <code class="docutils literal notranslate"><span class="pre">c.Mul(a,b)</span></code> is not that bad.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>Matrices are widely used in numerical algorithms, and have been used in
+computing arguably even before there were computers.
+With time and effort, Go could be a great language for numerical computing (for
+all of the same reasons it is a great general-purpose language), but first it
+needs a rectangular data structure, the extension of slices to higher dimensions,
+built into the language as a foundation for more advanced libraries.
+This proposal describes a behavior for slices which is a strict improvement over
+the options currently available.
+It will be faster than the single-slice representation (index optimization and
+range), more convenient than the slice of slice representation (range, copy,
+len), and will provide a correct representation of the data that is more compile-
+time verifiable than the struct representation.
+The desire for slices is not driven by syntax and ease-of-use, though that is a
+huge benefit, but instead a request for safety and speed; the desire to build
+“simple, reliable, and efficient software”.</p>
+<p>|                | Correct Representation | Access/Assignment Convenience | Speed |
+| ————-: | :——————–: | :—————————: | :—: |
+| Slice of slice | X                      | ✓                             | X     |
+| Single slice   | X                      | X                             | ✓     |
+| Struct type    | ✓                      | X                             | X     |
+| Built-in       | ✓                      | ✓                             | ✓     |</p>
+</div>
+<div class="section" id="open-issues">
+<h2>Open issues<a class="headerlink" href="#open-issues" title="Permalink to this headline">¶</a></h2>
+<ol>
+<li><p>In the discussion, it was mentioned that adding a SliceHeader2 is a bad idea.
+This can be removed from the proposal, but some other mechanism should be added
+that allows data in 2d-slices to be passed to C.
+It has been suggested that the type</p>
+<p>type NDimSliceHeader struct {
+Data   unsafe.Pointer
+Stride []int  // len(N-1)
+Len    []int  // len(N)
+Cap    []int  // len(N)
+}</p>
+</li>
+</ol>
+<p>would be sufficient.
+2. The “reshaping” syntax as discussed above.
+3. In a slice literal, if part of the slice is specified with a key-element literal,
+does the whole expression need to use key-element syntax?
+4. Given the presence of <code class="docutils literal notranslate"><span class="pre">unshape</span></code>, is there any use for three-element syntax?</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="6977-overlapping-interfaces.html" class="btn btn-neutral float-right" title="Proposal: Permit embedding of interfaces with overlapping method sets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="4899-testing-helper.html" class="btn btn-neutral float-left" title="Proposal: testing: better support test helper functions with TB.Helper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

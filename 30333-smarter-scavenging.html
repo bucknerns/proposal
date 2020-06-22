@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Smarter Scavenging &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: go command configuration file" href="30411-env.html" />
+    <link rel="prev" title="Proposal: Go 2 Error Inspection" href="29934-error-values.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Smarter Scavenging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation-purpose">Motivation &amp; Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scavenging">Scavenging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-1-11">Go 1.11</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#go-1-12">Go 1.12</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#note-on-span-coalescing-rules">Note on Span Coalescing Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#prior-art">Prior Art</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#goals">Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-much-memory-should-we-retain">How much memory should we retain?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#at-what-rate-is-memory-scavenged">At what rate is memory scavenged?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#which-memory-should-we-scavenge">Which memory should we scavenge?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-considerations">Other Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appendix-implementing-a-first-fit-data-structure">Appendix: Implementing a First-fit Data Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Smarter Scavenging</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/30333-smarter-scavenging.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-smarter-scavenging">
+<h1>Proposal: Smarter Scavenging<a class="headerlink" href="#proposal-smarter-scavenging" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Michael Knyszek &lt;mknyszek&#64;google.com&gt; Last Updated: 2019-02-20</p>
+<div class="section" id="motivation-purpose">
+<h2>Motivation &amp; Purpose<a class="headerlink" href="#motivation-purpose" title="Permalink to this headline">¶</a></h2>
+<p>Out-of-memory errors (OOMs) have long been a pain-point for Go applications.
+A class of these errors come from the same underlying cause: a temporary spike
+in memory causes the Go runtime to grow the heap, but it takes a very long time
+(on the order of minutes) to return that unneeded memory back to the system.</p>
+<p>The system can end up killing the application in many situations, such as if
+the system has no swap space or if system monitors count this space against
+your application.
+In addition, if this additional space is counted against your application, you
+end up paying more for memory when you don’t really need it.</p>
+<p>The Go runtime does have internal mechanisms to help deal with this, but they
+don’t react to changes in the application promptly enough.
+The way users solve this problem today is through a runtime library function
+called <code class="docutils literal notranslate"><span class="pre">debug.FreeOSMemory</span></code>.
+<code class="docutils literal notranslate"><span class="pre">debug.FreeOSMemory</span></code> performs a GC and subsequently returns all unallocated
+memory back to the underlying system.
+However, this solution is very heavyweight:</p>
+<ul class="simple">
+<li><p>Returning all free memory back to the underlying system at once is expensive,
+and can lead to latency spikes as it holds the heap lock through the whole
+process.</p></li>
+<li><p>It’s an invasive solution: you need to modify your code to call it when you
+need it.</p></li>
+<li><p>Reusing free chunks of memory becomes more expensive. On UNIX-y systems that
+means an extra page fault (which is surprisingly expensive on some systems).</p></li>
+</ul>
+<p>The purpose of this document is to propose we replace the existing mechanisms in
+the runtime with something stronger that responds promptly to the memory
+requirements of Go applications, ensuring the application is only charged for as
+much as it needs to remain performant.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="scavenging">
+<h3>Scavenging<a class="headerlink" href="#scavenging" title="Permalink to this headline">¶</a></h3>
+<p>Dynamic memory allocators typically obtain memory from the operating system by
+requesting for it to be mapped into their virtual address space.
+Sometimes this space ends up unused, and modern operating systems provide a way
+to tell the OS that certain virtual memory address regions won’t be used
+without unmapping them. This means the physical memory backing those regions
+may be taken back by the OS and used elsewhere.
+We in the Go runtime refer to this technique as “scavenging”.</p>
+<p>Scavenging is especially useful in dealing with page-level external
+fragmentation, since we can give these fragments back to the OS, reducing the
+process’ resident set size (RSS).
+That is, the amount of memory that is backed by physical memory in the
+application’s address space.</p>
+</div>
+<div class="section" id="go-1-11">
+<h3>Go 1.11<a class="headerlink" href="#go-1-11" title="Permalink to this headline">¶</a></h3>
+<p>As of Go 1.11, the only scavenging process in the Go runtime was a periodic
+scavenger which runs every 2.5 minutes.
+This scavenger combs over all the free spans in the heap and scavenge them if
+they have been unused for at least 5 minutes.
+When the runtime coalesced spans, it would track how much of the new span was
+scavenged.</p>
+<p>While this simple technique is surprisingly effective for long-running
+applications, the peak RSS of an application can end up wildly exaggerated in
+many circumstances, even though the application’s peak in-use memory is
+significantly smaller.
+The periodic scavenger just does not react quickly enough to changes in the
+application’s memory usage.</p>
+</div>
+<div class="section" id="go-1-12">
+<h3>Go 1.12<a class="headerlink" href="#go-1-12" title="Permalink to this headline">¶</a></h3>
+<p>As of Go 1.12, in addition to the periodic scavenger, the Go runtime
+also performs heap-growth scavenging.
+On each heap growth up to N bytes of the largest spans are scavenged, where N
+is the amount of bytes the heap grew by.
+The idea here is to “pay back” the cost of a heap growth.
+This technique helped to reduce the peak RSS of some applications.</p>
+<div class="section" id="note-on-span-coalescing-rules">
+<h4>Note on Span Coalescing Rules<a class="headerlink" href="#note-on-span-coalescing-rules" title="Permalink to this headline">¶</a></h4>
+<p>As part of the Go 1.12 release, the span coalescing rules had changed such that
+scavenged and unscavenged spans would not coalesce.</p>
+<p>Earlier in the Go 1.12 cycle a choice was made to coalesce the two different
+kinds of spans by scavenging them, but this turned out to be far too aggressive
+in practice since most spans would become scavenged over time.
+This policy was especially costly if scavenging was particularly expensive on a
+given platform.</p>
+<p>In addition to avoiding the problem above, there’s a key reason why not to merge
+across this boundary: if most spans end up scavenged over time, then we do not
+have the fine-grained control we need over memory to create good policies and
+mechanisms for scavenging memory.</p>
+</div>
+</div>
+<div class="section" id="prior-art">
+<h3>Prior Art<a class="headerlink" href="#prior-art" title="Permalink to this headline">¶</a></h3>
+<p>For scavenging, we look to C/C++ allocators which have a much richer history of
+scavenging memory than allocators for managed languages. For example, the
+HotSpot VM just started scavenging memory, and even then its policies are very
+conservative, <a class="reference external" href="https://openjdk.java.net/jeps/346">only returning memory during low application
+activity</a>.
+The <a class="reference external" href="https://mail.openjdk.java.net/pipermail/hotspot-gc-dev/2018-June/022203.html">Shenandoah
+collector</a>
+has had this functionality for a little while, but it just does the same thing
+Go 1.11 did, as far as I can tell.</p>
+<p>For the purposes of this document, we will focus our comparisons on
+<a class="reference external" href="https://jemalloc.net">jemalloc</a>, which appears to me to be the state-of-the-art
+in scavenging.</p>
+</div>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<p>The goal in scavenging smarter is two-fold:</p>
+<ul class="simple">
+<li><p>Reduce the average and peak RSS of Go applications.</p></li>
+<li><p>Minimize the CPU impact of keeping the RSS low.</p></li>
+</ul>
+<p>The two goals go hand-in-hand. On the one hand, you want to keep the RSS of the
+application as close to its in-use memory usage as possible.
+On the other hand, doing so is expensive in terms of CPU time, having to make
+syscalls and handle page faults.
+If we’re too aggressive and scavenge every free space we have, then on every
+span allocation we effectively incur a hard page fault (or invoke a syscall),
+and we’re calling a syscall on every span free.</p>
+<p>The ideal scenario, in my view, is that the RSS of the application “tracks” the
+peak in-use memory over time.</p>
+<ul class="simple">
+<li><p>We should keep the RSS close to the actual in-use heap, but leave enough of a
+buffer such that the application has a pool of unscavenged memory to allocate
+from.</p></li>
+<li><p>We should try to smooth over fast and transient changes in heap size.</p></li>
+</ul>
+<p>The goal of this proposal is to improve the Go runtime’s scavenging mechanisms
+such that it exhibits the behavior shown above.
+Compared with today’s implementation, this behavior should reduce the average
+overall RSS of most Go applications with minimal impact on performance.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>Three questions represent the key policy decisions that describe a memory
+scavenging system.</p>
+<ol class="simple">
+<li><p>At what rate is memory scavenged?</p></li>
+<li><p>How much memory should we retain (not scavenge)?</p></li>
+<li><p>Which memory should we scavenge?</p></li>
+</ol>
+<p>I propose that for the Go runtime, we:</p>
+<ol class="simple">
+<li><p>Scavenge at a rate proportional to the rate at which the application is
+allocating memory.</p></li>
+<li><p>Retain some constant times the peak heap goal over the last <code class="docutils literal notranslate"><span class="pre">N</span></code> GCs.</p></li>
+<li><p>Scavenge the unscavenged spans with the highest base addresses first.</p></li>
+</ol>
+<p>Additionally, I propose we change the span allocation policy to prefer
+unscavenged spans over scavenged spans, and to be first-fit rather than
+best-fit.</p>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="how-much-memory-should-we-retain">
+<h3>How much memory should we retain?<a class="headerlink" href="#how-much-memory-should-we-retain" title="Permalink to this headline">¶</a></h3>
+<p>As part of our goal to keep the program’s reported RSS to a minimum, we ideally
+want to scavenge as many pages as it takes to track the program’s in-use memory.</p>
+<p>However, there’s a performance trade-off in tracking the program’s in-use memory
+too closely.
+For example, if the heap very suddenly shrinks but then grows again, there’s a
+significant cost in terms of syscalls and page faults incurred.
+On the other hand, if we scavenge too passively, then the program’s reported
+RSS may be inflated significantly.</p>
+<p>This question is difficult to answer in general, because generally allocators
+can not predict the future behavior of the application.
+jemalloc avoids this question entirely, relying solely on having a good (albeit
+complicated) answer to the “rate” question (see next section).</p>
+<p>But, as Austin mentioned in
+<a class="reference external" href="https://github.com/golang/go/issues/16930">golang/go#16930</a>, Go has an
+advantage over C/C++ allocators in this respect.
+The Go runtime knows that before the next GC, the heap will grow to the heap
+goal.</p>
+<p>This suggests that between GCs there may be some body of free memory that one
+can drop with relatively few consequences.
+Thus, I propose the following heuristic, borrowed from #16930: retain
+<code class="docutils literal notranslate"><span class="pre">C*max(heap</span> <span class="pre">goal,</span> <span class="pre">max(heap</span> <span class="pre">goal</span> <span class="pre">over</span> <span class="pre">the</span> <span class="pre">last</span> <span class="pre">N</span> <span class="pre">GCs))</span></code> bytes of memory, and
+scavenge the rest.
+For a full rationale of the formula, see
+<a class="reference external" href="https://github.com/golang/go/issues/16930">golang/go#16930</a>.
+<code class="docutils literal notranslate"><span class="pre">C</span></code> is the “steady state variance factor” mentioned in #16930.
+<code class="docutils literal notranslate"><span class="pre">C</span></code> also represents a pool of unscavenged memory in addition to that guaranteed
+by the heap goal which the application may allocate from, increasing the
+probability that a given allocation will be satisfied by unscavenged memory and
+thus not incur a page fault on access.
+The initial proposed values for <code class="docutils literal notranslate"><span class="pre">C</span></code> and <code class="docutils literal notranslate"><span class="pre">N</span></code> are 1.125 (9/8) and 16,
+respectively.</p>
+</div>
+<div class="section" id="at-what-rate-is-memory-scavenged">
+<h3>At what rate is memory scavenged?<a class="headerlink" href="#at-what-rate-is-memory-scavenged" title="Permalink to this headline">¶</a></h3>
+<p>In order to have the application’s RSS track the amount of heap space it’s
+actually using over time, we want to be able to grow and shrink the RSS at a
+rate proportional to how the in-use memory of the application is growing and
+shrinking, with smoothing.</p>
+<p>When it comes to growth, that problem is generally solved.
+The application may cause the heap to grow, and the allocator will map new,
+unscavenged memory in response.
+Or, similarly, the application may allocate out of scavenged memory.</p>
+<p>On the flip side, figuring out the rate at which to shrink the RSS is harder.
+Ideally the rate is “as soon as possible”, but unfortunately this could result
+in latency issues.</p>
+<p>jemalloc solves this by having its memory “decay” according to a sigmoid-like
+curve.</p>
+<p>Each contiguous extent of allocable memory decays according to a
+globally-defined tunable rate, and how many of them end up available for
+scavenging is governed by a sigmoid-like function.</p>
+<p>The result of this policy is that the heap shrinks in sigmoidal fashion:
+carefully turning down to smooth out noise in in-use memory but at some point
+committing and scavenging lots of memory at once.
+While this strategy works well in general, it’s still prone to making bad
+decisions in certain cases, and relies on the developer to tune the decay rate
+for the application.
+Furthermore, I believe that this design by jemalloc was a direct result of not
+knowing anything about the future state of the heap.</p>
+<p>As mentioned earlier, the Go runtime does know that the heap will grow to the
+heap goal.</p>
+<p>Thus, I propose a <em>proportional scavenging policy</em>, in the same vein as the
+runtime’s proportional sweeping implementation.
+Because of how Go’s GC is paced, we know that the heap will grow to the heap
+goal in the future and we can measure how quickly it’s approaching that goal by
+seeing how quickly it’s allocating.
+Between GCs, I propose that the scavenger do its best to scavenge down to the
+scavenge goal by the time the next GC comes in.</p>
+<p>The proportional scavenger will run asynchronously, much like the Go runtime’s
+background sweeper, but will be more aggressive, batching more scavenging work
+if it finds itself falling behind.</p>
+<p>One issue with this design is situations where the application goes idle.
+In that case, the scavenger will do at least one unit of work (scavenge one
+span) on wake-up to ensure it makes progress as long as there’s work to be
+done.</p>
+<p>Another issue with having the scavenger be fully asynchronous is that the
+application could actively create more work for the scavenger to do.
+There are two ways this could happen:</p>
+<ul class="simple">
+<li><p>An allocation causes the heap to grow.</p></li>
+<li><p>An allocation is satisfied using scavenged memory.
+The former case is already eliminated by heap-growth scavenging.
+The latter case may be eliminated by scavenging memory when we allocate from
+scavenged memory, which as of Go 1.12 we also already do.</p></li>
+</ul>
+<p>The additional scavenging during allocation could prove expensive, given the
+costs associated with the madvise syscall.
+I believe we can dramatically reduce the amount of times this is necessary by
+reusing unscavenged memory before scavenged memory when allocating.
+Thus, where currently we try to find the best-fit span across both scavenged
+and unscavenged spans, I propose we <em>prefer unscavenged to scavenged spans
+during allocation</em>.</p>
+<p>The benefits of this policy are that unscavenged pages are now significantly
+more likely to be reused.</p>
+</div>
+<div class="section" id="which-memory-should-we-scavenge">
+<h3>Which memory should we scavenge?<a class="headerlink" href="#which-memory-should-we-scavenge" title="Permalink to this headline">¶</a></h3>
+<p>At first, this question appears to be a lot like trying to pick an eviction
+policy for caches or a page replacement policy.
+The naive answer is thus to favor least-recently used memory, since there’s a
+cost to allocating scavenged memory (much like a cache miss).
+Indeed, this is the route which jemalloc takes.</p>
+<p>However unlike cache eviction policies or page replacement policies, which
+cannot make any assumptions about memory accesses, scavenging policy is deeply
+tied to allocation policy.
+Fundamentally, we want to scavenge the memory that the allocator is least
+likely to pick in the future.</p>
+<p>For a best-fit allocation policy, one idea (the current one) is to pick the
+largest contiguous chunks of memory first for scavenging.</p>
+<p>This scavenging
+policy does well and picks the least likely to be reused spans assuming that
+most allocations are small.
+If most allocations are small, then smaller contiguous free spaces will be used
+up first, and larger ones may be scavenged with little consequence.
+Consider also that even though the cost of scavenging memory is generally
+proportional to how many physical pages are scavenged at once, scavenging
+memory still has fixed costs that may be amortized by picking larger spans
+first.
+In essence, by making fewer madvise syscalls, we pay the cost of the syscall
+itself less often.
+In the cases where most span allocations aren’t small, however, we’ll be making
+the same number of madvise syscalls but we will incur many more page faults.</p>
+<p>Thus, I propose a more robust alternative: <em>change the Go runtime’s span
+allocation policy to be first-fit, rather than best-fit</em>.
+Address-ordered first-fit allocation policies generally perform as well as
+best-fit in practice when it comes to fragmentation [Johnstone98], a claim
+which I verified holds true for the Go runtime by simulating a large span
+allocation trace.</p>
+<p>Furthermore, I propose we then <em>scavenge the spans with the highest base address
+first</em>.
+The advantage of a first-fit allocation policy here is that we know something
+about which chunks of memory will actually be chosen, which leads us to a
+sensible scavenging policy.</p>
+<p>First-fit allocation paired with scavenging the “last” spans has a clear
+preference for taking spans which are less likely to be used, even if the
+assumption that most allocations are small does not hold.
+Therefore this policy is more robust than the current one and should therefore
+incur fewer page faults overall.</p>
+<p>There’s still the more general question of how performant this policy will be.
+First and foremost, efficient implementations of first fit-allocation exist (see
+Appendix).
+Secondly, a valid concern with this new policy is that it no longer amortizes
+the fixed costs of scavenging because it may choose smaller spans to scavenge,
+thereby making more syscalls to scavenge the same amount of memory.</p>
+<p>In the case where most span allocations are small, a first-fit allocation
+policy actually works to our advantage since it tends to aggregate smaller
+fragments at lower addresses and larger fragments at higher addresses
+[Wilson95].
+In this case I expect performance to be on par with best-fit
+allocation and largest-spans-first scavenging. Where this assumption does not
+hold true, it’s true that this new policy may end up making more syscalls.
+However, the sum total of the marginal costs in scavenging generally outweigh
+the fixed costs.
+The one exception here is huge pages, which have very tiny marginal costs, but
+it’s unclear how good of a job we or anyone else is doing with keeping huge
+pages intact, and this demands more research that is outside the scope of this
+design.
+Overall, I suspect any performance degradation will be minimal.</p>
+</div>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Michael Knyszek will implement this functionality.
+The rough plan will be as follows:</p>
+<ol class="simple">
+<li><p>Remove the existing periodic scavenger.</p></li>
+<li><p>Track the last N heap goals, as in the prompt scavenging proposal.</p></li>
+<li><p>Add a background goroutine which performs proportional scavenging.</p></li>
+<li><p>Modify and augment the treap implementation to efficiently implement first-fit
+allocation.</p>
+<ul class="simple">
+<li><p>This step will simultaneously change the policy to pick higher addresses
+first without any additional work.</p></li>
+<li><p>Add tests to ensure the augmented treap works as intended.</p></li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="other-considerations">
+<h2>Other Considerations<a class="headerlink" href="#other-considerations" title="Permalink to this headline">¶</a></h2>
+<p><em>Heap Lock Contention.</em>
+Currently the scavenging process happens with the heap lock held.
+With each scavenging operation taking on the order of 10µs, this can add up
+fast and block progress.
+The way jemalloc combats this is to give up the heap lock when actually making
+any scavenging-related syscalls.
+Unfortunately this comes with the caveat that any spans currently being
+scavenged are not available for allocation, which could cause more heap growths
+and discourage reuse of existing virtual address space.
+Also, a process’s memory map is protected by a single coarse-grained read-write
+lock on many modern operating systems and writers typically need to queue
+behind readers.
+Since scavengers are usually readers of this lock and heap growth is a writer
+on this lock it may mean that letting go of the heap lock doesn’t help so much.</p>
+</div>
+<div class="section" id="appendix-implementing-a-first-fit-data-structure">
+<h2>Appendix: Implementing a First-fit Data Structure<a class="headerlink" href="#appendix-implementing-a-first-fit-data-structure" title="Permalink to this headline">¶</a></h2>
+<p>We can efficiently find the lowest-address available chunk of memory that also
+satisfies the allocation request by modifying and augmenting any existing
+balanced binary tree.</p>
+<p>For brevity we’ll focus just on the treap implementation in the runtime here.
+The technique shown here is similar to that found in [Rezaei00].
+The recipe for transforming out best-fit treap into a first-fit treap consists
+of the following steps:</p>
+<p>First, modify the existing treap implementation to sort by a span’s base
+address.</p>
+<p>Next, attach a new field to each binary tree node called maxPages.
+This field represents the maximum size in 8 KiB pages of a span in the subtree
+rooted at that node.</p>
+<p>For a leaf node, maxPages is always equal to the node’s span’s
+length.
+This invariant is maintained every time the tree changes. For most balanced
+trees, the tree may change in one of three ways: insertion, removal, and tree
+rotations.</p>
+<p>Tree rotations are simple: one only needs to update the two rotated nodes by
+checking their span’s size and comparing it with maxPages of their left and
+right subtrees, taking the maximum (effectively just recomputing maxPages
+non-recursively).</p>
+<p>A newly-inserted node in a treap is always a leaf, so that case is handled.
+Once we insert it, however, any number of subtrees from the parent may now have
+a different maxPages, so we start from the newly-inserted node and walk up the
+tree, updating maxPages.
+Once we reach a point where maxPages does not change, we may stop.
+Then we may rotate the leaf into place. At most, we travel the height of the
+tree in this update, but usually we’ll travel less.</p>
+<p>On removal, a treap uses rotations to make the node to-be-deleted a leaf. Once
+the node becomes a leaf, we remove it, and then update its ancestors starting
+from its new parent.
+We may stop, as before, when maxPages is no longer affected by the change.</p>
+<p>Finally, we modify the algorithm which finds a suitable span to use for
+allocation, or returns nil if one is not found.
+To find the first-fit span in the tree we leverage maxPages in the following
+algorithm (in pseudo-Go pseudocode):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>  <span class="n">func</span> <span class="n">Find</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pages</span><span class="p">):</span>
+<span class="mi">2</span>    <span class="n">t</span> <span class="o">=</span> <span class="n">root</span>
+<span class="mi">3</span>    <span class="k">for</span> <span class="n">t</span> <span class="o">!=</span> <span class="n">nil</span><span class="p">:</span>
+<span class="mi">4</span>      <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">left</span> <span class="o">!=</span> <span class="n">nil</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">maxPages</span> <span class="o">&gt;=</span> <span class="n">pages</span><span class="p">:</span>
+<span class="mi">5</span>        <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">left</span>
+<span class="mi">6</span>      <span class="k">else</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">span</span><span class="o">.</span><span class="n">pages</span> <span class="o">&gt;=</span> <span class="n">pages</span><span class="p">:</span>
+<span class="mi">7</span>        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">span</span>
+<span class="mi">8</span>      <span class="k">else</span> <span class="n">t</span><span class="o">.</span><span class="n">right</span> <span class="o">!=</span> <span class="n">nil</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">maxPages</span> <span class="o">&gt;=</span> <span class="n">pages</span><span class="p">:</span>
+<span class="mi">9</span>        <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">right</span>
+<span class="mi">10</span>     <span class="k">else</span><span class="p">:</span>
+<span class="mi">11</span>       <span class="k">return</span> <span class="n">nil</span>
+</pre></div>
+</div>
+<p>By only going down paths where we’re sure there’s at least one span that can
+satisfy the allocation, we ensure that the algorithm always returns a span of
+at least <code class="docutils literal notranslate"><span class="pre">pages</span></code> in size.</p>
+<p>Because we prefer going left if possible (line 4) over taking the current
+node’s span (line 6) over going right if possible (line 8), we ensure that we
+allocate the node with the lowest base address.</p>
+<p>The case where we cannot go left, cannot take the current node, and cannot go
+right (line 10) should only be possible at the root if maxPages is managed
+properly.
+That is, just by looking at the root, one can tell whether an allocation
+request is satisfiable.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Johnstone, Mark S., and Paul R. Wilson. “The Memory Fragmentation Problem:
+Solved?” Proceedings of the First International Symposium on Memory Management -
+ISMM 98, 1998. doi:10.1145/286860.286864.</p>
+<p>M. Rezaei and K. M. Kavi, “A new implementation technique for memory
+management,” Proceedings of the IEEE SoutheastCon 2000. ‘Preparing for The New
+Millennium’ (Cat.No.00CH37105), Nashville, TN, USA, 2000, pp. 332-339.
+doi:10.1109/SECON.2000.845587</p>
+<p>Wilson, Paul R., Mark S. Johnstone, Michael Neely, and David Boles. “Dynamic
+Storage Allocation: A Survey and Critical Review.” Memory Management Lecture
+Notes in Computer Science, 1995, 1-116. doi:10.1007/3-540-60368-9_19.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="30411-env.html" class="btn btn-neutral float-right" title="Proposal: go command configuration file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="29934-error-values.html" class="btn btn-neutral float-left" title="Proposal: Go 2 Error Inspection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,667 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: -json flag in go test &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Go 2 Error Inspection" href="29934-error-values.html" />
+    <link rel="prev" title="Proposal: Go 2 transition" href="28221-go2-transitions.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#testing-package"><code class="docutils literal notranslate"><span class="pre">testing</span></code> package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-output">Example output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/2981-go-test-json.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-json-flag-in-go-test">
+<h1>Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code><a class="headerlink" href="#proposal-json-flag-in-go-test" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Nodir Turakulov &lt;nodir&#64;google.com&gt;</p>
+<p><em>With initial input by Russ Cox, Caleb Spare, Andrew Gerrand and Minux Ma.</em></p>
+<p>Last updated: 2016-09-14</p>
+<p>Discussion at https://golang.org/issue/2981.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#abstract">Abstract</a></p></li>
+<li><p><a class="reference external" href="#background">Background</a></p></li>
+<li><p><a class="reference external" href="#proposal">Proposal</a></p>
+<ul>
+<li><p><a class="reference external" href="#testing-package"><code class="docutils literal notranslate"><span class="pre">testing</span></code> package</a></p></li>
+<li><p><a class="reference external" href="#example-output">Example output</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="#rationale">Rationale</a></p></li>
+<li><p><a class="reference external" href="#compatibility">Compatibility</a></p></li>
+<li><p><a class="reference external" href="#implementation">Implementation</a></p></li>
+</ul>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Add <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag to <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code>.
+When specified, <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> stdout is JSON.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>There is a clear need in parsing test and benchmark results by third party
+tools, see feedback in https://golang.org/issue/2981.
+Currently <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> output format is suited for humans, but not computers.
+Also a change to the current format may break existing programs that parse
+<code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> output.</p>
+<p>Currently, under certain conditions, <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> streams test/benchmark results
+so a user can see them as they happen.
+Also streaming prevents losing data if <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> crashes.
+This proposal attempts to preserve streaming capability in the <code class="docutils literal notranslate"><span class="pre">-json</span></code> mode, so
+third party tools interpreting <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> output can stream results too.</p>
+<p><code class="docutils literal notranslate"><span class="pre">-json</span></code> flag was originally proposed by Russ Cox in
+https://golang.org/issue/2981 in 2012. This proposal has several differences.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>I propose the following user-visible changes:</p>
+<ul class="simple">
+<li><p>add <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag to <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">-json</span></code>: <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> stdout is a valid <a class="reference external" href="https://tools.ietf.org/html/rfc7464">JSON Text Sequence</a>
+of JSON objects containing test binary artifacts.
+Format below.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-json</span> <span class="pre">-v</span></code>: verbose messages are printed to stderr, so stdout contains
+only JSON.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-json</span> <span class="pre">-n</span></code>: not supported</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-json</span> <span class="pre">-x</span></code>: not supported</p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">testing</span></code> package</p>
+<ul>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">State</span> <span class="pre">int</span></code> with constants to describe test/benchmark states.</p></li>
+<li><p>Add type <code class="docutils literal notranslate"><span class="pre">JSONResult</span></code> for JSON output.</p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">Cover.CoveredPackages</span></code> field type from <code class="docutils literal notranslate"><span class="pre">string</span></code> to <code class="docutils literal notranslate"><span class="pre">[]string</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p>Type definitions and details below.</p>
+<div class="section" id="testing-package">
+<h3><code class="docutils literal notranslate"><span class="pre">testing</span></code> package<a class="headerlink" href="#testing-package" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>
+// State is one of test/benchmark execution states.
+// Implements fmt.Stringer, json.Marshaler and json.Unmarshaler.
+type State int
+
+const (
+    // RUN means a test/benchmark execution has started
+    RUN State = iota + 1
+    PASS
+    FAIL
+    SKIP
+)
+
+// JSONResult structs encoded in JSON are emitted by `go test` if -json flag is
+// specified.
+type JSONResult struct {
+    // Configuration is metadata produced by test/benchmark infrastructure.
+    // The interpretation of a key/value pair is up to tooling, but the key/value
+    // pair describes all test/benchmark results that follow,
+    // until overwritten by a JSONResult with a non-empty Configuration field.
+    //
+    // The key begins with a lowercase character (as defined by unicode.IsLower),
+    // contains no space characters (as defined by unicode.IsSpace)
+    // nor upper case characters (as defined by unicode.IsUpper).
+    // Conventionally, multiword keys are written with the words separated by hyphens,
+    // as in cpu-speed.
+    Configuration map[string]string  `json:&quot;,omitempty&quot;`
+
+    // Package is a full name of the package containing the test/benchmark.
+    // It is zero iff Name is zero.
+    Package string  `json:&quot;,omitempty&quot;`
+    // Name is the name of the test/benchmark that this JSONResult is about.
+    // It can be empty if JSONResult describes global state, such as
+    // Configuration or Stdout/Stderr.
+    Name    string  `json:&quot;,omitempty&quot;`
+    // State is the current state of the test/benchmark.
+    // It is non-zero iff Name is non-zero.
+    State   State   `json:&quot;,omitempty&quot;`
+    // Procs is the value of runtime.GOMAXPROCS for this test/benchmark run.
+    // It is specified only in the first JSONResult of a test/benchmark.
+    Procs   int     `json:&quot;,omitempty&quot;`
+    // Log is log created by calling Log or Logf functions of *T or *B.
+    // A JSONResult with Log is emitted by go test as soon as possible.
+    // First occurrence of test/benchmark does not contain logs.
+    Log     string  `json:&quot;,omitempty&quot;`
+
+    // Benchmark contains benchmark-specific details.
+    // It is emitted in the final JSONResult of a benchmark with a terminal
+    // State if the benchmark does not have sub-benchmarks.
+    Benchmark *BenchmarkResult  `json:&quot;,omitempty&quot;`
+
+    // CoverageMode is coverage mode that was used to run these tests.
+    CoverageMode     string    `json:&quot;,omitempty&quot;
+    // TotalStatements is the number of statements checked for coverage.
+    TotalStatements  int64     `json:&quot;,omitempty&quot;`
+    // ActiveStatements is the number of statements covered by tests, examples
+    // or benchmarks.
+    ActiveStatements int64     `json:&quot;,omitempty&quot;`
+    // CoveragedPackages is full names of packages included in coverage.
+    CoveredPackages  []string  `json:&quot;,omitempty&quot;`
+
+    // Stdout is text written by the test binary directly to os.Stdout.
+    // If this field is non-zero, all others are zero.
+    Stdout string  `json:&quot;,omitempty&quot;`
+    // Stderr is text written by test binary directly to os.Stderr.
+    // If this field is non-zero, all others are zero.
+    Stderr string  `json:&quot;,omitempty&quot;`
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-output">
+<h3>Example output<a class="headerlink" href="#example-output" title="Permalink to this headline">¶</a></h3>
+<p>Here is an example of <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span> <span class="pre">-json</span></code> output.
+It is simplified and commented for the convenience of the reader;
+in practice it will be unindented and will contain JSON Text Sequence separators
+and no comments.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>// go test emits environment configuration
+{
+    &quot;Configuration&quot;: {
+        &quot;commit&quot;: &quot;7cd9055&quot;,
+        &quot;commit-time&quot;: &quot;2016-02-11T13:25:45-0500&quot;,
+        &quot;goos&quot;: &quot;darwin&quot;,
+        &quot;goarch&quot;: &quot;amd64&quot;,
+        &quot;cpu&quot;: &quot;Intel(R) Core(TM) i7-4980HQ CPU @ 2.80GHz&quot;,
+        &quot;cpu-count&quot;: &quot;8&quot;,
+        &quot;cpu-physical-count&quot;: &quot;4&quot;,
+        &quot;os&quot;: &quot;Mac OS X 10.11.3&quot;,
+        &quot;mem&quot;: &quot;16 GB&quot;
+    }
+}
+// TestFoo started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestFoo&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// A line was written directly to os.Stdout
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Stderr&quot;: &quot;Random string written directly to os.Stdout\n&quot;
+}
+// TestFoo passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestFoo&quot;,
+    &quot;State&quot;: &quot;PASS&quot;,
+}
+// TestBar started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestBar&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// TestBar logged a line
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestBar&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Log&quot;: &quot;some test output&quot;
+}
+// TestBar failed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestBar&quot;,
+    &quot;State&quot;: &quot;FAIL&quot;
+}
+// TestQux started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestQux&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// TestQux calls T.Fatal(&quot;bug&quot;)
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestBar&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Log&quot;: &quot;bug&quot;
+}
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestQux&quot;,
+    &quot;State&quot;: &quot;FAIL&quot;
+}
+// TestComposite started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestComposite&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// TestComposite/A=1 subtest started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestComposite/A=1&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// TestComposite/A=1 passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestComposite/A=1&quot;,
+    &quot;State&quot;: &quot;PASS&quot;,
+}
+// TestComposite passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;TestComposite&quot;,
+    &quot;State&quot;: &quot;PASS&quot;,
+}
+// Example1 started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;Example1&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// Example1 passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;Example1&quot;,
+    &quot;State&quot;: &quot;PASS&quot;
+}
+// BenchmarkRun started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;BenchmarkBar&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// BenchmarkRun passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;BenchmarkBar&quot;,
+    &quot;State&quot;: &quot;PASS&quot;,
+    &quot;Benchmark&quot;: {
+        &quot;T&quot;: 1000000,
+        &quot;N&quot;: 1000,
+        &quot;Bytes&quot;: 100,
+        &quot;MemAllocs&quot;: 10,
+        &quot;MemBytes&quot;: 10
+    }
+}
+// BenchmarkComposite started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;BenchmarkComposite&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// BenchmarkComposite/A=1 started
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;BenchmarkComposite/A=1&quot;,
+    &quot;State&quot;: &quot;RUN&quot;,
+    &quot;Procs&quot;: 4
+}
+// BenchmarkComposite/A=1 passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;BenchmarkComposite/A=1&quot;,
+    &quot;State&quot;: &quot;PASS&quot;,
+    &quot;Benchmark&quot;: {
+        &quot;T&quot;: 1000000,
+        &quot;N&quot;: 1000,
+        &quot;Bytes&quot;: 100,
+        &quot;MemAllocs&quot;: 10,
+        &quot;MemBytes&quot;: 10
+    }
+}
+// BenchmarComposite passed
+{
+    &quot;Package&quot;: &quot;github.com/user/repo&quot;,
+    &quot;Name&quot;: &quot;BenchmarComposite&quot;,
+    &quot;State&quot;: &quot;PASS&quot;
+}
+// Total coverage information in the end.
+{
+    &quot;CoverageMode&quot;: &quot;set&quot;,
+    &quot;TotalStatements&quot;:  1000,
+    &quot;ActiveStatements&quot;: 900,
+    &quot;CoveredPackages&quot;: [
+        &quot;github.com/user/repo&quot;
+    ]
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>Alternatives:</p>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">-format</span></code> and <code class="docutils literal notranslate"><span class="pre">-benchformat</span></code> flags proposed in
+https://github.com/golang/go/issues/12826.
+While this is simpler to implement, users will have to do more work to
+specify format and then parse it.</p></li>
+</ul>
+<p>Trade offs:</p>
+<ul>
+<li><p>I propose to make <code class="docutils literal notranslate"><span class="pre">-json</span></code> mutually exclusive with <code class="docutils literal notranslate"><span class="pre">-n</span></code> and <code class="docutils literal notranslate"><span class="pre">-x</span></code> flags.
+These flags belong to <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">build</span></code> subcommand while this proposal is scoped
+to <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code>.
+Supporting the flags would require adding JSON output knowledge to
+<code class="docutils literal notranslate"><span class="pre">go/build.go</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JSONResult.Benchmark.T</span></code> provides duration of a benchmark run, but there is
+not an equivalent for a test run.
+This is a trade off for <code class="docutils literal notranslate"><span class="pre">JSONResult</span></code> simplicity.
+We don’t have to define <code class="docutils literal notranslate"><span class="pre">TestResult</span></code> because <code class="docutils literal notranslate"><span class="pre">JSONResult</span></code> is enough to
+describe a test result.</p>
+<p>Currently <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> does not provide test timing info, so the proposal is
+consistent with the current <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> output.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>The only backwards incompatibility is changing <code class="docutils literal notranslate"><span class="pre">testing.Cover.CoveredPackages</span></code>
+field type, but <code class="docutils literal notranslate"><span class="pre">testing.Cover</span></code> is not covered by Go 1 compatibility
+guidelines.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>Most of the work would be done by the author of this proposal.</p>
+<p>The goal is to get agreement on this proposal and to complete the work
+before the 1.8 freeze date.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="29934-error-values.html" class="btn btn-neutral float-right" title="Proposal: Go 2 Error Inspection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="28221-go2-transitions.html" class="btn btn-neutral float-left" title="Proposal: Go 2 transition" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

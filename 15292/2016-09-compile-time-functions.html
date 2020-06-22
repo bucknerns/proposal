@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Compile-time Functions and First Class Types &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Compile-time Functions and First Class Types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/15292/2016-09-compile-time-functions.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="compile-time-functions-and-first-class-types">
+<h1>Compile-time Functions and First Class Types<a class="headerlink" href="#compile-time-functions-and-first-class-types" title="Permalink to this headline">¶</a></h1>
+<p>This is a proposal for adding compile-time functions and first-class types to
+Go, written by Bryan C. Mills in September, 2016.
+This proposal will most likely not be adopted.
+It is being presented as an example for what a complete generics proposal must
+cover.</p>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>This is an alternative to an
+<a class="reference external" href="https://github.com/golang/proposal/blob/master/design/15292/2013-12-type-params">earlier proposal</a>
+and subsequent drafts by Ian Lance Taylor.</p>
+<p>Ian’s earlier proposal notes:</p>
+<blockquote>
+<div><p>[T]he right way to implement such features [as template metaprogramming] in
+Go would be to add support in the go tool for writing Go code to generate Go
+code […] which is in turn compiled into the final program. This would mean
+that the metaprogramming language in Go is itself Go.</p>
+</div></blockquote>
+<p>This proposal is an attempt to drive that observation to its natural conclusion,
+by adding explicit support for running Go functions over types at compile-time.
+It results in a variant of Go with deep support for parametric types and
+functions, despite relatively little addition to the language.</p>
+<p>This proposal is intended to be Go 1 compatible.
+If any incompatibilities exist, they are likely to be due to the extension of
+<code class="docutils literal notranslate"><span class="pre">TypeName</span></code> to include compile-time expressions and/or due to grammar conflicts
+with the expanded definition of <code class="docutils literal notranslate"><span class="pre">Declaration</span></code>.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We introduce a new builtin type, <code class="docutils literal notranslate"><span class="pre">gotype</span></code>, which represents a type within Go
+program during compilation, and a new token which creates a constant of type
+<code class="docutils literal notranslate"><span class="pre">gotype</span></code> from a <a class="reference external" href="https://golang.org/ref/spec#Type"><code class="docutils literal notranslate"><span class="pre">Type</span></code></a>.</p>
+<p>We permit a subset of Go functions to be called at compile-time.
+These functions can accept and return values of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">gotype</span></code> values returned from such functions can appear as types within the
+program.</p>
+<div class="section" id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">const</span></code>, applied at the start of a
+<a class="reference external" href="https://golang.org/ref/spec#FunctionDecl"><code class="docutils literal notranslate"><span class="pre">FunctionDecl</span></code></a>, indicates a
+declaration of a compile-time function.</p>
+<p>ℹ There are many reasonable alternatives to the <code class="docutils literal notranslate"><span class="pre">const</span></code> token.
+We could use a currently-invalid token (such as <code class="docutils literal notranslate"><span class="pre">::</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code>), a new builtin
+name (such as <code class="docutils literal notranslate"><span class="pre">static</span></code>), or, in fact, nothing at all!
+In the latter case, any <code class="docutils literal notranslate"><span class="pre">FunctionDecl</span></code> that meets the constraints of a
+compile-time function would result in a function which could be called at
+compile time.</p>
+<p>The new builtin type <code class="docutils literal notranslate"><span class="pre">gotype</span></code> represents a Go type at compile-time.</p>
+<p><code class="docutils literal notranslate"><span class="pre">(type)</span></code>, used in place of a
+<a class="reference external" href="https://golang.org/ref/spec#FunctionBody"><code class="docutils literal notranslate"><span class="pre">FunctionBody</span></code></a>,
+<a class="reference external" href="https://golang.org/ref/spec#LiteralValue"><code class="docutils literal notranslate"><span class="pre">LiteralValue</span></code></a>, or the <code class="docutils literal notranslate"><span class="pre">Expression</span></code>
+in a <a class="reference external" href="https://golang.org/ref/spec#Conversion"><code class="docutils literal notranslate"><span class="pre">Conversion</span></code></a>, represents “the
+type itself”.
+It produces a constant of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code>.</p>
+<p>The actual syntax for the <code class="docutils literal notranslate"><span class="pre">(type)</span></code> token could be a currently-invalid
+token (such as <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">{...}</span></code>), an existing keyword that cannot currently occur
+in this position (such as an unparenthesized <code class="docutils literal notranslate"><span class="pre">type</span></code>), or a new builtin
+non-keyword (such as <code class="docutils literal notranslate"><span class="pre">itself</span></code>, <code class="docutils literal notranslate"><span class="pre">typeof</span></code>, or <code class="docutils literal notranslate"><span class="pre">gotype</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.(type)</span></code> syntax already supported in type switches can be used as a general
+expression within compile-time functions.
+It returns the <code class="docutils literal notranslate"><span class="pre">gotype</span></code> of the <code class="docutils literal notranslate"><span class="pre">interface</span></code> value to which it is applied.</p>
+<p>In order to support defining methods on types within compile-time functions, we
+expand the definition of a
+<a class="reference external" href="https://golang.org/ref/spec#Declaration"><code class="docutils literal notranslate"><span class="pre">Declaration</span></code></a> to include
+<a class="reference external" href="https://golang.org/ref/spec#FunctionDecl"><code class="docutils literal notranslate"><span class="pre">FunctionDecl</span></code></a> and
+<a class="reference external" href="https://golang.org/ref/spec#MethodDecl"><code class="docutils literal notranslate"><span class="pre">MethodDecl</span></code></a>, with the restriction
+that method declarations must occur within the same scope as the corresponding
+type declaration and before any values of that type are instantiated.
+For uniformity, we also allow these declarations within ordinary
+(non-compile-time) functions.</p>
+<p>ℹ As a possible future extension, we could allow conditional method declarations
+within a compile-time function before the first use of the type.</p>
+<p>Expressions of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code> can appear anywhere a
+<a class="reference external" href="https://golang.org/ref/spec#TypeName"><code class="docutils literal notranslate"><span class="pre">TypeName</span></code></a> is valid, including in the
+parameters or return-values of a compile-time function.
+The compiler substitutes the concrete type returned by the function in place of
+the <code class="docutils literal notranslate"><span class="pre">gotype</span></code> expression.
+<code class="docutils literal notranslate"><span class="pre">gotype</span></code> parameters to a compile-time function may be used in the types of
+subsequent parameters.</p>
+<p>ℹ In this proposal, functions whose parameter types depend on other parameters
+do not have a well-formed Go type, and hence cannot be passed or stored as
+variables with <code class="docutils literal notranslate"><span class="pre">func</span></code> types.
+It may be possible to add such
+<a class="reference external" href="https://en.wikipedia.org/wiki/Dependent_type">dependent types</a> in the
+future, but for now it seems prudent to avoid that complexity.</p>
+</div>
+<div class="section" id="semantics">
+<h3>Semantics<a class="headerlink" href="#semantics" title="Permalink to this headline">¶</a></h3>
+<p>Compile-time functions and expressions cannot depend upon values that are not
+available at compile-time.
+In particular, they cannot call non-compile-time functions or access variables
+at package scope.</p>
+<p>ℹ As a possible future extension, we could allow compile-time functions to read
+and manipulate package variables.
+This would enable more <code class="docutils literal notranslate"><span class="pre">init</span></code> functions to be evaluated at compile-time,
+reducing the run-time cost of package initialization (and allowing Go programs
+to load more quickly).
+However, it would potentially remove the useful invariant that all
+compile-time functions are “pure” functions.</p>
+<p>The values returned from a call to a compile-time function are
+<a class="reference external" href="https://golang.org/ref/spec#Constants">constants</a> if expressions of the
+corresponding types are otherwise valid as constants.</p>
+<p>Arguments to compile-time functions can include:</p>
+<ul class="simple">
+<li><p>constants (including constants of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code>)</p></li>
+<li><p>calls to other compile-time functions (even if they do not return constants)</p></li>
+<li><p>functions declared at package scope</p></li>
+<li><p>functions and variables declared locally within other compile-time functions</p></li>
+<li><p><a class="reference external" href="https://golang.org/ref/spec#Function_literals">function literals</a>, provided
+that the body of the literal does not refer to the local variables of a
+run-time function or method</p></li>
+</ul>
+<p>It is an error to write a compile-time expression that depends on a value not
+available at compile-time.</p>
+<p>Passed-in run-time functions cannot be called directly within the compile-time
+function to which they are passed, but they can be called by other (run-time)
+functions and/or methods declared within it.</p>
+<p>⚠ Can / should we allow compile-time functions to accept and call other
+compile-time functions passed as parameters?</p>
+<p>Run-time functions and methods declared within compile-time functions may refer
+to local variables of the compile-time function.</p>
+<p>Calls to compile-time functions from within run-time functions are evaluated at
+compile-time.
+(This is a form of
+<a class="reference external" href="https://en.wikipedia.org/wiki/Partial_evaluation">partial evaluation</a>.)
+Calls to compile-time functions from other compile-time functions are evaluated
+when the outer function is called.</p>
+<p>⚠ Should we allow compile-time functions that do not involve <code class="docutils literal notranslate"><span class="pre">gotype</span></code> to be
+called at run-time (with parameters computed at run-time)?</p>
+<p>Expressions of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code> can only be evaluated at compile-time.</p>
+<p>ℹ There is an important distinction between “an expression of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code>” and
+“an expression <em>whose type is</em> an expression of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code>” (a.k.a. “an
+expression whose type is <em>a</em> <code class="docutils literal notranslate"><span class="pre">gotype</span></code>).
+The former is always a compile-time expression; the latter is not.</p>
+<p>If an expression’s type is a <code class="docutils literal notranslate"><span class="pre">gotype</span></code> but the concrete type represented by
+evaluating the <code class="docutils literal notranslate"><span class="pre">gotype</span></code> does not support an operation used in the expression, it
+is a compile-time error.
+If the expression occurs within a compile-time function and the expression is
+not evaluated, there is no error.
+<code class="docutils literal notranslate"><span class="pre">gotype</span></code> expressions within type and method declarations are only evaluated if
+the block containing the type declaration is evaluated.
+(This is analogous to the
+<a class="reference external" href="https://en.cppreference.com/w/cpp/language/sfinae">SFINAE rule in C++</a>.)</p>
+<p>A <a class="reference external" href="https://golang.org/ref/spec#TypeSwitchStmt"><code class="docutils literal notranslate"><span class="pre">TypeSwitchStmt</span></code></a> on an
+expression or variable of type <code class="docutils literal notranslate"><span class="pre">gotype</span></code> switches on the concrete type
+represented by that <code class="docutils literal notranslate"><span class="pre">gotype</span></code>, not the type <code class="docutils literal notranslate"><span class="pre">gotype</span></code> itself.
+As a consequence, a <code class="docutils literal notranslate"><span class="pre">TypeSwitchStmt</span></code> on a <code class="docutils literal notranslate"><span class="pre">gotype</span></code> cannot bind an <code class="docutils literal notranslate"><span class="pre">identifier</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">TypeSwitchGuard</span></code>.</p>
+<p>⚠ It would be useful in some cases to be able to convert between a <code class="docutils literal notranslate"><span class="pre">gotype</span></code> and
+a <code class="docutils literal notranslate"><span class="pre">reflect.Type</span></code>, or to otherwise implement many of the <code class="docutils literal notranslate"><span class="pre">reflect.Type</span></code> methods
+on the <code class="docutils literal notranslate"><span class="pre">gotype</span></code> type.
+For example, in the <code class="docutils literal notranslate"><span class="pre">hashmap</span></code> example below, the <code class="docutils literal notranslate"><span class="pre">K</span></code> parameter could be
+eliminated by changing the <code class="docutils literal notranslate"><span class="pre">hashfn</span></code> and <code class="docutils literal notranslate"><span class="pre">eqfn</span></code> parameters to <code class="docutils literal notranslate"><span class="pre">interface{}</span></code> and
+reflecting over them to discover the key type.
+Is that worth considering at this point?</p>
+<div class="section" id="type-names">
+<h4>Type names<a class="headerlink" href="#type-names" title="Permalink to this headline">¶</a></h4>
+<p>The name of a type declared within a function is local to the function.
+If a local type is returned (as a <code class="docutils literal notranslate"><span class="pre">gotype</span></code>), it becomes
+an <a class="reference external" href="https://golang.org/ref/spec#Types">unnamed type</a>.</p>
+<p>ℹ Local types introduce the possibility of unnamed types with methods.</p>
+<p>Two unnamed types returned as <code class="docutils literal notranslate"><span class="pre">gotype</span></code> are
+<a class="reference external" href="https://golang.org/ref/spec#Type_identity">identical</a> if they were returned by
+calls to the same function with the same parameters.
+If the function itself was local to another compile-time function, this applies
+to the parameters passed to the outermost function that returns the <code class="docutils literal notranslate"><span class="pre">gotype</span></code>.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// AsWriterTo returns reader if it implements io.WriterTo,</span>
+<span class="c1">// or a wrapper that embeds reader and implements io.WriterTo otherwise.</span>
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">AsWriterTo</span><span class="p">(</span><span class="nx">reader</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span>
+	<span class="k">switch</span> <span class="nx">reader</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">io</span><span class="p">.</span><span class="nx">WriterTo</span><span class="p">:</span>
+		<span class="k">return</span> <span class="nx">reader</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="kd">type</span> <span class="nx">WriterTo</span> <span class="kd">struct</span> <span class="p">{</span>
+			<span class="nx">reader</span>
+		<span class="p">}</span>
+		<span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">WriterTo</span><span class="p">)</span> <span class="nx">WriteTo</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Copy</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">reader</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">WriterTo</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">MakeWriterTo</span><span class="p">(</span><span class="nx">reader</span> <span class="nx">gotype</span><span class="p">)</span> <span class="kd">func</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span> <span class="nx">AsWriterTo</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">switch</span> <span class="nx">reader</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">case</span> <span class="nx">io</span><span class="p">.</span><span class="nx">WriterTo</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">r</span> <span class="nx">reader</span><span class="p">)</span> <span class="nx">AsWriterTo</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">r</span>
+		<span class="p">}</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">r</span> <span class="nx">reader</span><span class="p">)</span> <span class="nx">AsWriterTo</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">AsWriterTo</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span> <span class="p">{</span> <span class="nx">r</span> <span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">redundantButOk</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">)</span> <span class="nx">io</span><span class="p">.</span><span class="nx">WriterTo</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">MakeWriterTo</span><span class="p">(</span><span class="o">*</span><span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">)(</span><span class="nx">b</span><span class="p">)</span>  <span class="c1">// ok: takes the io.WriterTo case</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">maybeUseful</span><span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">io</span><span class="p">.</span><span class="nx">LimitedReader</span><span class="p">)</span> <span class="nx">io</span><span class="p">.</span><span class="nx">WriterTo</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">MakeWriterTo</span><span class="p">(</span><span class="o">*</span><span class="nx">io</span><span class="p">.</span><span class="nx">LimitedReader</span><span class="p">)(</span><span class="nx">r</span><span class="p">)</span>  <span class="c1">// ok: takes the default case</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">fused</span><span class="p">(</span><span class="nx">reader</span> <span class="nx">gotype</span><span class="p">)</span> <span class="p">(</span><span class="nx">writerTo</span> <span class="nx">gotype</span><span class="p">,</span> <span class="nx">make</span> <span class="kd">func</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span> <span class="nx">writerTo</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">writerTo</span> <span class="p">=</span> <span class="nx">AsWriterTo</span><span class="p">(</span><span class="nx">reader</span><span class="p">)</span>            <span class="c1">// ok: gotype var in a compile-time function</span>
+	<span class="k">return</span> <span class="nx">writerTo</span><span class="p">,</span> <span class="nx">MakeWriterTo</span><span class="p">(</span><span class="nx">writerTo</span><span class="p">)</span>  <span class="c1">// ok: call of compile-time function with compile-time var</span>
+<span class="p">}</span>
+
+<span class="c1">// bad always produces a compile-time error.</span>
+<span class="kd">func</span> <span class="nx">bad</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">io</span><span class="p">.</span><span class="nx">WriterTo</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">MakeWriterTo</span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="nx">i</span><span class="p">)</span>  <span class="c1">// error: &#39;int&#39; does not implement &#39;io.Reader&#39;</span>
+<span class="p">}</span>
+
+<span class="c1">// hiddenError produces a compile-time error only if it is called.</span>
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">hiddenError</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">io</span><span class="p">.</span><span class="nx">WriterTo</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">MakeWriterTo</span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="nx">i</span><span class="p">)</span>  <span class="c1">// error: &#39;int&#39; does not implement &#39;io.Reader&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span> <span class="kd">func</span> <span class="nx">List</span><span class="p">(</span><span class="nx">T</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span>
+	<span class="kd">type</span> <span class="nx">List</span> <span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">element</span> <span class="nx">T</span>
+		<span class="nx">next</span> <span class="o">*</span><span class="nx">List</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">List</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">ListInt</span> <span class="nx">List</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">v1</span> <span class="nx">List</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">v2</span> <span class="nx">List</span><span class="p">(</span><span class="kt">float</span><span class="p">)</span>
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">MyMap</span><span class="p">(</span><span class="nx">T1</span><span class="p">,</span> <span class="nx">T2</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span> <span class="k">return</span> <span class="kd">map</span><span class="p">[</span><span class="nx">T1</span><span class="p">]</span><span class="nx">T2</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span> <span class="p">}</span>
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">MyChan</span><span class="p">(</span><span class="nx">T3</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span> <span class="k">return</span> <span class="kd">chan</span> <span class="nx">T3</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span> <span class="p">}</span>
+<span class="kd">var</span> <span class="nx">v3</span> <span class="nx">MyMap</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">hashmap</span>
+
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">bucket</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span>
+	<span class="kd">type</span> <span class="nx">bucket</span> <span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">next</span> <span class="o">*</span><span class="nx">bucket</span>
+		<span class="nx">key</span> <span class="nx">K</span>
+		<span class="nx">val</span> <span class="nx">V</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">bucket</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">Hashfn</span><span class="p">(</span><span class="nx">K</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span> <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">K</span><span class="p">)</span> <span class="kt">uint</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span> <span class="p">}</span>
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">Eqfn</span><span class="p">(</span><span class="nx">K</span> <span class="nx">gotype</span><span class="p">)</span> <span class="nx">gotype</span> <span class="p">{</span> <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">K</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">Hashmap</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span> <span class="nx">gotype</span><span class="p">,</span> <span class="nx">hashfn</span> <span class="nx">Hashfn</span><span class="p">(</span><span class="nx">K</span><span class="p">),</span> <span class="nx">eqfn</span> <span class="nx">Eqfn</span><span class="p">(</span><span class="nx">K</span><span class="p">))</span> <span class="nx">gotype</span> <span class="p">{</span>
+	<span class="kd">type</span> <span class="nx">Hashmap</span> <span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">buckets</span> <span class="p">[]</span><span class="nx">bucket</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span><span class="p">)</span>
+		<span class="nx">entries</span> <span class="kt">int</span>
+	<span class="p">}</span>
+
+	<span class="kd">func</span><span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Hashmap</span><span class="p">)</span> <span class="nx">Lookup</span> <span class="p">(</span><span class="nx">key</span> <span class="nx">K</span><span class="p">)</span> <span class="p">(</span><span class="nx">val</span> <span class="nx">V</span><span class="p">,</span> <span class="nx">found</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">h</span> <span class="o">:=</span> <span class="nx">hashfn</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">buckets</span><span class="p">)</span>
+		<span class="k">for</span> <span class="nx">b</span> <span class="o">:=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">buckets</span><span class="p">[</span><span class="nx">h</span><span class="p">];</span> <span class="nx">b</span> <span class="o">!=</span> <span class="kc">nil</span><span class="p">;</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">next</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="nx">eqfn</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">b</span><span class="p">.</span><span class="nx">val</span><span class="p">,</span> <span class="kc">true</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+
+	<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="o">*</span><span class="nx">Hashmap</span><span class="p">)</span> <span class="nx">Insert</span><span class="p">(</span><span class="nx">key</span> <span class="nx">K</span><span class="p">,</span> <span class="nx">val</span> <span class="nx">V</span><span class="p">)</span> <span class="p">(</span><span class="nx">inserted</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c1">// Implementation omitted.</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">Hashmap</span> <span class="p">(</span><span class="kd">type</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="kd">func</span> <span class="nx">New</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span> <span class="nx">gotype</span><span class="p">,</span> <span class="nx">hashfn</span> <span class="nx">Hashfn</span><span class="p">(</span><span class="nx">K</span><span class="p">),</span> <span class="nx">eqfn</span> <span class="nx">Eqfn</span><span class="p">(</span><span class="nx">K</span><span class="p">))</span> <span class="kd">func</span><span class="p">()</span><span class="o">*</span><span class="nx">Hashmap</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span><span class="p">,</span> <span class="nx">hashfn</span><span class="p">,</span> <span class="nx">eqfn</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="kd">func</span> <span class="p">()</span> <span class="o">*</span><span class="nx">Hashmap</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span><span class="p">,</span> <span class="nx">hashfn</span><span class="p">,</span> <span class="nx">eqfn</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">Hashmap</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span><span class="p">,</span> <span class="nx">hashfn</span><span class="p">,</span> <span class="nx">eqfn</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">buckets</span><span class="p">:</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">bucket</span><span class="p">(</span><span class="nx">K</span><span class="p">,</span> <span class="nx">V</span><span class="p">),</span> <span class="mi">16</span><span class="p">),</span>
+			<span class="nx">entries</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nx">sample</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;hashmap&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">hashint</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">uint</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nb">uint</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">eqint</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">j</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">v</span> <span class="p">=</span> <span class="nx">hashmap</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="kd">type</span><span class="p">),</span> <span class="nb">string</span><span class="p">(</span><span class="kd">type</span><span class="p">),</span> <span class="nx">hashint</span><span class="p">,</span> <span class="nx">eqint</span><span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">Add</span><span class="p">(</span><span class="nx">id</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">name</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">v</span><span class="p">.</span><span class="nx">Insert</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="s">&quot;duplicate id&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">Find</span><span class="p">(</span><span class="nx">id</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="nx">val</span><span class="p">,</span> <span class="nx">found</span> <span class="o">:=</span> <span class="nx">v</span><span class="p">.</span><span class="nx">Lookup</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+	<span class="k">if</span> <span class="p">!</span><span class="nx">found</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nx">Fatal</span><span class="p">(</span><span class="s">&quot;missing id&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">val</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ambiguities">
+<h3>Ambiguities<a class="headerlink" href="#ambiguities" title="Permalink to this headline">¶</a></h3>
+<p>The extension of <code class="docutils literal notranslate"><span class="pre">TypeName</span></code> to include calls returning a <code class="docutils literal notranslate"><span class="pre">gotype</span></code> introduces
+some minor ambiguities in the grammar which must be resolved, particularly when
+the argument to the <code class="docutils literal notranslate"><span class="pre">gotype</span></code> function is a named constant rather than a <code class="docutils literal notranslate"><span class="pre">gotype</span></code>
+or another call.</p>
+<p>The following example illustrates an ambiguity in interface declarations.
+If <code class="docutils literal notranslate"><span class="pre">Z</span></code> is a type, it declares a method named <code class="docutils literal notranslate"><span class="pre">Y</span></code> with an argument of type <code class="docutils literal notranslate"><span class="pre">Z</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">Z</span></code> is a constant, it embeds the interface type <code class="docutils literal notranslate"><span class="pre">Y(Z)</span></code> in <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">interface</span> <span class="nx">X</span> <span class="p">{</span>
+  <span class="nx">Y</span><span class="p">(</span><span class="nx">Z</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The compiler can theoretically resolve the ambiguity itself based on the
+definition of <code class="docutils literal notranslate"><span class="pre">Z</span></code>, but <code class="docutils literal notranslate"><span class="pre">go/parser</span></code> package currently does not do enough analysis
+to determine the correct abstract syntax tree for this case.
+To keep the parser relatively simple, we can resolve the ambiguity by requiring
+parentheses for embedded types derived from expressions, which can never be
+valid method declarations:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">interface</span> <span class="nx">X</span> <span class="p">{</span>
+  <span class="p">(</span><span class="nx">Y</span><span class="p">(</span><span class="nx">Z</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ℹ In the above example, <code class="docutils literal notranslate"><span class="pre">Z</span></code> must be a constant or the name of a type, not a
+<code class="docutils literal notranslate"><span class="pre">gotype</span></code> literal: the <code class="docutils literal notranslate"><span class="pre">(type)</span></code> in <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">(type)</span></code> would already remove the
+ambiguity.</p>
+<p>ℹ This problem and the proposed resolution are analogous to the existing
+ambiguity and workaround for composite literals within <code class="docutils literal notranslate"><span class="pre">if</span></code>, <code class="docutils literal notranslate"><span class="pre">switch</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">for</span></code> statements.
+(Search for “parsing ambiguity” in the Go 1.7 spec.)</p>
+<p>The following example illustrates an ambiguity in expressions.
+If <code class="docutils literal notranslate"><span class="pre">Y</span></code> is a compile-time function that returns a <code class="docutils literal notranslate"><span class="pre">gotype</span></code>, the expression is a
+<a class="reference external" href="https://golang.org/ref/spec#Conversion"><code class="docutils literal notranslate"><span class="pre">Conversion</span></code></a> of the expression <code class="docutils literal notranslate"><span class="pre">w</span></code> to
+the type <code class="docutils literal notranslate"><span class="pre">Y(Z)</span></code>.
+Otherwise, it is a <a class="reference external" href="https://golang.org/ref/spec#Calls">call</a> to the function
+<code class="docutils literal notranslate"><span class="pre">Y(Z)</span></code> with <a class="reference external" href="https://golang.org/ref/spec#Arguments"><code class="docutils literal notranslate"><span class="pre">Arguments</span></code></a> <code class="docutils literal notranslate"><span class="pre">w</span></code>.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">x</span> <span class="p">=</span> <span class="nx">Y</span><span class="p">(</span><span class="nx">Z</span><span class="p">)(</span><span class="nx">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Fortunately, the <a class="reference external" href="https://play.golang.org/p/C0W4uMy5ek"><code class="docutils literal notranslate"><span class="pre">go/ast</span></code> representation</a>
+for both of these forms is equivalent: a nested <code class="docutils literal notranslate"><span class="pre">CallExpr</span></code>.</p>
+<p>ℹ As above, this case is only ambiguous if <code class="docutils literal notranslate"><span class="pre">Z</span></code> is a constant or the name of a
+type.</p>
+<p>ℹ This ambiguity already appears in the existing grammar for the simpler case of
+<code class="docutils literal notranslate"><span class="pre">var</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">Y(w)</span></code>: whether the subexpression <code class="docutils literal notranslate"><span class="pre">Y(w)</span></code> is parsed as a <code class="docutils literal notranslate"><span class="pre">Conversion</span></code>
+of <code class="docutils literal notranslate"><span class="pre">w</span></code> to <code class="docutils literal notranslate"><span class="pre">Y</span></code> or a <code class="docutils literal notranslate"><span class="pre">PrimaryExpr</span></code> applying a function <code class="docutils literal notranslate"><span class="pre">Y</span></code> to <code class="docutils literal notranslate"><span class="pre">w</span></code> already
+depends upon whether <code class="docutils literal notranslate"><span class="pre">Y</span></code> names a type or a function or variable.</p>
+<p>The ambiguities described here are low-risk: the result of misparsing is an
+invalid program, not a valid program with unintended behavior.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>This proposal provides support for parametricity and metaprogramming using a
+language that is already familiar to Go programmers: a subset of Go itself.</p>
+<p>The proposed changes to the compiler are extensive (in order to support
+compile-time evaluation), but the changes to the language itself and to the
+runtime are relatively minimal: extensions of existing declaration syntax to
+additional scopes, a token for indicating compile-time functions, a token for
+hoisting types into values, and the new built-in type <code class="docutils literal notranslate"><span class="pre">gotype</span></code>.
+The programmer needs to think about which parts of the program execute at
+compile-time or at run-time, but does not need to learn a whole new language (as
+opposed to, say, the extensive surface area of the <code class="docutils literal notranslate"><span class="pre">reflect</span></code> or <code class="docutils literal notranslate"><span class="pre">go/ast</span></code>
+packages or the entirely different language of <code class="docutils literal notranslate"><span class="pre">text/template</span></code>).</p>
+<p>The potential applications cover a significant fraction of “metaprogramming”
+use-cases that are currently well-supported only in languages much more complex
+than Go, and that are not addressed by previous proposals that run closer to
+conventional “generics” or “templates”.
+The specific language changes may be somewhat more complex than some
+alternatives (particularly when compared to tools that build on top of <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">generate</span></code>), but the deployment overhead is substantially lower: instead of
+preprocessing source files (and potentially iterating over the outputs many
+times to reach a fix-point of code generation), the programmer need only run the
+usual <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">build</span></code> command.
+That is: this proposal trades a bit more language complexity for a significant
+reduction in tooling complexity for Go users.</p>
+<p>With a few additional modest extensions (e.g. compile-time <code class="docutils literal notranslate"><span class="pre">init</span></code> functions),
+the same mechanism can be used to make Go program initialization more efficient
+and to move detection of more errors from run-time to compile-time.</p>
+<p>The principles underlying this proposal are based on existing (if little-used)
+designs from programming language research: namely, higher-order types, partial
+evaluation<a class="reference external" href="https://www.cs.cmu.edu/~fp/papers/jacm00.pdf">1</a><a class="reference external" href="https://www.cs.cmu.edu/~fp/papers/sope98.pdf">2</a>, and dependent function types.</p>
+</div>
+<div class="section" id="caveats">
+<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
+<p>With this style of metaprogramming, it would be difficult (perhaps infeasible)
+to add deduction for <code class="docutils literal notranslate"><span class="pre">gotype</span></code> arguments in a subsequent revision of the language
+in a way that maintains backward-compatibility.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal is intended to be compatible with Go 1.
+(The author has looked for incompatibilities and not yet found any.)</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The implementation of <code class="docutils literal notranslate"><span class="pre">gotype</span></code> is straightforward, especially if we decline to
+add conversions to and from <code class="docutils literal notranslate"><span class="pre">reflect.Type</span></code>.
+The detection and evaluation of compile-time expressions adds a new algorithm to
+the compiler, but it should be a straightforward one (a bottom-up analysis of
+expressions) and is closely related to common compiler optimizations
+(e.g. constant folding).</p>
+<p>The export data format would have to be expanded to include definitions of
+compile-time functions (as I assume it does today for inlinable functions).</p>
+<p>The bulk of the implementation work is likely to be in support of executing Go
+functions at compile time: compile-time functions have similar semantics to
+run-time functions, but (because they are executed at compile time and because
+they can have dependent types) would need support for a more dynamically-typed
+evaluation.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

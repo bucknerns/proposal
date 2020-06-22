@@ -1,0 +1,1275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Localization support in Go &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Dense mark bits and sweep-free allocation" href="12800-sweep-free-alloc.html" />
+    <link rel="prev" title="Proposal: Rules for passing pointers between Go and C" href="12416-cgo-pointers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Localization support in Go</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#localization-in-go">Localization in Go</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#definitions">Definitions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#package-golang-org-x-text-message">Package golang.org/x/text/message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-golang-org-x-text-template-html-template">Package golang.org/x/text/{template|html/template}</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-golang-org-x-text-feature">Package golang.org/x/text/feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#value-formatting">Value formatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-currencies">Example: Currencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-units">Example: units</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#details-and-rationale">Details and Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#formatting">Formatting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#differences-from-the-fmt-package">Differences from the fmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#currency">Currency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#units">Units</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#matching-algorithm">Matching algorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#full-example">Full Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#comparison-to-icu">Comparison to ICU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#comparison-to-os-x">Comparison to OS X</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#code-organization">Code organization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-statically-linked-package">Example: statically linked package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-dynamically-loaded-files">Example: dynamically loaded files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation-plan">Implementation Plan</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Localization support in Go</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/12750-localization.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-localization-support-in-go">
+<h1>Proposal: Localization support in Go<a class="headerlink" href="#proposal-localization-support-in-go" title="Permalink to this headline">¶</a></h1>
+<p>Discussion at https://golang.org/issue/12750.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>This proposal gives a big-picture overview of localization support for
+Go, explaining how all pieces fit together.
+It is intended as a guide to designing the individual packages and to allow
+catching design issues early.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Localization can be a complex matter.
+For many languages, localization is more than just translating an English format
+string.
+For example, a sentence may change depending on properties of the arguments such
+as gender or plurality.
+In turn, the rendering of the arguments may be influenced by, for example:
+language, sentence context (start, middle, list item, standalone, etc.),
+role within the sentence (case: dative, nominative, genitive, etc.),
+formatting options, and
+user-specific settings, like measurement system.</p>
+<p>In other words, the format string is selected based on the arguments and the
+arguments may be rendered differently based on the format string, or even the
+position within the format string.</p>
+<p>A localization framework should provide at least the following features:</p>
+<ol class="simple">
+<li><p>mark and extract text in code to be translated,</p></li>
+<li><p>injecting translated text received from a translator, and</p></li>
+<li><p>formatting values, such as numbers, currencies, units, names, etc.</p></li>
+</ol>
+<p>Language-specific parsing of values belongs in this list as well,
+but we consider it to be out of scope for now.</p>
+<div class="section" id="localization-in-go">
+<h3>Localization in Go<a class="headerlink" href="#localization-in-go" title="Permalink to this headline">¶</a></h3>
+<p>Although we have drawn some ideas for the design from other localization
+libraries, the design will inevitably be different in various aspects for Go.</p>
+<p>Most frameworks center around the concept of a single user per machine.
+This leads to concepts like default locale, per-locale loadable files, etc.
+Go applications tend to be multi-user and single static libraries.</p>
+<p>Also many frameworks predate CLDR-provided features such as varying values
+based on plural and gender.
+Retrofitting frameworks to use this data is hard and often results in clunky APIs.
+Designing a framework from scratch allows designing with such features in mind.</p>
+</div>
+<div class="section" id="definitions">
+<h3>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h3>
+<p>We call a <strong>message</strong> the abstract notion of some semantic content to be
+conveyed to the user.
+Each message is identified by a key, which will often be
+a fmt- or template-style format string.
+A message definition defines concrete format strings for a message
+called <strong>variants</strong>.
+A single message will have at least one variant per supported language.</p>
+<p>A message may take <strong>arguments</strong> to be substituted at given insertion points.
+An argument may have 0 or more features.
+An argument <strong>feature</strong> is a key-value pair derived from the value of this argument.
+Features are used to select the specific variant for a message for a given
+language at runtime.
+A <strong>feature value</strong> is the value of an argument feature.
+The set of possible feature values for an attribute can vary per language.
+A <strong>selector</strong> is a user-provided string to select a variant based on a feature
+or argument value.</p>
+</div>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>Most messages in Go programs pass through either the fmt or one of the template
+packages.
+We treat each of these two types of packages separately.</p>
+<div class="section" id="package-golang-org-x-text-message">
+<h3>Package golang.org/x/text/message<a class="headerlink" href="#package-golang-org-x-text-message" title="Permalink to this headline">¶</a></h3>
+<p>Package message has drop-in replacements for most functions in the fmt package.
+Replacing one of the print functions in fmt with the equivalent in package
+message flags the string for extraction and causes language-specific rendering.</p>
+<p>Consider a traditional use of fmt:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s went to %s.&quot;</span><span class="p">,</span> <span class="nx">person</span><span class="p">,</span> <span class="nx">city</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To localize this message, replace fmt with a message.Printer for a given language:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">p</span> <span class="o">:=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">NewPrinter</span><span class="p">(</span><span class="nx">userLang</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s went to %s.&quot;</span><span class="p">,</span> <span class="nx">person</span><span class="p">,</span> <span class="nx">city</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To localize all strings in a certain scope, the user could assign such a printer
+to <code class="docutils literal notranslate"><span class="pre">fmt</span></code>.</p>
+<p>Using the Printf of <code class="docutils literal notranslate"><span class="pre">message.Printer</span></code> has the following consequences:</p>
+<ul class="simple">
+<li><p>it flags the format string for translation,</p></li>
+<li><p>the format string is now a key used for looking up translations (the format
+string is still used as a format string in case of a missing translation),</p></li>
+<li><p>localizable types, like numbers are rendered corresponding to p’s language.</p></li>
+</ul>
+<p>In practice translations will be automatically injected from
+a translator-supplied data source.
+But let’s do this manually for now.
+The following adds a localized variant for Dutch:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">Set</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">Dutch</span><span class="p">,</span> <span class="s">&quot;%s went to %s.&quot;</span><span class="p">,</span>  <span class="s">&quot;%s is in %s geweest.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Assuming p is configured with <code class="docutils literal notranslate"><span class="pre">language.Dutch</span></code>, the Printf above will now print
+the message in Dutch.</p>
+<p>In practice, translators do not see the code and may need more context than just
+the format string.
+The user may add context to the message by simply commenting the Go code:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s went to %s.&quot;</span><span class="p">,</span> <span class="c1">// Describes the location a person visited.</span>
+	<span class="nx">person</span><span class="p">,</span>                <span class="c1">// The Person going to the location.</span>
+ 	<span class="nx">city</span><span class="p">,</span>                  <span class="c1">// The location visited.</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The message extraction tool can pick up these comments and pass them to the
+translator.</p>
+<p>The section on Features and the Rationale chapter present more details on package
+message.</p>
+</div>
+<div class="section" id="package-golang-org-x-text-template-html-template">
+<h3>Package golang.org/x/text/{template|html/template}<a class="headerlink" href="#package-golang-org-x-text-template-html-template" title="Permalink to this headline">¶</a></h3>
+<p>Templates can be localized by using the drop-in replacement packages of equal name.
+They add the following functionality:</p>
+<ul class="simple">
+<li><p>mark to-be-localized text in templates,</p></li>
+<li><p>substitute variants of localized text based on the language, and</p></li>
+<li><p>use the localized versions of the print builtins, if applicable.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">msg</span></code> action marks text in templates for localization analogous to the
+namesake construct in Soy.</p>
+<p>Consider code using core’s text/template:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="s">&quot;text/template&quot;</span>
+<span class="kn">import</span> <span class="s">&quot;golang.org/x/text/language&quot;</span>
+
+<span class="kd">const</span> <span class="nx">letter</span> <span class="p">=</span> <span class="s">`</span>
+<span class="s">Dear {{.Name}},</span>
+<span class="s">{{if .Attended}}</span>
+<span class="s">It was a pleasure to see you at the wedding.{{else}}</span>
+<span class="s">It is a shame you couldn&#39;t make it to the wedding.{{end}}</span>
+<span class="s">Best wishes,</span>
+<span class="s">Josie</span>
+<span class="s">`</span>
+<span class="c1">// Prepare some data to insert into the template.</span>
+<span class="kd">type</span> <span class="nx">Recipient</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span>     <span class="kt">string</span>
+	<span class="nx">Attended</span> <span class="kt">bool</span>
+	<span class="nx">Language</span> <span class="nx">language</span><span class="p">.</span><span class="nx">Tag</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">recipients</span> <span class="p">=</span> <span class="p">[]</span><span class="nx">Recipient</span><span class="p">{</span>
+	<span class="p">{</span><span class="s">&quot;Mildred&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">language</span><span class="p">.</span><span class="nx">English</span><span class="p">},</span>
+	<span class="p">{</span><span class="s">&quot;Aurélie&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">language</span><span class="p">.</span><span class="nx">French</span><span class="p">},</span>
+	<span class="p">{</span><span class="s">&quot;Rens&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">language</span><span class="p">.</span><span class="nx">Dutch</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Create a new template and parse the letter into it.</span>
+	<span class="nx">t</span> <span class="o">:=</span> <span class="nx">template</span><span class="p">.</span><span class="nx">Must</span><span class="p">(</span><span class="nx">template</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;letter&quot;</span><span class="p">).</span><span class="nx">Parse</span><span class="p">(</span><span class="nx">letter</span><span class="p">))</span>
+
+	<span class="c1">// Execute the template for each recipient.</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">r</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">recipients</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Execute</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">r</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;executing template:&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To localize this program the user may adopt the program as follows:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="s">&quot;golang.org/x/text/template&quot;</span>
+
+<span class="kd">const</span> <span class="nx">letter</span> <span class="p">=</span> <span class="s">`</span>
+<span class="s">{{msg &quot;Opening of a letter&quot;}}Dear {{.Name}},{{end}}</span>
+<span class="s">{{if .Attended}}</span>
+<span class="s">{{msg}}It was a pleasure to see you at the wedding.{{end}}{{else}}</span>
+<span class="s">{{msg}}It is a shame you couldn&#39;t make it to the wedding.{{end}}{{end}}</span>
+<span class="s">{{msg &quot;Closing of a letter, followed by name (f)&quot;}}Best wishes,{{end}}</span>
+<span class="s">Josie</span>
+<span class="s">`</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Create a new template and parse the letter into it.</span>
+	<span class="nx">t</span> <span class="o">:=</span> <span class="nx">template</span><span class="p">.</span><span class="nx">Must</span><span class="p">(</span><span class="nx">template</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">&quot;letter&quot;</span><span class="p">).</span><span class="nx">Parse</span><span class="p">(</span><span class="nx">letter</span><span class="p">))</span>
+
+	<span class="c1">// Execute the template for each recipient.</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">r</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">recipients</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">Language</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">Language</span><span class="p">).</span><span class="nx">Execute</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="nx">r</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;executing template:&quot;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To make this work, we distinguish between normal and language-specific templates.
+A normal template behaves exactly like a template in core, but may be associated
+with a set of language-specific templates.</p>
+<p>A language-specific template differs from a normal template as follows:
+It is associated with exactly one normal template, which we call its base template.</p>
+<ol class="simple">
+<li><p>A Lookup of an associated template will find the first non-empty result of
+a Lookup on:</p>
+<ol class="simple">
+<li><p>the language-specific template itself,</p></li>
+<li><p>recursively, the result of Lookup on the template for the parent language
+(as defined by language.Tag.Parent) associated with its base template, or</p></li>
+<li><p>the base template.</p></li>
+</ol>
+</li>
+<li><p>Any template obtained from a lookup on a language-specific template will itself
+be a language-specific template for the same language.
+The same lookup algorithm applies for such templates.</p></li>
+<li><p>The builtins print, println, and printf will respectively call the Sprint,
+Sprintln, and Sprintf methods of a message.Printer for the associated language.</p></li>
+</ol>
+<p>A top-level template called <code class="docutils literal notranslate"><span class="pre">Messages</span></code> holds all translations of messages
+in language-specific templates. This allows registering of variants using
+existing methods defined on templates.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">dutch</span> <span class="o">:=</span> <span class="nx">template</span><span class="p">.</span><span class="nx">Messages</span><span class="p">.</span><span class="nx">Language</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">Dutch</span><span class="p">)</span>
+<span class="nx">template</span><span class="p">.</span><span class="nx">Must</span><span class="p">(</span><span class="nx">dutch</span><span class="p">.</span><span class="nx">New</span><span class="p">(</span><span class="s">`Dear {{.Name}},`</span><span class="p">).</span><span class="nx">Parse</span><span class="p">(</span><span class="s">`Lieve {{.Name}},`</span><span class="p">))</span>
+<span class="nx">template</span><span class="p">.</span><span class="nx">Must</span><span class="p">(</span><span class="nx">dutch</span><span class="p">.</span>
+	<span class="nx">New</span><span class="p">(</span><span class="s">`It was a pleasure to see you at the wedding.`</span><span class="p">).</span>
+	<span class="nx">Parse</span><span class="p">(</span><span class="s">`Het was een genoegen om je op de bruiloft te zien.`</span><span class="p">))</span>
+	    <span class="c1">// etc.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="package-golang-org-x-text-feature">
+<h3>Package golang.org/x/text/feature<a class="headerlink" href="#package-golang-org-x-text-feature" title="Permalink to this headline">¶</a></h3>
+<p>So far we have addressed cases where messages get translated one-to-one in
+different languages.
+Translations are often not as simple.
+Consider the message <code class="docutils literal notranslate"><span class="pre">&quot;%[1]s</span> <span class="pre">went</span> <span class="pre">to</span> <span class="pre">%[2]&quot;</span></code>, which has the arguments P (a person)
+and D (a destination).
+This one variant suffices for English.
+In French, one needs two:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gender</span> <span class="n">of</span> <span class="n">P</span> <span class="ow">is</span> <span class="n">female</span><span class="p">:</span> <span class="s2">&quot;%[1]s est allée à %[2]s.&quot;</span><span class="p">,</span> <span class="ow">and</span>
+<span class="n">gender</span> <span class="n">of</span> <span class="n">P</span> <span class="ow">is</span> <span class="n">male</span><span class="p">:</span>   <span class="s2">&quot;%[1]s est allé à %[2]s.&quot;</span>
+</pre></div>
+</div>
+<p>The number of variants needed to properly translate a message can vary
+wildly per language.
+For example, Arabic has six plural forms.
+At worst, the number of variants for a language is equal to the Cartesian product
+of all possible values for the argument features for this language.</p>
+<p>Package feature defines a mechanism for selecting message variants based on
+linguistic features of its arguments.
+Both the message and template packages allow selecting variants based on features.
+CLDR provides data for plural and gender features.
+Likewise-named packages in the text repo provide support for each.</p>
+<p>An argument may have multiple features.
+For example, a list of persons can have both a count attribute (the number of
+people in the list) as well as a gender attribute (the combined gender of the
+group of people in the list, the determination of which varies per language).</p>
+<p>The feature.Select struct defines a mapping of selectors to variants.
+In practice, it is created by a feature-specific, high-level wrapper.
+For the above example, such a definition may look like:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">French</span><span class="p">,</span> <span class="s">&quot;%s went to %s&quot;</span><span class="p">,</span>
+	<span class="nx">gender</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="c1">// Select on gender of the first argument.</span>
+		<span class="s">&quot;female&quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s est allée à %[2]s.&quot;</span><span class="p">,</span>
+		<span class="s">&quot;other&quot;</span><span class="p">,</span>  <span class="s">&quot;%[1]s est allé à %[2]s.&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The “1” in the Select statement refers to the first argument, which was our person.
+The message definition now expects the first argument to support the gender feature.
+For example:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span> <span class="nx">Person</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span> <span class="kt">string</span>
+	<span class="nx">gender</span><span class="p">.</span><span class="nx">Gender</span>
+<span class="p">}</span>
+<span class="nx">person</span> <span class="o">:=</span> <span class="nx">Person</span><span class="p">{</span> <span class="s">&quot;Joe&quot;</span><span class="p">,</span> <span class="nx">gender</span><span class="p">.</span><span class="nx">Male</span> <span class="p">}</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%s went to %s.&quot;</span><span class="p">,</span> <span class="nx">person</span><span class="p">,</span> <span class="nx">city</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The plural package defines a feature type for plural forms.
+An obvious consumer is the numbers package.
+But any package that has any kind of amount or cardinality (e.g. lists) can use it.
+An example usage:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">English</span><span class="p">,</span> <span class="s">&quot;There are %d file(s) remaining.&quot;</span><span class="p">,</span>
+    <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+		<span class="s">&quot;zero&quot;</span><span class="p">,</span>	 <span class="s">&quot;Done!&quot;</span><span class="p">,</span>
+		<span class="s">&quot;one&quot;</span><span class="p">,</span>	 <span class="s">&quot;One file remaining&quot;</span><span class="p">,</span>
+		<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="s">&quot;There are %d files remaining.&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This works in English because the CLDR category “zero” and “one” correspond
+exclusively to the values 0 and 1.
+This is not the case, for example, for Serbian, where “one” is really a category
+for a broad range of numbers ending in 1 but not 11.
+To deal with such cases, we borrow a notation from ICU to support exact matching:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">English</span><span class="p">,</span> <span class="s">&quot;There are %d file(s) remaining.&quot;</span><span class="p">,</span>
+    <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+		<span class="s">&quot;=0&quot;</span><span class="p">,</span>	 <span class="s">&quot;Done!&quot;</span><span class="p">,</span>
+		<span class="s">&quot;=1&quot;</span><span class="p">,</span>	 <span class="s">&quot;One file remaining&quot;</span><span class="p">,</span>
+		<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="s">&quot;There are %d files remaining.&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Besides “=”, and in addition to ICU, we will also support the “&lt;” and “&gt;” comparators.</p>
+<p>The template packages would add a corresponding ParseSelect to add translation variants.</p>
+</div>
+<div class="section" id="value-formatting">
+<h3>Value formatting<a class="headerlink" href="#value-formatting" title="Permalink to this headline">¶</a></h3>
+<p>We now move from localizing messages to localizing values.
+This is a non-exhaustive list of value type that support localized rendering:</p>
+<ul class="simple">
+<li><p>numbers</p></li>
+<li><p>currencies</p></li>
+<li><p>units</p></li>
+<li><p>lists</p></li>
+<li><p>dates (calendars, formatting with spell-out, intervals)</p></li>
+<li><p>time zones</p></li>
+<li><p>phone numbers</p></li>
+<li><p>postal addresses</p></li>
+</ul>
+<p>Each type maps to a separate package that roughly provides the same types:</p>
+<ul class="simple">
+<li><p>Value: encapsulates a value and implements fmt.Formatter.
+For example, currency.Value encapsulates the amount, the currency, and
+whether it should be rendered as cash, accounting, etc.</p></li>
+<li><p>Formatter: a func of the form func(x interface{}) Value that creates or wraps
+a Value to be rendered according to the Formatter’s purpose.</p></li>
+</ul>
+<p>Since a Formatter leaves the actual printing to the implementation of
+fmt.Formatter, the value is not printed until after it is passed to one of the
+print methods.
+This allows formatting flags, as well as other context information to influence
+the rendering.</p>
+<p>The State object passed to Format needs to provide more information than
+what is passed by fmt.State, namely:</p>
+<ul class="simple">
+<li><p>a <code class="docutils literal notranslate"><span class="pre">language.Tag</span></code>,</p></li>
+<li><p>locale settings that a user may override relative to the user locale setting
+(e.g. preferred time format, measurement system),</p></li>
+<li><p>sentence context, such as standalone, start-, mid-, or end-of-sentence, and</p></li>
+<li><p>formatting options, possibly defined by the translator.</p></li>
+</ul>
+<p>To accommodate this, we either need to define a text repo-specific State
+implementation that Format implementations can type assert to or
+define a different Formatter interface.</p>
+<div class="section" id="example-currencies">
+<h4>Example: Currencies<a class="headerlink" href="#example-currencies" title="Permalink to this headline">¶</a></h4>
+<p>We consider this pattern applied to currencies. The Value and Formatter type:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// A Formatter associates formatting information with the given value. x may be a</span>
+<span class="c1">// Currency, a Value, or a number if the Formatter is associated with a default currency.</span>
+<span class="kd">type</span> <span class="nx">Formatter</span> <span class="kd">func</span><span class="p">(</span><span class="nx">x</span> <span class="kd">interface</span><span class="p">{})</span> <span class="nx">Value</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="nx">Formatter</span><span class="p">)</span> <span class="nx">NumberFormat</span><span class="p">(</span><span class="nx">f</span> <span class="nx">number</span><span class="p">.</span><span class="nx">Formatter</span><span class="p">)</span> <span class="nx">Formatter</span>
+<span class="o">...</span>
+
+<span class="kd">var</span> <span class="nx">Default</span> <span class="nx">Formatter</span> <span class="p">=</span> <span class="nx">Formatter</span><span class="p">(</span><span class="nx">formISO</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">Symbol</span> <span class="nx">Formatter</span> <span class="p">=</span> <span class="nx">Formatter</span><span class="p">(</span><span class="nx">formSymbol</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">SpellOut</span> <span class="nx">Formatter</span> <span class="p">=</span> <span class="nx">Formatter</span><span class="p">(</span><span class="nx">formSpellOut</span><span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">Value</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nx">amount</span> <span class="kd">interface</span><span class="p">{}</span>
+	<span class="nx">currency</span> <span class="nx">Currency</span>
+	<span class="nx">formatter</span> <span class="o">*</span><span class="nx">settings</span>
+<span class="p">}</span>
+
+<span class="c1">// Format formats v. If State is a format.State, the value is formatted</span>
+<span class="c1">// according to the given language. If State is not language-specific, it will</span>
+<span class="c1">// use number plus ISO code for values and the ISO code for Currency.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Format</span><span class="p">(</span><span class="nx">s</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">State</span><span class="p">,</span> <span class="nx">verb</span> <span class="kt">rune</span><span class="p">)</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Amount</span><span class="p">()</span> <span class="kd">interface</span><span class="p">{}</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Float</span><span class="p">()</span> <span class="p">(</span><span class="kt">float64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">v</span> <span class="nx">Value</span><span class="p">)</span> <span class="nx">Currency</span><span class="p">()</span> <span class="nx">Currency</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Usage examples:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">p</span> <span class="o">:=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">NewPrinter</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">AmericanEnglish</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;You pay %s.&quot;</span><span class="p">,</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">USD</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>                   <span class="c1">// You pay USD 3.</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;You pay %s.&quot;</span><span class="p">,</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">Symbol</span><span class="p">(</span><span class="nx">currency</span><span class="p">.</span><span class="nx">USD</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>  <span class="c1">// You pay $3.</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;You pay %s.&quot;</span><span class="p">,</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">(</span><span class="nx">currency</span><span class="p">.</span><span class="nx">USD</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="c1">// You pay 1 US Dollar.</span>
+<span class="nx">spellout</span> <span class="o">:=</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">.</span><span class="nx">NumberFormat</span><span class="p">(</span><span class="nx">number</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;You pay %s.&quot;</span><span class="p">,</span> <span class="nx">spellout</span><span class="p">(</span><span class="nx">currency</span><span class="p">.</span><span class="nx">USD</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>   <span class="c1">// You pay three US Dollars.</span>
+</pre></div>
+</div>
+<p>Formatters have option methods for creating new formatters.
+Under the hood all formatter implementations use the same settings type, a
+pointer of which is included as a field in Value.
+So option methods can access a formatter’s settings by formatting a dummy value.</p>
+<p>Different types of currency types are available for different localized rounding
+and accounting practices.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">v</span> <span class="o">:=</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">CHF</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="mf">3.123</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;You pay %s.&quot;</span><span class="p">,</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">Cash</span><span class="p">.</span><span class="nx">Value</span><span class="p">(</span><span class="nx">v</span><span class="p">))</span>  <span class="c1">// You pay CHF 3.15.</span>
+
+<span class="nx">spellCash</span> <span class="o">:=</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">.</span><span class="nx">Kind</span><span class="p">(</span><span class="nx">currency</span><span class="p">.</span><span class="nx">Cash</span><span class="p">).</span><span class="nx">NumberFormat</span><span class="p">(</span><span class="nx">number</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;You pay %s.&quot;</span><span class="p">,</span> <span class="nx">spellCash</span><span class="p">(</span><span class="nx">v</span><span class="p">))</span>   <span class="c1">// You pay three point fifteen Swiss Francs.</span>
+</pre></div>
+</div>
+<p>The API ensures unused tables are not linked in.
+For example, the rather large tables for spelling out numbers and currencies
+needed for number.SpellOut and currency.SpellOut are only linked in when
+the respective formatters are called.</p>
+</div>
+<div class="section" id="example-units">
+<h4>Example: units<a class="headerlink" href="#example-units" title="Permalink to this headline">¶</a></h4>
+<p>Units are like currencies but have the added complexity that the amount and
+unit may change per locale.
+The Formatter and Value types are analogous to those of Currency.
+It defines “constructors” for a selection of unit types.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>type Formatter func(x interface{}) Value
+var (
+	Symbol Formatter = Formatter(formSymbol)
+	SpellOut Formatter = Formatter(formSpellOut)
+)
+// Unit sets the default unit for the formatter. This allows the formatter to
+// create values directly from numbers.
+func (f Formatter) Unit(u Unit) Formatter
+
+// create formatted values:
+func (f Formatter) Value(x interface{}, u Unit) Value
+func (f Formatter) Meters(x interface{}) Value
+func (f Formatter) KilometersPerHour(x interface{}) Value
+…
+
+type Unit int
+const SpeedKilometersPerHour Unit = ...
+
+type Kind int
+const Speed Kind = ...
+</pre></div>
+</div>
+<p>Usage examples:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">p</span> <span class="o">:=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">NewPrinter</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">AmericanEnglish</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="nx">unit</span><span class="p">.</span><span class="nx">KilometersPerHour</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>   <span class="c1">// 155 mph</span>
+</pre></div>
+</div>
+<p>spelling out the unit names:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">p</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">unit</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">.</span><span class="nx">KilometersPerHour</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span> <span class="c1">// 155.343 miles per hour</span>
+</pre></div>
+</div>
+<p>Associating a default unit with a formatter allows it to format numbers directly:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">kmh</span> <span class="o">:=</span> <span class="nx">unit</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">.</span><span class="nx">Unit</span><span class="p">(</span><span class="nx">unit</span><span class="p">.</span><span class="nx">SpeedKilometersPerHour</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">kmh</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span> <span class="c1">// 155.343 miles per hour</span>
+</pre></div>
+</div>
+<p>Spell out the number as well:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">spellout</span> <span class="o">:=</span> <span class="nx">unit</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">.</span><span class="nx">NumberFormat</span><span class="p">(</span><span class="nx">number</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">)</span>
+<span class="nx">p</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">spellout</span><span class="p">.</span><span class="nx">KilometersPerHour</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
+<span class="c1">// one hundred fifty-five point three four three miles per hour</span>
+</pre></div>
+</div>
+<p>or perhaps also</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">p</span><span class="p">.</span><span class="nx">Print</span><span class="p">(</span><span class="nx">unit</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">.</span><span class="nx">KilometersPerHour</span><span class="p">(</span><span class="nx">number</span><span class="p">.</span><span class="nx">SpellOut</span><span class="p">(</span><span class="mi">250</span><span class="p">)))</span>
+<span class="c1">// one hundred fifty-five point three four three miles per hour</span>
+</pre></div>
+</div>
+<p>Using a formatter, like <code class="docutils literal notranslate"><span class="pre">number.SpellOut(250)</span></code>, just returns a Value wrapped
+with the new formatting settings.
+The underlying value is retained, allowing its features to select
+the proper unit names.</p>
+<p>There may be an ambiguity as to which unit to convert to when converting from
+US to the metric system.
+For example, feet can be converted to meters or centimeters.
+Moreover, which one is to prefer may differ per language.
+If this is an issue we may consider allowing overriding the default unit to
+convert in a message.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="n">unit</span><span class="o">=</span><span class="n">km</span><span class="p">]</span><span class="n">f</span>
+</pre></div>
+</div>
+<p>Such a construct would allow translators to annotate the preferred unit override.</p>
+</div>
+</div>
+</div>
+<div class="section" id="details-and-rationale">
+<h2>Details and Rationale<a class="headerlink" href="#details-and-rationale" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="formatting">
+<h3>Formatting<a class="headerlink" href="#formatting" title="Permalink to this headline">¶</a></h3>
+<p>The proposed Go API deviates from a common pattern in other localization APIs by
+<em>not</em> associating a Formatter with a language.
+Passing the language through State has several advantages:</p>
+<ol class="simple">
+<li><p>the user needs to specify a language for a message only once, which means</p>
+<ol class="simple">
+<li><p>less typing,</p></li>
+<li><p>no possibility of mismatch, and</p></li>
+<li><p>no need to initialize a formatter for each language (which may mean on
+every usage),</p></li>
+</ol>
+</li>
+<li><p>the value is preserved up till selecting the variant, and</p></li>
+<li><p>a string is not rendered until its context is known.</p></li>
+</ol>
+<p>It prevents strings from being rendered prematurely, which, in turn, helps
+picking the proper variant and allows translators to pass in options in
+formatting strings.
+The Formatter construct is a natural way of allowing for this flexibility and
+allows for a straightforward and natural API for something that is otherwise
+quite complex.</p>
+<p>The Value types of the formatting packages conflate data with formatting.
+However, formatting types often are strongly correlated to types.
+Combining formatting types with values is not unlike associating the time zone
+with a Time or rounding information with a number.
+Combined with the fact that localized formatting is one of the main purposes
+of the text repo, it seems to make sense.</p>
+<div class="section" id="differences-from-the-fmt-package">
+<h4>Differences from the fmt package<a class="headerlink" href="#differences-from-the-fmt-package" title="Permalink to this headline">¶</a></h4>
+<p>Formatted printing in the message package differs from the equivalent in the
+fmt package in various ways:</p>
+<ul class="simple">
+<li><p>An argument may be used solely for its features, or may be unused for
+specific variants.
+It is therefore possible to have a format string that has no
+substitutions even in the presence of arguments.</p></li>
+<li><p>Package message dynamically selects a variant based on the
+arguments’ features and the configured language.
+The format string passed to a formatted print method is mostly used as a
+reference or key.</p></li>
+<li><p>The variant selection mechanism allows for the definition of variables
+(see the section on package feature).
+It seems unnatural to refer to these by position.
+We contemplate the usage of named arguments for such variables: <code class="docutils literal notranslate"><span class="pre">%[name]s</span></code>.</p></li>
+<li><p>Rendered text is always natural language and values render accordingly.
+For example, <code class="docutils literal notranslate"><span class="pre">[]int{1,</span> <span class="pre">2,</span> <span class="pre">3}</span></code> will be rendered, in English, as <code class="docutils literal notranslate"><span class="pre">&quot;1,</span> <span class="pre">2</span> <span class="pre">and</span> <span class="pre">3&quot;</span></code>,
+instead of  <code class="docutils literal notranslate"><span class="pre">&quot;[1</span> <span class="pre">2</span> <span class="pre">3]&quot;</span></code>.</p></li>
+<li><p>Formatters may use information about sentence context.
+Such meta data must be derived by automated analysis or supplied by a
+translator.</p></li>
+</ul>
+<p>Considering the differences with fmt we expect package message to do its own
+parsing.
+Different substitution points of the same argument may require a different State
+object to be passed.
+Using fmt’s parser would require rewriting such arguments into different forms
+and/or exposing more internals of fmt in the API.
+It seems more straightforward for package message to do its own parsing.
+Nonetheless, we aim to utilize as much of the fmt package as possible.</p>
+</div>
+<div class="section" id="currency">
+<h4>Currency<a class="headerlink" href="#currency" title="Permalink to this headline">¶</a></h4>
+<p>Currency is its own package.
+In most localization APIs the currency formatter is part of the number formatter.
+Currency data is large, though, and putting it in its own package
+avoids linking it in unnecessarily.
+Separating the currency package also allows greater control over options.
+Currencies have specific locale-sensitive rounding and scale settings that
+may interact poorly with options provided for a number formatter.</p>
+</div>
+<div class="section" id="units">
+<h4>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h4>
+<p>We propose to have one large package that includes all unit types.
+We could split this package up in,  for example, packages for energy, mass,
+length, speed etc.
+However, there is a lot of overlap in data (e.g. kilometers and kilometers per hour).
+Spreading the tables across packages will make sharing data harder.
+Also, not all units belong naturally in a specific package.</p>
+<p>To mitigate the impact of including large tables, we can have composable modules
+of data from which user can compose smaller formatters
+(similar to the display package).</p>
+</div>
+</div>
+<div class="section" id="features">
+<h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
+<p>The proposed mechanism for features takes a somewhat different approach
+to OS X and ICU.
+It allows mitigating the combinatorial explosion that may occur when combining
+features while still being legible.</p>
+<div class="section" id="matching-algorithm">
+<h4>Matching algorithm<a class="headerlink" href="#matching-algorithm" title="Permalink to this headline">¶</a></h4>
+<p>The matching algorithm returns the first match on a depth-first search on all cases.
+We also allow for variable assignment.
+We define the following types (in Go-ey pseudo code):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Select</span> <span class="n">struct</span> <span class="p">{</span>
+	<span class="n">Feature</span>  <span class="n">string</span>  	 <span class="o">//</span> <span class="n">identifier</span> <span class="n">of</span> <span class="n">feature</span> <span class="nb">type</span>
+	<span class="n">Argument</span> <span class="n">interface</span><span class="p">{}</span> <span class="o">//</span> <span class="n">Argument</span> <span class="n">reference</span>
+	<span class="n">Cases</span> <span class="p">[]</span><span class="n">Case</span>         <span class="o">//</span> <span class="n">The</span> <span class="n">variants</span><span class="o">.</span>
+<span class="p">}</span>
+<span class="n">Case</span>   <span class="n">struct</span>  <span class="p">{</span> <span class="n">Selector</span> <span class="n">string</span><span class="p">;</span> <span class="n">Value</span> <span class="n">interface</span><span class="p">{}</span> <span class="p">}</span>
+<span class="n">Var</span><span class="p">:</span>    <span class="n">struct</span> <span class="p">{</span> <span class="n">Name</span> <span class="n">string</span><span class="p">;</span> <span class="n">Value</span> <span class="n">interface</span><span class="p">{}</span> <span class="p">}</span>
+<span class="n">Value</span><span class="p">:</span> <span class="n">Select</span> <span class="ow">or</span> <span class="n">String</span>
+<span class="n">SelectSequence</span><span class="p">:</span> <span class="p">[](</span><span class="n">Select</span> <span class="ow">or</span> <span class="n">Var</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To select a variant given a set of arguments:</p>
+<ol class="simple">
+<li><p>Initialize a map m from argument name to argument value.</p></li>
+<li><p>For each v in s:</p>
+<ol class="simple">
+<li><p>If v is of type Var, update m[v.Name] = Eval(v.Value, m)</p></li>
+<li><p>If v is of type Select, then let v be Eval(v, m).</p></li>
+<li><p>If v is of type string,  return v.</p></li>
+</ol>
+</li>
+</ol>
+<p>Eval(v, m): Value</p>
+<ol class="simple">
+<li><p>If v is a string, return it.</p></li>
+<li><p>Let f be the feature value for feature v.Feature of argument v.Argument.</p></li>
+<li><p>For each case in v.Cases,</p>
+<ol class="simple">
+<li><p>return Eval(v) if f.Match(case.Selector, f, v.Argument)</p></li>
+</ol>
+</li>
+<li><p>Return nil (no match)</p></li>
+</ol>
+<p>Match(s, cat, arg): string x string x interface{} // Implementation for numbers.</p>
+<ol class="simple">
+<li><p>If s[0] == ‘=’ return int(s[1:]) == arg.</p></li>
+<li><p>If s[0] == ‘&lt;’ return int(s[1:]) &lt; arg.</p></li>
+<li><p>If s[0] == ‘&gt;’ return int(s[1:]) &gt; arg.</p></li>
+<li><p>If  s == cat return true.</p></li>
+<li><p>return s == “other”</p></li>
+</ol>
+<p>A simple data structure encodes the entire Select procedure, which makes it
+trivially machine-readable, a condition for including it in a translation pipeline.</p>
+</div>
+<div class="section" id="full-example">
+<h4>Full Example<a class="headerlink" href="#full-example" title="Permalink to this headline">¶</a></h4>
+<p>Consider the message <code class="docutils literal notranslate"><span class="pre">&quot;%[1]s</span> <span class="pre">invite</span> <span class="pre">%[2]</span> <span class="pre">to</span> <span class="pre">their</span> <span class="pre">party&quot;</span></code>, where argument 1 an 2
+are lists of respectively hosts and guests, and data:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span>
+	<span class="s">&quot;Hosts&quot;</span><span class="p">:</span> <span class="p">[]</span><span class="nx">gender</span><span class="p">.</span><span class="nx">String</span><span class="p">{</span>
+		<span class="nx">gender</span><span class="p">.</span><span class="nx">Male</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;Andy&quot;</span><span class="p">),</span>
+		<span class="nx">gender</span><span class="p">.</span><span class="nx">Female</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;Sheila&quot;</span><span class="p">),</span>
+	<span class="p">},</span>
+	<span class="s">&quot;Guests&quot;</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span> <span class="s">&quot;Andy&quot;</span><span class="p">,</span> <span class="s">&quot;Mary&quot;</span><span class="p">,</span> <span class="s">&quot;Bob&quot;</span><span class="p">,</span> <span class="s">&quot;Linda&quot;</span><span class="p">,</span> <span class="s">&quot;Carl&quot;</span><span class="p">,</span> <span class="s">&quot;Danny&quot;</span> <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following variant selector covers various cases for different values of the
+arguments.
+It limits the number of guests listed to 4.</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">en</span><span class="p">,</span> <span class="s">&quot;%[1]s invite %[2]s and %[3]d other guests to their party.&quot;</span><span class="p">,</span>
+	<span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="c1">// Hosts</span>
+		<span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="s">`There is no party. Move on!`</span><span class="p">,</span>
+		<span class="s">&quot;=1&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="c1">// Guests</span>
+			<span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="s">`%[1]s does not give a party.`</span><span class="p">,</span>
+			<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="c1">// Other guests count</span>
+				<span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="nx">gender</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="c1">// Hosts</span>
+					<span class="s">&quot;female&quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invites %[2]s to her party.&quot;</span><span class="p">,</span>
+					<span class="s">&quot;other &quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invites %[2]s to his party.&quot;</span><span class="p">),</span>
+				<span class="s">&quot;=1&quot;</span><span class="p">,</span> <span class="nx">gender</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="c1">// Hosts</span>
+					<span class="s">&quot;female&quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invites %#[2]s and one other person to her party.&quot;</span><span class="p">,</span>
+					<span class="s">&quot;other &quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invites %#[2]s and one other person to his party.&quot;</span><span class="p">),</span>
+				<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="nx">gender</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="c1">// Hosts</span>
+					<span class="s">&quot;female&quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invites %#[2]s and %[3]d other people to her party.&quot;</span><span class="p">,</span>
+					<span class="s">&quot;other &quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invites %#[2]s and %[3]d other people to his party.&quot;</span><span class="p">)),</span>
+		<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="c1">// Guests,</span>
+			<span class="s">&quot;=0 &quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s do not give a party.&quot;</span><span class="p">,</span>
+			<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="c1">// Other guests count</span>
+				<span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invite %[2]s to their party.&quot;</span><span class="p">,</span>
+				<span class="s">&quot;=1&quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invite %#[2]s and one other person to their party.&quot;</span><span class="p">,</span>
+				<span class="s">&quot;other &quot;</span><span class="p">,</span> <span class="s">&quot;%[1]s invite %#[2]s and %[3]d other people to their party.&quot;</span><span class="p">))))</span>
+</pre></div>
+</div>
+<!-- ```go
+template.Language(language.English).
+New("{{.Hosts}} invite {{.Guests}} to their party.").
+ParseSelect(plural.Select(".Hosts",
+	"=0", `There is no party. Move on!`,
+	"=1", plural.Select(".Guests",
+		"=0", `{{.Hosts}} does not give a party.`,
+		"<5", gender.Select(".Hosts",
+			"female", `{{.Hosts}} invites {{.Guests}} to her party.`,
+			"other ", `{{.Hosts}} invites {{.Guests}} to his party.`),
+		"=5", gender.Select(".Hosts",
+			"female", `{{.Hosts}} invites {{first 4 .Guests}} and one other
+							person to her party.`,
+			"other ", `{{.Hosts}} invites {{first 4 .Guests}} and one other
+							person to his party.`),
+		"other", gender.Select(".Hosts",
+			"female", `{{.Hosts}} invites {{first 4 .Guests}} and {{offset 4 .Guests}}
+							other people to her party.`,
+			"other ", `{{.Hosts}} invites {{first 4 .Guests}} and {{offset 4 .Guests}}
+							other people to his party.`),
+				),
+		"other", plural.Select(".Guests",
+			"=0 ", `{{.Hosts}} do not give a party.`,
+			"<5 ", `{{.Hosts}} invite {{.Guests}} to their party.`,
+			"=5 ", `{{.Hosts}} invite {{first 4 .Guests}} and one other person
+							to their party.`,
+			"other ", `{{.Hosts}} invite {{first 4 .Guests}} and
+							{{offset 4 .Guests}} other people to their party.`)))
+``` --><p>For English, we have three variables to deal with:
+the plural form of the hosts and guests and the gender of the hosts.
+Both guests and hosts are slices.
+Slices have a plural feature (its cardinality) and gender (based on CLDR data).
+We define the flag <code class="docutils literal notranslate"><span class="pre">#</span></code> as an alternate form for lists to drop the comma.</p>
+<p>It should be clear how quickly things can blow up with when dealing with
+multiple features.
+There are 12 variants.
+For other languages this could be quite a bit more.
+Using the properties of the matching algorithm one can often mitigate this issue.
+With a bit of creativity, we can remove the two cases where <code class="docutils literal notranslate"><span class="pre">Len(Guests)</span> <span class="pre">==</span> <span class="pre">0</span></code>
+and add another select block at the start of the list:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>message.SetSelect(en, &quot;%[1]s invite %[2]s and %[3]d other guests to their party.&quot;,
+	plural.Select(2, &quot;=0&quot;, `There is no party. Move on!`),
+	plural.Select(1,
+		&quot;=0&quot;, `There is no party. Move on!`,
+		…
+</pre></div>
+</div>
+<!-- ```go
+template.Language(language.English).
+	New("{{.Hosts}} invite {{.Guests}} to their party.").
+	ParseSelect(
+		plural.Select(".Guests", "=0", `There is no party. Move on!`),
+		plural.Select(".Hosts",
+			"=0", `There is no party. Move on!`,
+			…
+``` --><p>The algorithm will return from the first select when <code class="docutils literal notranslate"><span class="pre">len(Guests)</span> <span class="pre">==</span> <span class="pre">0</span></code>,
+so this case will not have to be considered later.</p>
+<p>Using Var we can do a lot better, though:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">en</span><span class="p">,</span> <span class="s">&quot;%[1]s invite %[2]s and %[3]d other guests to their party.&quot;</span><span class="p">,</span>
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">Var</span><span class="p">(</span><span class="s">&quot;noParty&quot;</span><span class="p">,</span> <span class="s">&quot;There is no party. Move on!&quot;</span><span class="p">),</span>
+	<span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="s">&quot;%[noParty]s&quot;</span><span class="p">),</span>
+	<span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="s">&quot;%[noParty]s&quot;</span><span class="p">),</span>
+
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">Var</span><span class="p">(</span><span class="s">&quot;their&quot;</span><span class="p">,</span> <span class="nx">gender</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;female&quot;</span><span class="p">,</span> <span class="s">&quot;her&quot;</span><span class="p">,</span> <span class="s">&quot;other &quot;</span><span class="p">,</span> <span class="s">&quot;his&quot;</span><span class="p">)),</span>
+ 	<span class="c1">// Variables may be overwritten.</span>
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">Var</span><span class="p">(</span><span class="s">&quot;their&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;&gt;1&quot;</span><span class="p">,</span> <span class="s">&quot;their&quot;</span><span class="p">)),</span>
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">Var</span><span class="p">(</span><span class="s">&quot;invite&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;=1&quot;</span><span class="p">,</span> <span class="s">&quot;invites&quot;</span><span class="p">,</span> <span class="s">&quot;other &quot;</span><span class="p">,</span> <span class="s">&quot;invite&quot;</span><span class="p">)),</span>
+
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">Var</span><span class="p">(</span><span class="s">&quot;guests&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="c1">// other guests</span>
+		<span class="s">&quot;=0&quot;</span><span class="p">,</span> <span class="s">&quot;%[2]s&quot;</span><span class="p">,</span>
+		<span class="s">&quot;=1&quot;</span><span class="p">,</span> <span class="s">&quot;%#[2]s and one other person&quot;</span><span class="p">,</span>
+		<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="s">&quot;%#[2]s and %[3]d other people&quot;</span><span class="p">),</span>
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;%[1]s %[invite]s %[guests]s to %[their]s party.&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<!--```go
+template.Language(language.English).
+    New("{{.Hosts}} invite {{.Guests}} to their party.").
+    ParseSelect(
+		feature.Var("noParty", "There is no party. Move on!"),
+		plural.Select(".Hosts", "=0", `{{$noParty}}`),
+		plural.Select(".Guests", "=0", `{{$noParty}}`),
+
+		feature.Var("their", gender.Select(".Hosts",
+			"female", "her",
+			"other ", "his")),
+	 	// Variables may be overwritten.
+		feature.Var("their", plural.Select(".Hosts", ">1", "their")),
+		feature.Var("invite", plural.Select(".Hosts",
+			"=1", "invites",
+			"other ", "invite")),
+
+		plural.Select(".Guests",
+			"<5", `{{.Hosts}} {{$invite}} {{.Guests}} to {{$their}} party.`,
+			"=5", `{{.Hosts}} {{$invite}} {{first 4 .Guests}} and one other person
+						to {{$their}} party.`,
+			"other", `{{.Hosts}} {{$invite}} {{first 4 .Guests | printf  "%#v"}}
+						and {{offset 4 .Guests}} other people to {{$their}} party.`))
+```--><p>This is essentially the same as the example before, but with the use of
+variables to reduce the verbosity.
+If one always shows all guests, there would only be one variant for describing
+the guests attending a party!</p>
+</div>
+<div class="section" id="comparison-to-icu">
+<h4>Comparison to ICU<a class="headerlink" href="#comparison-to-icu" title="Permalink to this headline">¶</a></h4>
+<p>ICU has a similar approach to dealing with gender and plurals.
+The above example roughly translates to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>`{num_hosts, plural,
+  =0 {There is no party. Move on!}
+  other {
+    {gender_of_host, select,
+      female {
+        {num_guests, plural, offset:1
+           =0 {{host} does not give a party.}
+           =1 {{host} invites {guest} to her party.}
+           =2 {{host} invites {guest} and one other person to her party.}
+           other {{host} invites {guest} and # other people to her party.}}}
+      male {
+         {num_guests, plural, offset:1
+            =0 {{host} does not give a party.}
+            =1 {{host} invites {guest} to his party.}
+            =2 {{host} invites {guest} and one other person to his party.}
+            other {{host} invites {guest} and # other people to his party.}}}
+      other {
+         {num_guests, plural, offset:1
+           =0 {{host} do not give a party.}
+           =1 {{host} invite {guest} to their party.}
+           =2 {{host} invite {guest} and one other person to their party.}
+           other {{host} invite {guest} and # other people to their party.}}}}}}`
+</pre></div>
+</div>
+<p>Comparison:</p>
+<ul>
+<li><p>In Go, features are associated with values, instead of passed separately.</p></li>
+<li><p>There is no Var construct in ICU.</p></li>
+<li><p>Instead the ICU notation is more flexible and allows for notations like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;{1, plural,</span>
+	<span class="n">zero</span> <span class="p">{</span><span class="n">Personne</span> <span class="n">ne</span> <span class="n">se</span> <span class="n">rendit</span><span class="p">}</span>
+	<span class="n">one</span> <span class="p">{{</span><span class="mi">0</span><span class="p">}</span> <span class="n">est</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="n">select</span><span class="p">,</span> <span class="n">female</span> <span class="p">{</span><span class="n">allée</span><span class="p">}</span> <span class="n">other</span> <span class="p">{</span><span class="n">allé</span><span class="p">}}}</span>
+	<span class="n">other</span> <span class="p">{{</span><span class="mi">0</span><span class="p">}</span> <span class="n">sont</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="n">select</span><span class="p">,</span> <span class="n">female</span> <span class="p">{</span><span class="n">allées</span><span class="p">}</span> <span class="n">other</span> <span class="p">{</span><span class="n">allés</span><span class="p">}}}}</span> <span class="n">à</span> <span class="p">{</span><span class="mi">3</span><span class="p">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>In Go, strings can only be assigned to variables or used in leaf nodes of a
+select. We find this to result in more readable definitions.</p></li>
+<li><p>The Go notation is fully expressed in terms of Go structs:</p>
+<ul class="simple">
+<li><p>There is no separate syntax to learn.</p></li>
+<li><p>Most of the syntax is checked at compile time.</p></li>
+<li><p>It is serializable and machine readable without needing another parser.</p></li>
+</ul>
+</li>
+<li><p>In Go, feature types are fully generic.</p></li>
+<li><p>Go has no special syntax for constructs like offset (see the third argument
+in ICU’s plural select and the “#” for substituting offsets).
+We can solve this with pipelines in templates and special interpretation for
+flag and verb types for the Format implementation of lists.</p></li>
+<li><p>ICU’s algorithm seems to prohibit the user of ‘&lt;’ and ‘&gt;’ selectors.</p></li>
+</ul>
+</div>
+<div class="section" id="comparison-to-os-x">
+<h4>Comparison to OS X<a class="headerlink" href="#comparison-to-os-x" title="Permalink to this headline">¶</a></h4>
+<p>OS X recently introduced support for handling plurals and prepared for support
+for gender.
+The data for selecting variants is stored in the stringsdict file.
+This example from the referenced link shows how to vary sentences for
+“number of files selected” in English:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;%d files are selected&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;NSStringLocalizedFormatKey&lt;/key&gt;
+        &lt;string&gt;%#@num_files_are@ selected&lt;/string&gt;
+        &lt;key&gt;num_files_are&lt;/key&gt;
+        &lt;dict&gt;
+            &lt;key&gt;NSStringFormatSpecTypeKey&lt;/key&gt;
+            &lt;string&gt;NSStringPluralRuleType&lt;/string&gt;
+            &lt;key&gt;NSStringFormatValueTypeKey&lt;/key&gt;
+            &lt;string&gt;d&lt;/string&gt;
+            &lt;key&gt;zero&lt;/key&gt;
+            &lt;string&gt;No file is&lt;/string&gt;
+            &lt;key&gt;one&lt;/key&gt;
+            &lt;string&gt;A file is&lt;/string&gt;
+            &lt;key&gt;other&lt;/key&gt;
+            &lt;string&gt;%d files are&lt;/string&gt;
+        &lt;/dict&gt;
+    &lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</pre></div>
+</div>
+<p>The equivalent in the proposed Go format:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="nx">message</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">language</span><span class="p">.</span><span class="nx">English</span><span class="p">,</span> <span class="s">&quot;%d files are selected&quot;</span><span class="p">,</span>
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">Var</span><span class="p">(</span><span class="s">&quot;numFilesAre&quot;</span><span class="p">,</span> <span class="nx">plural</span><span class="p">.</span><span class="nx">Select</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+		<span class="s">&quot;zero&quot;</span><span class="p">,</span>  <span class="s">&quot;No file is&quot;</span><span class="p">,</span>
+		<span class="s">&quot;one&quot;</span><span class="p">,</span>   <span class="s">&quot;A file is&quot;</span><span class="p">,</span>
+		<span class="s">&quot;other&quot;</span><span class="p">,</span> <span class="s">&quot;%d files are&quot;</span><span class="p">)),</span>
+	<span class="nx">feature</span><span class="p">.</span><span class="nx">String</span><span class="p">(</span><span class="s">&quot;%[numFilesAre]s selected&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>A comparison between OS X and the proposed design:</p>
+<ul class="simple">
+<li><p>In both cases, the selection of variants can be represented in a data structure.</p></li>
+<li><p>OS X does not have a specific API for defining the variant selection in code.</p></li>
+<li><p>Both approaches allow for arbitrary feature implementations.</p></li>
+<li><p>OS X allows for a similar construct to Var to allow substitution of substrings.</p></li>
+<li><p>OS X has extended its printf-style format specifier to allow for named substitutions.
+The substitution string <code class="docutils literal notranslate"><span class="pre">&quot;%#&#64;foo&#64;&quot;</span></code> will substitute the variable foo.
+The equivalent in Go is the less offensive <code class="docutils literal notranslate"><span class="pre">&quot;%[foo]v&quot;</span></code>.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="code-organization">
+<h3>Code organization<a class="headerlink" href="#code-organization" title="Permalink to this headline">¶</a></h3>
+<p>The typical Go deployment is that of a single statically linked binary.
+Traditionally, though, most localization frameworks have grouped data in
+per-language dynamically-loaded files.
+We suggested some code organization methods for both use cases.</p>
+<div class="section" id="example-statically-linked-package">
+<h4>Example: statically linked package<a class="headerlink" href="#example-statically-linked-package" title="Permalink to this headline">¶</a></h4>
+<p>In the following code, a single file called messages.go contains all collected
+translations:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span>import &quot;golang.org/x/text/message&quot;
+func init() {
+	for _, e := range entries{
+		for _, t := range e {
+			message.SetSelect(e.lang, t.key, t.value)
+		}
+	}
+}
+type entry struct {
+	key   string
+	value feature.Value
+}
+var entries = []struct{
+	lang  language.Tag
+	entry []entry
+}{
+	{ language.French, []entry{
+		{ &quot;Hello&quot;, feature.String(&quot;Bonjour&quot;) },
+		{ &quot;%s went to %s&quot;, feature.Select{ … } },
+		…
+	},
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-dynamically-loaded-files">
+<h4>Example: dynamically loaded files<a class="headerlink" href="#example-dynamically-loaded-files" title="Permalink to this headline">¶</a></h4>
+<p>We suggest storing per-language data files in a messages subdirectory:</p>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">func</span> <span class="nx">NewPrinter</span><span class="p">(</span><span class="nx">t</span> <span class="nx">language</span><span class="p">.</span><span class="nx">Tag</span><span class="p">)</span> <span class="o">*</span><span class="nx">message</span><span class="p">.</span><span class="nx">Printer</span> <span class="p">{</span>
+	<span class="nx">r</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Open</span><span class="p">(</span><span class="nx">filepath</span><span class="p">.</span><span class="nx">Join</span><span class="p">(</span><span class="s">&quot;messages&quot;</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">String</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;.json&quot;</span><span class="p">))</span>
+	<span class="c1">// handle error</span>
+	<span class="nx">cat</span> <span class="o">:=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">NewCatalog</span><span class="p">()</span>
+	<span class="nx">d</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">NewDecoder</span><span class="p">(</span><span class="nx">r</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">msg</span> <span class="kd">struct</span><span class="p">{</span> <span class="nx">Key</span> <span class="kt">string</span><span class="p">;</span> <span class="nx">Value</span> <span class="p">[]</span><span class="nx">feature</span><span class="p">.</span><span class="nx">Value</span> <span class="p">}</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">Decode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">msg</span><span class="p">);</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+			<span class="k">break</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="c1">// handle error</span>
+		<span class="p">}</span>
+		<span class="nx">cat</span><span class="p">.</span><span class="nx">SetSelect</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">Key</span><span class="p">,</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">Value</span><span class="o">...</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">cat</span><span class="p">.</span><span class="nx">NewPrinter</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>The implementation of the <code class="docutils literal notranslate"><span class="pre">msg</span></code> action will require some modification to core’s
+template/parse package.
+Such a change would be backward compatible.</p>
+</div>
+<div class="section" id="implementation-plan">
+<h2>Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permalink to this headline">¶</a></h2>
+<p>Implementation would start with some of the rudimentary package in the text
+repo, most notably format.
+Subsequently, this allows the implementation of the formatting of some specific
+types, like currencies.
+The messages package will be implemented first.
+The template package is more invasive and will be implemented at a later stage.
+Work on infrastructure for extraction messages from templates and print
+statements will allow integrating the tools with translation pipelines.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="12800-sweep-free-alloc.html" class="btn btn-neutral float-right" title="Proposal: Dense mark bits and sweep-free allocation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="12416-cgo-pointers.html" class="btn btn-neutral float-left" title="Proposal: Rules for passing pointers between Go and C" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

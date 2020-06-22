@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Go Benchmark Data Format &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Zip-based Go package archives" href="14386-zip-package-archives.html" />
+    <link rel="prev" title="Proposal: Natural XML" href="13504-natural-xml.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Go Benchmark Data Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#benchmark-data-formats">Benchmark data formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmark-processors">Benchmark processors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmark-runners">Benchmark runners</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-lines">Configuration Lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmark-results">Benchmark Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#value-units">Value Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmark-name-configuration">Benchmark Name Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17505-concurrent-rescan.html">Proposal: Concurrent stack re-scanning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Go Benchmark Data Format</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/14313-benchmark-format.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-go-benchmark-data-format">
+<h1>Proposal: Go Benchmark Data Format<a class="headerlink" href="#proposal-go-benchmark-data-format" title="Permalink to this headline">¶</a></h1>
+<p>Authors: Russ Cox, Austin Clements</p>
+<p>Last updated: February 2016</p>
+<p>Discussion at <a class="reference external" href="https://golang.org/issue/14313">golang.org/issue/14313</a>.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>We propose to make the current output of <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span> <span class="pre">-bench</span></code> the defined format for recording all Go benchmark data.
+Having a defined format allows benchmark measurement programs
+and benchmark analysis programs to interoperate while
+evolving independently.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="benchmark-data-formats">
+<h3>Benchmark data formats<a class="headerlink" href="#benchmark-data-formats" title="Permalink to this headline">¶</a></h3>
+<p>We are unaware of any standard formats for recording raw benchmark data,
+and we’ve been unable to find any using web searches.
+One might expect that a standard benchmark suite such as SPEC CPU2006 would have
+defined a format for raw results, but that appears not to be the case.
+The <a class="reference external" href="https://www.spec.org/cpu2006/results/">collection of published results</a>
+includes only analyzed data (<a class="reference external" href="https://www.spec.org/cpu2006/results/res2011q3/cpu2006-20110620-17230.txt">example</a>), not raw data.</p>
+<p>Go has a de facto standard format for benchmark data:
+the lines generated by the testing package when using <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span> <span class="pre">-bench</span></code>.
+For example, running compress/flate’s benchmarks  produces this output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BenchmarkDecodeDigitsSpeed1e4</span><span class="o">-</span><span class="mi">8</span>   	     <span class="mi">100</span>	    <span class="mi">154125</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">64.88</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40418</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	       <span class="mi">7</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsSpeed1e5</span><span class="o">-</span><span class="mi">8</span>   	      <span class="mi">10</span>	   <span class="mi">1367632</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">73.12</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">41356</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">14</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsSpeed1e6</span><span class="o">-</span><span class="mi">8</span>   	       <span class="mi">1</span>	  <span class="mi">13879794</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">72.05</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">52056</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">94</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsDefault1e4</span><span class="o">-</span><span class="mi">8</span> 	     <span class="mi">100</span>	    <span class="mi">147551</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">67.77</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40418</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	       <span class="mi">8</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsDefault1e5</span><span class="o">-</span><span class="mi">8</span> 	      <span class="mi">10</span>	   <span class="mi">1197672</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">83.50</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">41508</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">13</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsDefault1e6</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	  <span class="mi">11808775</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">84.68</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">53800</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">80</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsCompress1e4</span><span class="o">-</span><span class="mi">8</span>	     <span class="mi">100</span>	    <span class="mi">143348</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">69.76</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40417</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	       <span class="mi">8</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsCompress1e5</span><span class="o">-</span><span class="mi">8</span>	      <span class="mi">10</span>	   <span class="mi">1185527</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">84.35</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">41508</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">13</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeDigitsCompress1e6</span><span class="o">-</span><span class="mi">8</span>	       <span class="mi">1</span>	  <span class="mi">11740304</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">85.18</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">53800</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">80</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainSpeed1e4</span><span class="o">-</span><span class="mi">8</span>    	     <span class="mi">100</span>	    <span class="mi">143665</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">69.61</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40849</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">15</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainSpeed1e5</span><span class="o">-</span><span class="mi">8</span>    	      <span class="mi">10</span>	   <span class="mi">1390359</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">71.92</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">45700</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">31</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainSpeed1e6</span><span class="o">-</span><span class="mi">8</span>    	       <span class="mi">1</span>	  <span class="mi">12128469</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">82.45</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">89336</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	     <span class="mi">221</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainDefault1e4</span><span class="o">-</span><span class="mi">8</span>  	     <span class="mi">100</span>	    <span class="mi">141916</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">70.46</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40849</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">15</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainDefault1e5</span><span class="o">-</span><span class="mi">8</span>  	      <span class="mi">10</span>	   <span class="mi">1076669</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">92.88</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">43820</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">28</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainDefault1e6</span><span class="o">-</span><span class="mi">8</span>  	       <span class="mi">1</span>	  <span class="mi">10106485</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">98.95</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">71096</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	     <span class="mi">172</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainCompress1e4</span><span class="o">-</span><span class="mi">8</span> 	     <span class="mi">100</span>	    <span class="mi">138516</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">72.19</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40849</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">15</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainCompress1e5</span><span class="o">-</span><span class="mi">8</span> 	      <span class="mi">10</span>	   <span class="mi">1227964</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">81.44</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">43316</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">25</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecodeTwainCompress1e6</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	  <span class="mi">10040347</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">99.60</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">72120</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	     <span class="mi">173</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkEncodeDigitsSpeed1e4</span><span class="o">-</span><span class="mi">8</span>   	      <span class="mi">30</span>	    <span class="mi">482808</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">20.71</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsSpeed1e5</span><span class="o">-</span><span class="mi">8</span>   	       <span class="mi">5</span>	   <span class="mi">2685455</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">37.24</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsSpeed1e6</span><span class="o">-</span><span class="mi">8</span>   	       <span class="mi">1</span>	  <span class="mi">24966055</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">40.05</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsDefault1e4</span><span class="o">-</span><span class="mi">8</span> 	      <span class="mi">20</span>	    <span class="mi">655592</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">15.25</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsDefault1e5</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	  <span class="mi">13000839</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">7.69</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsDefault1e6</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	 <span class="mi">136341747</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">7.33</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsCompress1e4</span><span class="o">-</span><span class="mi">8</span>	      <span class="mi">20</span>	    <span class="mi">668083</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">14.97</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsCompress1e5</span><span class="o">-</span><span class="mi">8</span>	       <span class="mi">1</span>	  <span class="mi">12301511</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">8.13</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncodeDigitsCompress1e6</span><span class="o">-</span><span class="mi">8</span>	       <span class="mi">1</span>	 <span class="mi">137962041</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">7.25</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>The testing package always reports ns/op, and each benchmark can request the addition of MB/s (throughput) and also B/op and allocs/op (allocation rates).</p>
+</div>
+<div class="section" id="benchmark-processors">
+<h3>Benchmark processors<a class="headerlink" href="#benchmark-processors" title="Permalink to this headline">¶</a></h3>
+<p>Multiple tools have been written that process this format,
+most notably <a class="reference external" href="https://godoc.org/golang.org/x/tools/cmd/benchcmp">benchcmp</a>
+and its more statistically valid successor <a class="reference external" href="https://godoc.org/rsc.io/benchstat">benchstat</a>.
+There is also <a class="reference external" href="https://godoc.org/github.com/aclements/go-misc/benchmany">benchmany</a>’s plot subcommand
+and likely more unpublished programs.</p>
+</div>
+<div class="section" id="benchmark-runners">
+<h3>Benchmark runners<a class="headerlink" href="#benchmark-runners" title="Permalink to this headline">¶</a></h3>
+<p>Multiple tools have also been written that generate this format.
+In addition to the standard Go testing package,
+<a class="reference external" href="https://godoc.org/rsc.io/compilebench">compilebench</a>
+generates this data format based on runs of the Go compiler,
+and Austin’s unpublished shellbench generates this data format
+after running an arbitrary shell command.</p>
+<p>The <a class="reference external" href="https://golang.org/x/benchmarks/bench">golang.org/x/benchmarks/bench</a> benchmarks
+are notable for <em>not</em> generating this format,
+which has made all analysis of those results
+more complex than we believe it should be.
+We intend to update those benchmarks to generate the standard format,
+once a standard format is defined.
+Part of the motivation for the proposal is to avoid
+the need to process custom output formats in future benchmarks.</p>
+</div>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>A Go benchmark data file is a UTF-8 textual file consisting of a sequence of lines.
+Configuration lines and benchmark result lines, described below,
+have semantic meaning in the reporting of benchmark results.</p>
+<p>All other lines in the data file, including but not limited to
+blank lines and lines beginning with a # character, are ignored.
+For example, the testing package prints test results above benchmark data,
+usually the text <code class="docutils literal notranslate"><span class="pre">PASS</span></code>. That line is neither a configuration line nor a benchmark
+result line, so it is ignored.</p>
+<div class="section" id="configuration-lines">
+<h3>Configuration Lines<a class="headerlink" href="#configuration-lines" title="Permalink to this headline">¶</a></h3>
+<p>A configuration line is a key-value pair of the form</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p>where key begins with a lower case character (as defined by <code class="docutils literal notranslate"><span class="pre">unicode.IsLower</span></code>),
+contains no space characters (as defined by <code class="docutils literal notranslate"><span class="pre">unicode.IsSpace</span></code>)
+nor upper case characters (as defined by <code class="docutils literal notranslate"><span class="pre">unicode.IsUpper</span></code>),
+and one or more ASCII space or tab characters separate “key:” from “value.”
+Conventionally, multiword keys are written with the words
+separated by hyphens, as in cpu-speed.
+There are no restrictions on value, except that it cannot contain a newline character.
+Value can be omitted entirely, in which case the colon must still be
+present, but need not be followed by a space.</p>
+<p>The interpretation of a key/value pair is up to tooling, but the key/value pair
+is considered to describe all benchmark results that follow,
+until overwritten by a configuration line with the same key.</p>
+</div>
+<div class="section" id="benchmark-results">
+<h3>Benchmark Results<a class="headerlink" href="#benchmark-results" title="Permalink to this headline">¶</a></h3>
+<p>A benchmark result line has the general form</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">iterations</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">unit</span><span class="o">&gt;</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">unit</span><span class="o">&gt;...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The fields are separated by runs of space characters (as defined by <code class="docutils literal notranslate"><span class="pre">unicode.IsSpace</span></code>),
+so the line can be parsed with <code class="docutils literal notranslate"><span class="pre">strings.Fields</span></code>.
+The line must have an even number of fields, and at least four.</p>
+<p>The first field is the benchmark name, which must begin with <code class="docutils literal notranslate"><span class="pre">Benchmark</span></code>
+followed by an upper case character (as defined by <code class="docutils literal notranslate"><span class="pre">unicode.IsUpper</span></code>)
+or the end of the field,
+as in <code class="docutils literal notranslate"><span class="pre">BenchmarkReverseString</span></code> or just <code class="docutils literal notranslate"><span class="pre">Benchmark</span></code>.
+Tools displaying benchmark data conventionally omit the <code class="docutils literal notranslate"><span class="pre">Benchmark</span></code> prefix.
+The same benchmark name can appear on multiple result lines,
+indicating that the benchmark was run multiple times.</p>
+<p>The second field gives the number of iterations run.
+For most processing this number can be ignored, although
+it may give some indication of the expected accuracy
+of the measurements that follow.</p>
+<p>The remaining fields report value/unit pairs in which the value
+is a float64 that can be parsed by <code class="docutils literal notranslate"><span class="pre">strconv.ParseFloat</span></code>
+and the unit explains the value, as in “64.88 MB/s”.
+The units reported are typically normalized so that they can be
+interpreted without considering to the number of iterations.
+In the example, the CPU cost is reported per-operation and the
+throughput is reported per-second; neither is a total that
+depends on the number of iterations.</p>
+</div>
+<div class="section" id="value-units">
+<h3>Value Units<a class="headerlink" href="#value-units" title="Permalink to this headline">¶</a></h3>
+<p>A value’s unit string is expected to specify not only the measurement unit
+but also, as needed, a description of what is being measured.
+For example, a benchmark might report its overall execution time
+as well as cache miss times with three units “ns/op,” “L1-miss-ns/op,”and “L2-miss-ns/op.”</p>
+<p>Tooling can expect that the unit strings are identical for all runs to be compared;
+for example, a result reporting “ns/op” need not be considered comparable
+to one reporting “µs/op.”</p>
+<p>However, tooling may assume that the measurement unit is the final
+of the hyphen-separated words in the unit string and may recognize
+and rescale known measurement units.
+For example, consistently large “ns/op” or “L1-miss-ns/op”
+might be rescaled to “ms/op” or “L1-miss-ms/op” for display.</p>
+</div>
+<div class="section" id="benchmark-name-configuration">
+<h3>Benchmark Name Configuration<a class="headerlink" href="#benchmark-name-configuration" title="Permalink to this headline">¶</a></h3>
+<p>In the current testing package, benchmark names correspond to Go identifiers:
+each benchmark must be written as a different Go function.
+<a class="reference external" href="https://github.com/golang/proposal/blob/master/design/12166-subtests">Work targeted for Go 1.7</a> will allow tests and benchmarks
+to define sub-tests and sub-benchmarks programatically,
+in particular to vary interesting parameters both when
+testing and when benchmarking.
+That work uses a slash to separate the name of a benchmark
+collection from the description of a sub-benchmark.</p>
+<p>We propose that sub-benchmarks adopt the convention of
+choosing names that are key=value pairs;
+that slash-prefixed key=value pairs in the benchmark name are
+treated by benchmark data processors as per-benchmark
+configuration values.</p>
+</div>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>The benchmark output given in the background section above
+is already in the format proposed here.
+That is a key feature of the proposal.</p>
+<p>However, a future run of the benchmark might add configuration lines,
+and the benchmark might be rewritten to use sub-benchmarks,
+producing this output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">commit</span><span class="p">:</span> <span class="mi">7</span><span class="n">cd9055</span>
+<span class="n">commit</span><span class="o">-</span><span class="n">time</span><span class="p">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">11</span><span class="n">T13</span><span class="p">:</span><span class="mi">25</span><span class="p">:</span><span class="mi">45</span><span class="o">-</span><span class="mi">0500</span>
+<span class="n">goos</span><span class="p">:</span> <span class="n">darwin</span>
+<span class="n">goarch</span><span class="p">:</span> <span class="n">amd64</span>
+<span class="n">cpu</span><span class="p">:</span> <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Core</span><span class="p">(</span><span class="n">TM</span><span class="p">)</span> <span class="n">i7</span><span class="o">-</span><span class="mi">4980</span><span class="n">HQ</span> <span class="n">CPU</span> <span class="o">@</span> <span class="mf">2.80</span><span class="n">GHz</span>
+<span class="n">cpu</span><span class="o">-</span><span class="n">count</span><span class="p">:</span> <span class="mi">8</span>
+<span class="n">cpu</span><span class="o">-</span><span class="n">physical</span><span class="o">-</span><span class="n">count</span><span class="p">:</span> <span class="mi">4</span>
+<span class="n">os</span><span class="p">:</span> <span class="n">Mac</span> <span class="n">OS</span> <span class="n">X</span> <span class="mf">10.11</span><span class="o">.</span><span class="mi">3</span>
+<span class="n">mem</span><span class="p">:</span> <span class="mi">16</span> <span class="n">GB</span>
+
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>   	     <span class="mi">100</span>	    <span class="mi">154125</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">64.88</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40418</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	       <span class="mi">7</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>   	      <span class="mi">10</span>	   <span class="mi">1367632</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">73.12</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">41356</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">14</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>   	       <span class="mi">1</span>	  <span class="mi">13879794</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">72.05</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">52056</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">94</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span> 	     <span class="mi">100</span>	    <span class="mi">147551</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">67.77</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40418</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	       <span class="mi">8</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span> 	      <span class="mi">10</span>	   <span class="mi">1197672</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">83.50</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">41508</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">13</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	  <span class="mi">11808775</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">84.68</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">53800</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">80</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>    	     <span class="mi">100</span>	    <span class="mi">143348</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">69.76</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40417</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	       <span class="mi">8</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>    	      <span class="mi">10</span>	   <span class="mi">1185527</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">84.35</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">41508</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">13</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>    	       <span class="mi">1</span>	  <span class="mi">11740304</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">85.18</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">53800</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">80</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>    	     <span class="mi">100</span>	    <span class="mi">143665</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">69.61</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40849</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">15</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>    	      <span class="mi">10</span>	   <span class="mi">1390359</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">71.92</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">45700</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">31</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>    	       <span class="mi">1</span>	  <span class="mi">12128469</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">82.45</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">89336</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	     <span class="mi">221</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>  	     <span class="mi">100</span>	    <span class="mi">141916</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">70.46</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40849</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">15</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>  	      <span class="mi">10</span>	   <span class="mi">1076669</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">92.88</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">43820</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">28</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>  	       <span class="mi">1</span>	  <span class="mi">10106485</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">98.95</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">71096</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	     <span class="mi">172</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>     	     <span class="mi">100</span>	    <span class="mi">138516</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">72.19</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">40849</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">15</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>     	      <span class="mi">10</span>	   <span class="mi">1227964</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">81.44</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">43316</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	      <span class="mi">25</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkDecode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">twain</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>     	       <span class="mi">1</span>	  <span class="mi">10040347</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">99.60</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>	   <span class="mi">72120</span> <span class="n">B</span><span class="o">/</span><span class="n">op</span>	     <span class="mi">173</span> <span class="n">allocs</span><span class="o">/</span><span class="n">op</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>   	      <span class="mi">30</span>	    <span class="mi">482808</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">20.71</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>   	       <span class="mi">5</span>	   <span class="mi">2685455</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">37.24</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">speed</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>   	       <span class="mi">1</span>	  <span class="mi">24966055</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">40.05</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span> 	      <span class="mi">20</span>	    <span class="mi">655592</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">15.25</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	  <span class="mi">13000839</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">7.69</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">default</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span> 	       <span class="mi">1</span>	 <span class="mi">136341747</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">7.33</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e4</span><span class="o">-</span><span class="mi">8</span>    	      <span class="mi">20</span>	    <span class="mi">668083</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	  <span class="mf">14.97</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e5</span><span class="o">-</span><span class="mi">8</span>    	       <span class="mi">1</span>	  <span class="mi">12301511</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">8.13</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+<span class="n">BenchmarkEncode</span><span class="o">/</span><span class="n">text</span><span class="o">=</span><span class="n">digits</span><span class="o">/</span><span class="n">level</span><span class="o">=</span><span class="n">best</span><span class="o">/</span><span class="n">size</span><span class="o">=</span><span class="mf">1e6</span><span class="o">-</span><span class="mi">8</span>    	       <span class="mi">1</span>	 <span class="mi">137962041</span> <span class="n">ns</span><span class="o">/</span><span class="n">op</span>	   <span class="mf">7.25</span> <span class="n">MB</span><span class="o">/</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>Using sub-benchmarks has benefits beyond this proposal, namely that it would
+avoid the current repetitive code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">func</span> <span class="n">BenchmarkDecodeDigitsSpeed1e4</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>    <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsSpeed1e5</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>    <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsSpeed1e6</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>    <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsDefault1e4</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>  <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">default_</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsDefault1e5</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>  <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">default_</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsDefault1e6</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>  <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">default_</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsCompress1e4</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">compress</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsCompress1e5</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">compress</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeDigitsCompress1e6</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">compress</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainSpeed1e4</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>     <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainSpeed1e5</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>     <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainSpeed1e6</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>     <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainDefault1e4</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>   <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">default_</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainDefault1e5</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>   <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">default_</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainDefault1e6</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>   <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">default_</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainCompress1e4</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>  <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">compress</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainCompress1e5</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>  <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">compress</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">func</span> <span class="n">BenchmarkDecodeTwainCompress1e6</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span><span class="n">testing</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>  <span class="p">{</span> <span class="n">benchmarkDecode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">twain</span><span class="p">,</span> <span class="n">compress</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>More importantly for this proposal, using sub-benchmarks also makes the possible
+comparison axes clear: digits vs twait, speed vs default vs best, size 1e4 vs 1e5 vs 1e6.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>As discussed in the background section,
+we have already developed a number of analysis programs
+that assume this proposal’s format,
+as well as a number of programs that generate this format.
+Standardizing the format should encourage additional work
+on both kinds of programs.</p>
+<p><a class="reference external" href="https://golang.org/issue/12826">Issue 12826</a> suggests a different approach,
+namely the addition of a new <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code> option <code class="docutils literal notranslate"><span class="pre">-benchformat</span></code>, to control
+the format of benchmark output. In fact it gives the lack of standardization
+as the main justification for a new option:</p>
+<blockquote>
+<div><p>Currently <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span> <span class="pre">-bench</span> <span class="pre">.</span></code> prints out benchmark results in a
+certain format, but there is no guarantee that this format will not
+change. Thus a tool that parses go test output may break if an
+incompatible change to the output format is made.</p>
+</div></blockquote>
+<p>Our approach is instead to guarantee that the format will not change,
+or rather that it will only change in ways allowed by this design.
+An analysis tool that parses the output specified here will not break
+in future versions of Go,
+and a tool that generates the output specified here will work
+with all such analysis tools.
+Having one agreed-upon format enables broad interoperation;
+the ability for one tool to generate arbitrarily many different formats
+does not achieve the same result.</p>
+<p>The proposed format also seems to be extensible enough to accommodate
+anticipated future work on benchmark reporting.</p>
+<p>The main known issue with the current <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span> <span class="pre">-bench</span></code> is that
+we’d like to emit finer-grained detail about runs, for linearity testing
+and more robust statistics (see <a class="reference external" href="https://golang.org/issue/10669">issue 10669</a>).
+This proposal allows that by simply printing more result lines.</p>
+<p>Another known issue is that we may want to add custom outputs
+such as garbage collector statistics to certain benchmark runs.
+This proposal allows that by adding more value-unit pairs.</p>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>Tools consuming existing benchmark format may need trivial changes
+to ignore non-benchmark result lines or to cope with additional value-unit pairs
+in benchmark results.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The benchmark format described here is already generated by <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span> <span class="pre">-bench</span></code>
+and expected by tools like <code class="docutils literal notranslate"><span class="pre">benchcmp</span></code> and <code class="docutils literal notranslate"><span class="pre">benchstat</span></code>.</p>
+<p>The format is trivial to generate, and it is
+straightforward but not quite trivial to parse.</p>
+<p>We anticipate that the <a class="reference external" href="https://github.com/golang/go/issues/14304">new x/perf subrepo</a> will include a library for loading
+benchmark data from files, although the format is also simple enough that
+tools that want a different in-memory representation might reasonably
+write separate parsers.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="14386-zip-package-archives.html" class="btn btn-neutral float-right" title="Proposal: Zip-based Go package archives" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="13504-natural-xml.html" class="btn btn-neutral float-left" title="Proposal: Natural XML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,604 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Proposal: Concurrent stack re-scanning &mdash; Go Design Proposal  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Proposal: Type Aliases" href="18130-type-alias.html" />
+    <link rel="prev" title="Proposal: Eliminate STW stack re-scanning" href="17503-eliminate-rescan.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Go Design Proposal
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="11502-securitypolicy.html">Proposal: Security Policy for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11970-decentralized-gc.html">Proposal: Decentralized GC coordination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12166-subtests.html">Proposal: testing: programmatic sub-test and sub-benchmark support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12302-release-proposal.html">Proposal: A minimal release process for Go repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12416-cgo-pointers.html">Proposal: Rules for passing pointers between Go and C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12750-localization.html">Proposal: Localization support in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12800-sweep-free-alloc.html">Proposal: Dense mark bits and sweep-free allocation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html">Proposal: Monotonic Elapsed Time Measurements in Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12914-monotonic.html#appendix-time-now-usage">Appendix: time.Now usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13073-code-of-conduct.html">Proposal: A Code of Conduct for the Go community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13432-mobile-audio.html">Proposal: Audio for Mobile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13504-natural-xml.html">Proposal: Natural XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14313-benchmark-format.html">Proposal: Go Benchmark Data Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14386-zip-package-archives.html">Proposal: Zip-based Go package archives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14951-soft-heap-limit.html">Proposal: Separate soft and hard heap size goal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15292-generics.html">Proposal: Go should have generics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16085-conversions-ignore-tags.html">Proposal: Ignore tags in struct type conversions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html">Proposal: Alias declarations for Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16339-alias-decls.html#appendix">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16410-heap-viewer.html">Proposal: Go Heap Dump Viewer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16704-cidr-notation-no-proxy.html">Proposal: Add support for CIDR notation in no_proxy variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17280-profile-labels.html">Proposal: Support for pprof profiler labels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="17503-eliminate-rescan.html">Proposal: Eliminate STW stack re-scanning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Proposal: Concurrent stack re-scanning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposal">Proposal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#transitive-mark-write-barrier">Transitive mark write barrier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stack-re-scanning">Stack re-scanning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-considerations">Other considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rationale">Rationale</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#alternative-approaches">Alternative approaches</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation">Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="18130-type-alias.html">Proposal: Type Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html">Proposal: percpu.Sharded, an API for reducing cache contention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#discussion">Discussion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18802-percpu-sharded.html#backwards-compatibility">Backwards compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19113-signed-shift-counts.html">Proposal: Permit Signed Integers as Shift Counts for Go 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19308-number-literals.html">Proposal: Go 2 Number Literal Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html">Proposal: Mid-stack inlining in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#proposal">Proposal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#rationale">Rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19348-midstack-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19480-xml-stream.html">Proposal: XML Stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html">Proposal: emit DWARF inlining info in the Go compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#abstract">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#background">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#how-the-generated-dwarf-should-look">How the generated DWARF should look</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#outline-of-proposed-changes">Outline of proposed changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#compatibility">Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#implementation">Implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#prerequisite-changes">Prerequisite Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#preliminary-results">Preliminary Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="22080-dwarf-inlining.html#open-issues">Open issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24301-versioned-go.html">Proposal: Versioned Go Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="24543-non-cooperative-preemption.html">Proposal: Non-cooperative goroutine preemption</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25530-sumdb.html">Proposal: Secure the Public Go Module Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="25719-go15vendor.html">Go 1.5 Vendor Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26160-dns-based-vanity-imports.html">Proposal: DNS Based Vanity Imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26756-rawxml-token.html">Proposal: Raw XML Token</a></li>
+<li class="toctree-l1"><a class="reference internal" href="26903-simplify-mark-termination.html">Proposal: Simplify mark termination and eliminate mark 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27539-internal-abi.html">Proposal: Create an undefined internal calling convention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2775-binary-only-packages.html">Proposal: Binary-Only Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="27935-unbounded-queue-package.html">Proposal: Built in support for high performance unbounded queue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="28221-go2-transitions.html">Proposal: Go 2 transition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2981-go-test-json.html">Proposal: <code class="docutils literal notranslate"><span class="pre">-json</span></code> flag in <code class="docutils literal notranslate"><span class="pre">go</span> <span class="pre">test</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="29934-error-values.html">Proposal: Go 2 Error Inspection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30333-smarter-scavenging.html">Proposal: Smarter Scavenging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="30411-env.html">Proposal: <code class="docutils literal notranslate"><span class="pre">go</span></code> command configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="32437-try-builtin.html">Proposal: A built-in Go error check function, <code class="docutils literal notranslate"><span class="pre">try</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="33974-add-public-lockedfile-pkg.html">Proposal: make the internal lockedfile package public</a></li>
+<li class="toctree-l1"><a class="reference internal" href="34481-opencoded-defers.html">Proposal: Low-cost defers through inline code, and extra funcdata to manage the panic case</a></li>
+<li class="toctree-l1"><a class="reference internal" href="35112-scaling-the-page-allocator.html">Proposal: Scaling the Go page allocator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36460-lazy-module-loading.html">Proposal: Lazy Module Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="36606-64-bit-field-alignment.html">Proposal: Make 64-bit fields be 64-bit aligned on 32-bit systems, add //go:packed, //go:align directives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37112-unstable-runtime-metrics.html">Proposal: API for unstable runtime metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="37720-gopls-workspaces.html">Proposal: Multi-project gopls workspaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4899-testing-helper.html">Proposal: testing: better support test helper functions with TB.Helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6282-table-data.html">Proposal: Multi-dimensional slices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6977-overlapping-interfaces.html">Proposal: Permit embedding of interfaces with overlapping method sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPLATE.html">Proposal: [Title]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cryptography-principles.html">Cryptography Principles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft.html">Go 2 Draft Designs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-contracts.html">Contracts — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling.html">Error Handling — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-handling-overview.html">Error Handling — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-inspection.html">Error Inspection — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-printing.html">Error Printing — Draft Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-error-values-overview.html">Error Values — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-generics-overview.html">Generics — Problem Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="go2draft-type-parameters.html">Type Parameters - Draft Design</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Go Design Proposal</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Proposal: Concurrent stack re-scanning</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/17505-concurrent-rescan.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="proposal-concurrent-stack-re-scanning">
+<h1>Proposal: Concurrent stack re-scanning<a class="headerlink" href="#proposal-concurrent-stack-re-scanning" title="Permalink to this headline">¶</a></h1>
+<p>Author(s): Austin Clements, Rick Hudson</p>
+<p>Last updated: 2016-10-18</p>
+<p>Discussion at https://golang.org/issue/17505.</p>
+<p><strong>Note:</strong> We are not actually proposing this.
+This design was developed before proposal #17503, which is a
+dramatically simpler solution to the problem of stack re-scanning.
+We’re posting this design doc for its historical value.</p>
+<div class="section" id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Since the release of the concurrent garbage collector in Go 1.5, each
+subsequent release has further reduced stop-the-world (STW) time by
+moving more tasks to the concurrent phase.
+As of Go 1.7, the only non-trivial STW task is stack re-scanning.
+We propose to make stack re-scanning concurrent for Go 1.8, likely
+resulting in sub-millisecond worst-case STW times.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>Go’s concurrent garbage collector consists of four phases: mark, mark
+termination, sweep, and sweep termination.
+The mark and sweep phases are <em>concurrent</em>, meaning that the
+application (the <em>mutator</em>) continues to run during these phases,
+while the mark termination and sweep termination phases are
+<em>stop-the-world</em> (STW), meaning that the garbage collector pauses the
+mutator for the duration of the phase.</p>
+<p>Since Go 1.5, we’ve been steadily moving tasks from the STW phases to
+the concurrent phases, with a particular focus on tasks that take time
+proportional to something under application control, such as heap size
+or number of goroutines.
+As a result, in Go 1.7, most applications have sub-millisecond STW
+times.</p>
+<p>As of Go 1.7, the only remaining application-controllable STW task is
+<em>stack re-scanning</em>.
+Because of this one task, applications with large numbers of active
+goroutines can still experience STW times in excess of 10ms.</p>
+<p>Stack re-scanning is necessary because stacks are <em>permagray</em> in the
+Go garbage collector.
+Specifically, for performance reasons, there are no write barriers for
+writes to pointers in the current stack frame.
+As a result, even though the garbage collector scans all stacks at the
+beginning of the mark phase, it must re-scan all modified stacks with
+the world is stopped to catch any pointers the mutator “hid” on the
+stack.</p>
+<p>Unfortunately, this makes STW time proportional to the total amount of
+stack that needs to be rescanned.
+Worse, stack scanning is relatively expensive (~5ms/MB).
+Hence, applications with a large number of active goroutines can
+quickly drive up STW time.</p>
+</div>
+<div class="section" id="proposal">
+<h2>Proposal<a class="headerlink" href="#proposal" title="Permalink to this headline">¶</a></h2>
+<p>We propose to make stack re-scanning concurrent using a <em>transitive
+mark</em> write barrier.</p>
+<p>In this design, we add a new concurrent phase between mark and mark
+termination called <em>stack re-scan</em>.
+This phase starts as soon as the mark phase has marked all objects
+reachable from roots <em>other than stacks</em>.
+The phase re-scans stacks that have been modified since their initial
+scan, and enables a special <em>transitive mark</em> write barrier.</p>
+<p>Re-scanning and the write barrier ensure the following invariant
+during this phase:</p>
+<blockquote>
+<div><p><em>After a goroutine stack G has been re-scanned, all objects locally
+reachable to G are black.</em></p>
+</div></blockquote>
+<p>This depends on a goroutine-local notion of reachability, which is the
+set of objects reachable from globals or a given goroutine’s stack or
+registers.
+Unlike regular global reachability, this is not stable: as goroutines
+modify heap pointers or communicate, an object that was locally
+unreachable to a given goroutine may become locally reachable.
+However, the concepts are closely related: a globally reachable object
+must be locally reachable by at least one goroutine, and, conversely,
+an object that is not locally reachable by any goroutine is not
+globally reachable.</p>
+<p>This invariant ensures that re-scanning a stack <em>blackens</em> that stack,
+and that the stack remains black since the goroutine has no way to
+find a white object once its stack has been re-scanned.</p>
+<p>Furthermore, once every goroutine stack has been re-scanned, marking
+is complete.
+Every globally reachable object must be locally reachable by some
+goroutine and, once every stack has been re-scanned, every object
+locally reachable by some goroutine is black, so it follows that every
+globally reachable object is black once every stack has been
+re-scanned.</p>
+<div class="section" id="transitive-mark-write-barrier">
+<h3>Transitive mark write barrier<a class="headerlink" href="#transitive-mark-write-barrier" title="Permalink to this headline">¶</a></h3>
+<p>The transitive mark write barrier for an assignment <code class="docutils literal notranslate"><span class="pre">*dst</span> <span class="pre">=</span> <span class="pre">src</span></code>
+(where <code class="docutils literal notranslate"><span class="pre">src</span></code> is a pointer) ensures that all objects reachable from
+<code class="docutils literal notranslate"><span class="pre">src</span></code> are black <em>before</em> writing <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">*dst</span></code>.
+Writing <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">*dst</span></code> may make any object reachable from <code class="docutils literal notranslate"><span class="pre">src</span></code>
+(including <code class="docutils literal notranslate"><span class="pre">src</span></code> itself) locally reachable to some goroutine that has
+been re-scanned.
+Hence, to maintain the invariant, we must ensure these objects are all
+black.</p>
+<p>To do this, the write barrier greys <code class="docutils literal notranslate"><span class="pre">src</span></code> and then drains the mark
+work queue until there are no grey objects (using the same work queue
+logic that drives the mark phase).
+At this point, it writes <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">*dst</span></code> and allows the goroutine to
+proceed.</p>
+<p>The write barrier must not perform the write until all simultaneous
+write barriers are also ready to perform the write.
+We refer to this <em>mark quiescence</em>.
+To see why this is necessary, consider two simultaneous write barriers
+for <code class="docutils literal notranslate"><span class="pre">*D1</span> <span class="pre">=</span> <span class="pre">S1</span></code> and <code class="docutils literal notranslate"><span class="pre">*D2</span> <span class="pre">=</span> <span class="pre">S2</span></code> on an object graph that looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>G1 [b] → D1 [b]   S1 [w]
+                        ↘
+                         O1 [w] → O2 [w] → O3 [w]
+                        ↗
+         D2 [b]   S2 [w]
+</pre></div>
+</div>
+<p>Goroutine <em>G1</em> has been re-scanned (so <em>D1</em> must be black), while <em>Sn</em>
+and <em>On</em> are all white.</p>
+<p>Suppose the <em>S2</em> write barrier blackens <em>S2</em> and <em>O1</em> and greys <em>O2</em>,
+then the <em>S1</em> write barrier blackens <em>S1</em> and observes that <em>O1</em> is
+already black:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>G1 [b] → D1 [b]   S1 [b]
+                        ↘
+                         O1 [b] → O2 [g] → O3 [w]
+                        ↗
+         D2 [b]   S2 [b]
+</pre></div>
+</div>
+<p>At this point, the <em>S1</em> barrier has run out of local work, but the
+<em>S2</em> barrier is still going.
+If <em>S1</em> were to complete and write <code class="docutils literal notranslate"><span class="pre">*D1</span> <span class="pre">=</span> <span class="pre">S1</span></code> at this point, it would
+make white object <em>O3</em> reachable to goroutine <em>G1</em>, violating the
+invariant.
+Hence, the <em>S1</em> barrier cannot complete until the <em>S2</em> barrier is also
+ready to complete.</p>
+<p>This requirement sounds onerous, but it can be achieved in a simple
+and reasonably efficient manner by sharing a global mark work queue
+between the write barriers.
+This reuses the existing mark work queue and quiescence logic and
+allows write barriers to help each other to completion.</p>
+</div>
+<div class="section" id="stack-re-scanning">
+<h3>Stack re-scanning<a class="headerlink" href="#stack-re-scanning" title="Permalink to this headline">¶</a></h3>
+<p>The stack re-scan phase re-scans the stacks of all goroutines that
+have run since the initial stack scan to find pointers to white
+objects.
+The process of re-scanning a stack is identical to that of the initial
+scan, except that it must participate in mark quiescence.
+Specifically, the re-scanned goroutine must not resume execution until
+the system has reached mark quiescence (even if no white pointers are
+found on the stack).
+Otherwise, the same sorts of races that were described above are
+possible.</p>
+<p>There are multiple ways to realize this.
+The whole stack scan could participate in mark quiescence, but this
+would block any contemporaneous stack scans or write barriers from
+completing during a stack scan if any white pointers were found.
+Alternatively, each white pointer found on the stack could participate
+individually in mark quiescence, blocking the stack scan at that
+pointer until mark quiescence, and the stack scan could again
+participate in mark quiescence once all frames had been scanned.</p>
+<p>We propose an intermediate: gather small batches of white pointers
+from a stack at a time and reach mark quiescence on each batch
+individually, as well as at the end of the stack scan (even if the
+final batch is empty).</p>
+</div>
+<div class="section" id="other-considerations">
+<h3>Other considerations<a class="headerlink" href="#other-considerations" title="Permalink to this headline">¶</a></h3>
+<p>Goroutines that start during stack re-scanning cannot reach any white
+objects, so their stacks are immediately considered black.</p>
+<p>Goroutines can also share pointers through channels, which are often
+implemented as direct stack-to-stack copies.
+Hence, channel receives also require write barriers in order to
+maintain the invariant.
+Channel receives already have write barriers to maintain stack
+barriers, so there is no additional work here.</p>
+</div>
+</div>
+<div class="section" id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Permalink to this headline">¶</a></h2>
+<p>The primary drawback of this approach to concurrent stack re-scanning
+is that a write barrier during re-scanning could introduce significant
+mutator latency if the transitive mark finds a large unmarked region
+of the heap, or if overlapping write barriers significantly delay mark
+quiescence.
+However, we consider this situation unlikely in non-adversarial
+applications.
+Furthermore, the resulting delay should be no worse than the mark
+termination STW time applications currently experience, since mark
+termination has to do exactly the same amount of marking work, in
+addition to the cost of stack scanning.</p>
+<div class="section" id="alternative-approaches">
+<h3>Alternative approaches<a class="headerlink" href="#alternative-approaches" title="Permalink to this headline">¶</a></h3>
+<p>An alternative solution to concurrent stack re-scanning would be to
+adopt DMOS-style quiescence [Hudson ‘97].
+In this approach, greying any object during stack re-scanning (either
+by finding a pointer to a white object on a stack or by installing a
+pointer to a white object in the heap) forces the GC to drain this
+marking work and <em>restart</em> the stack re-scanning phase.</p>
+<p>This approach has a much simpler write barrier implementation that is
+constant time, so the write barrier would not induce significant
+mutator latency.
+However, unlike the proposed approach, the amount of work performed by
+DMOS-style stack re-scanning is potentially unbounded.
+This interacts poorly with Go’s GC pacer.
+The pacer enforces the goal heap size making allocating and GC work
+proportional, but this requires an upper bound on possible GC work.
+As a result, if the pacer underestimates the amount of re-scanning
+work, it may need to block allocation entirely to avoid exceeding the
+goal heap size.
+This would be an effective STW.</p>
+<p>There is also a hybrid solution: we could use the proposed transitive
+marking write barrier, but bound the amount of work it can do (and
+hence the latency it can induce).
+If the write barrier exceeds this bound, it performs a DMOS-style
+restart.
+This is likely to get the best of both worlds, but also inherits the
+sum of their complexity.</p>
+<p>A final alternative would be to eliminate concurrent stack re-scanning
+entirely by adopting a <em>deletion-style</em> write barrier [Yuasa ‘90].
+This style of write barrier allows the initial stack scan to <em>blacken</em>
+the stack, rather than merely greying it (still without the need for
+stack write barriers).
+For full details, see proposal #17503.</p>
+</div>
+</div>
+<div class="section" id="compatibility">
+<h2>Compatibility<a class="headerlink" href="#compatibility" title="Permalink to this headline">¶</a></h2>
+<p>This proposal does not affect the language or any APIs and hence
+satisfies the Go 1 compatibility guidelines.</p>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>We do not plan to implement this proposal.
+Instead, we plan to implement proposal #17503.</p>
+<p>The implementation steps are as follows:</p>
+<ol class="simple">
+<li><p>While not strictly necessary, first make GC assists participate in
+stack scanning.
+Currently this is not possible, which increases mutator latency at
+the beginning of the GC cycle.
+This proposal would compound this effect by also blocking GC
+assists at the end of the GC cycle, causing an effective STW.</p></li>
+<li><p>Modify the write barrier to be pre-publication instead of
+post-publication.
+Currently the write barrier occurs after the write of a pointer,
+but this proposal requires that the write barrier complete
+transitive marking <em>before</em> writing the pointer to its destination.
+A pre-publication barrier is also necessary for
+<a class="reference external" href="https://golang.org/s/gctoc">ROC</a>.</p></li>
+<li><p>Make the mark completion condition precise.
+Currently it’s possible (albeit unlikely) to enter mark termination
+before all heap pointers have been marked.
+This proposal requires that we not start stack re-scanning until
+all objects reachable from globals are marked, which requires a
+precise completion condition.</p></li>
+<li><p>Implement the transitive mark write barrier.
+This can reuse the existing work buffer pool lists and logic,
+including the global quiescence barrier in getfull.
+It may be necessary to improve the performance characteristics of
+the getfull barrier, since this proposal will lean far more heavily
+on this barrier than we currently do.</p></li>
+<li><p>Check stack re-scanning code and make sure it is safe during
+non-STW.
+Since this only runs during STW right now, it may omit
+synchronization that will be necessary when running during non-STW.
+This is likely to be minimal, since most of the code is shared with
+the initial stack scan, which does run concurrently.</p></li>
+<li><p>Make stack re-scanning participate in write barrier quiescence.</p></li>
+<li><p>Create a new stack re-scanning phase.
+Make mark 2 completion transition to stack re-scanning instead of
+mark termination and enqueue stack re-scanning root jobs.
+Once all stack re-scanning jobs are complete, transition to mark
+termination.</p></li>
+</ol>
+</div>
+<div class="section" id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline">¶</a></h2>
+<p>We would like to thank Rhys Hiltner (&#64;rhysh) for suggesting the idea
+of a transitive mark write barrier.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>[Hudson ‘97] R. L. Hudson, R. Morrison, J. E. B. Moss, and D. S.
+Munro. Garbage collecting the world: One car at a time. In <em>ACM
+SIGPLAN Notices</em> 32(10):162–175, October 1997.</p>
+<p>[Yuasa ‘90] T. Yuasa. Real-time garbage collection on general-purpose
+machines. <em>Journal of Systems and Software</em>, 11(3):181–198, 1990.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="18130-type-alias.html" class="btn btn-neutral float-right" title="Proposal: Type Aliases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="17503-eliminate-rescan.html" class="btn btn-neutral float-left" title="Proposal: Eliminate STW stack re-scanning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
